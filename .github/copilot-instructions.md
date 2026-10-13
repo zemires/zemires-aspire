@@ -16,7 +16,7 @@ Shared guidance for AI coding agents (GitHub Copilot, Claude Code via `CLAUDE.md
 
 The repository was created by importing and merging several previously separate projects (some originally targeting the CommunityToolkit.Aspire repo). If you find leftovers from that origin (CommunityToolkit names, namespaces or links), align them with the conventions below.
 
-Targets `net10.0`, Aspire `13.x` (`AspireVersion` in `Directory.Build.props`, AppHost SDK in `global.json`).
+`src` packages target `net8.0`, `net9.0` and `net10.0` (`AllTargetFrameworks`; `Zemires.Aspire.Directus` is `net10.0` only because `Qute.Directus` is); examples, playground and tests target `net10.0`. Aspire `13.x` (`AspireVersion` in `Directory.Build.props`, AppHost SDK in `global.json`).
 
 ## Repository layout (core principles)
 
@@ -50,7 +50,7 @@ dotnet run --project examples\Zemires.Aspire.Hosting.N8n.AppHost\Zemires.Aspire.
 dotnet pack src\<Project>\<Project>.csproj   # output goes to ./nuget
 ```
 
-`global.json` opts into the Microsoft.Testing.Platform `dotnet test` mode (required by xunit.v3 4.x), so pass projects with `--project` / `--solution`. Integration tests and most playground AppHosts need a running container runtime (Docker or `podman machine start`). Terraform publishing needs the `terraform` CLI (and `az` for Azure targets).
+`global.json` opts into the Microsoft.Testing.Platform `dotnet test` mode (required by xunit.v3 4.x), so pass projects with `--project` / `--solution`. Integration tests and most playground AppHosts need a running container runtime (Docker or `podman machine start`). Terraform deployment needs the OpenTofu CLI `tofu` by default (`TerraformExecutor`; override with `Terraform:Executor:ExecutablePath`, e.g. `terraform`) and `az` for Azure targets.
 
 To regenerate the n8n API client (from `src\Zemires.N8n.Api`, spec file `openapi.yml`, see `kiota-lock.json`):
 
@@ -63,6 +63,7 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
 - Package versions are centrally managed in `Directory.Packages.props` — never put `Version=` on a `PackageReference`.
 - Shared properties (`DefaultTargetFramework`, `AspireVersion`, `AspireMajorVersion`, `ToolkitMinorVersion`, `ToolkitPatchVersion`) live in the root `Directory.Build.props`. Package version = `$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)`; local builds get a `-dev.<timestamp>` suffix, release builds are validated in `Directory.Build.targets`.
 - `src/Directory.Build.props` / `.targets` add packaging metadata, SourceLink, XML docs (CS1591 etc. as errors), the package icon and pack each project's `README.md` as the NuGet readme — **every `src` project needs a `README.md`**.
+- Every `src` project sets a `Description` and `AdditionalPackageTags` (appended to the common `aspire integration zemires` tags): the target system (e.g. `n8n`, `zitadel`, `terraform`) plus `hosting` for `Zemires.Aspire.Hosting.*` packages or `client` for client packages. The `ValidatePackageTags` target in `src/Directory.Build.targets` fails `dotnet pack` otherwise.
 - `src` projects build with `TreatWarningsAsErrors` and run `Aspire.Hosting.Integration.Analyzers`: public hosting extension methods need `[AspireExport]` or `[AspireExportIgnore]`. Playground, examples and tests keep warnings as warnings.
 - AppHost projects use `Sdk="Aspire.AppHost.Sdk"` (versionless; pinned in `global.json`). Preserve this when editing.
 
@@ -110,3 +111,4 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
 - Client integrations bind settings from `Aspire:<name>:Client`, fall back to `ConnectionStrings:{name}`, support keyed registration and register a health check unless disabled.
 - Do not commit local runtime data: `.n8n_data/`, `.data/`, `aspire-output/`, `.terragrunt-cache/`, `node_modules/`, `*.user` are git-ignored.
 - CI: `.github/workflows/ci.yml` runs restore, Release build, all tests except `Category=Integration` and `dotnet pack` of every `src` project on pull requests and pushes to `main`. Keep it green; run the same commands locally before pushing.
+- Release: pushing a tag `v*` (e.g. `v13.6.0`, `v13.6.0-preview.1`) runs `.github/workflows/release.yml` — build, tests (without `Category=Integration`), pack with the tag version, upload the packages as artifact and push them to nuget.org (secret `NUGET_API_KEY`). The tag version must match `$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)` from `Directory.Build.props` (prerelease tags: same prefix), so bump those first.

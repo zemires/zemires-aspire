@@ -9,7 +9,7 @@
 | n8n         | `Zemires.Aspire.Hosting.N8n`               | Hosting integration for [n8n](https://n8n.io) workflow automation: main instance, queue-mode workers, task runners, Postgres, Redis, OpenTelemetry, metrics. |
 |             | `Zemires.Aspire.N8n`                       | Client integration registering an `N8nClient` with health check. |
 |             | `Zemires.N8n.Api`                          | Kiota-generated client for the n8n public API. |
-| Terraform   | `Zemires.Aspire.Hosting.Terraform`         | Publishes the Aspire application model as Terraform configuration from Handlebars templates and deploys it with `terraform apply`. |
+| Terraform   | `Zemires.Aspire.Hosting.Terraform`         | Publishes the Aspire application model as Terraform configuration from Handlebars templates and deploys it with OpenTofu (default) or Terraform. |
 |             | `Zemires.Aspire.Hosting.Terraform.Azure`   | Maps Azure resources and Azure Container Apps to Terraform (templates in [`templates/azure-container-apps`](templates/azure-container-apps)). |
 | Zitadel     | `Zemires.Aspire.Hosting.Zitadel`           | Hosting integration for the [Zitadel](https://zitadel.com) identity provider incl. login v2 UI, machine user and project initialization. |
 | Directus    | `Zemires.Aspire.Hosting.Directus`          | Hosting integration for the [Directus](https://directus.io) headless CMS (SQLite, Postgres or SQL Server). |
@@ -29,9 +29,9 @@
 
 ## Prerequisites
 
-- .NET SDK 10 (projects target `net10.0`, Aspire 13)
+- .NET SDK 10 (packages target `net8.0`, `net9.0` and `net10.0`, Aspire 13)
 - Docker or Podman for running AppHosts and integration tests
-- Terraform CLI (and Azure CLI for Azure targets) for Terraform publishing
+- OpenTofu CLI (`tofu`, default) or Terraform CLI, plus Azure CLI for Azure targets, for Terraform deployment
 - Kiota — only to regenerate the n8n API client
 
 ## Build & test
@@ -97,7 +97,19 @@ builder.AddProject<Projects.ApiService>("api")
 builder.Build().Run();
 ```
 
-`aspire publish` renders the Terraform configuration; `aspire deploy` runs `terraform apply`. For a generic (non-Azure) environment use `builder.AddTerraformEnvironment("env")`.
+`aspire publish` renders the Terraform configuration; `aspire deploy` runs `tofu apply`. For a generic (non-Azure) environment use `builder.AddTerraformEnvironment("env")`.
+
+The default tool is [OpenTofu](https://opentofu.org) (`tofu`). To use another executable, e.g. the Terraform CLI, set `Terraform:Executor:ExecutablePath` in the AppHost's `appsettings.json`:
+
+```json
+{
+  "Terraform": {
+    "Executor": {
+      "ExecutablePath": "terraform"
+    }
+  }
+}
+```
 
 ### Zitadel
 

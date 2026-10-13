@@ -32,7 +32,7 @@ builder.Build().Run();
 
 Supported Azure resources include Storage (blob, queue, table), Key Vault, SQL, PostgreSQL, Redis / Managed Redis, Cosmos DB, Service Bus, Event Hubs, SignalR, AI Search, Application Insights, user-assigned identities and role assignments.
 
-`aspire deploy` provisions the container registry, applies the Terraform configuration and deploys the container apps. Requires the `terraform` and `az` CLIs.
+`aspire deploy` provisions the container registry, applies the Terraform configuration and deploys the container apps. Requires the `az` CLI and the [OpenTofu](https://opentofu.org) CLI `tofu` (default; use the Terraform CLI instead by setting `Terraform:Executor:ExecutablePath` to `terraform` in the AppHost's `appsettings.json`, see `Zemires.Aspire.Hosting.Terraform`).
 
 ## Feedback & contributing
 
