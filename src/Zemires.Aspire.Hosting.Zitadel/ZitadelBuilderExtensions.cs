@@ -1,5 +1,8 @@
 ﻿using Aspire.Hosting.ApplicationModel;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Zemires.Aspire.Hosting.Zitadel;
 using Zitadel.Api;
 using Zitadel.Management.V1;
 using Zitadel.Project.V1;
@@ -118,35 +121,52 @@ public static class ZitadelBuilderExtensions
 
         builder.Eventing.Subscribe<ResourceReadyEvent>(zitadel, async (@event, ct) =>
         {
-            Clients.Options? options = null;
+            IServiceProvider services = @event.Services;
+            ResourceNotificationService notificationService = services.GetRequiredService<ResourceNotificationService>();
+            ResourceLoggerService loggerService = services.GetRequiredService<ResourceLoggerService>();
+            ILogger logger = loggerService.GetLogger(zitadel);
 
-            zitadel.TryGetAnnotationsOfType<ZitadelInitializationAnnotation>(out IEnumerable<ZitadelInitializationAnnotation>? initAnnotations);
-            if (initAnnotations != null)
+            List<ZitadelProjectResource> projects = zitadel.Projects.Keys
+                .Select(name => builder.Resources.FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.InvariantCultureIgnoreCase)))
+                .OfType<ZitadelProjectResource>()
+                .ToList();
+
+            if (!zitadel.HasAnnotationOfType<ZitadelInitializationAnnotation>() && projects.Count == 0)
             {
-                foreach (ZitadelInitializationAnnotation annotation in initAnnotations)
-                {
-                    if (options == null)
-                    {
-                        options = await zitadel.CreateApiClientOptions(ct);
-                    }
-
-                    await annotation.Initialization.Invoke(options, zitadel);
-                }
+                ResolveOutputsFromConfiguration(zitadel, services);
+                return;
             }
 
-            ResourceNotificationService notificationService = @event.Services.GetRequiredService<ResourceNotificationService>();
-
-            foreach (KeyValuePair<string, string> pair in zitadel.Projects)
+            Clients.Options? options = null;
+            try
             {
-                if (builder.Resources.FirstOrDefault(n => string.Equals(n.Name, pair.Key, StringComparison.InvariantCultureIgnoreCase)) is ZitadelProjectResource
-                    zitadelProject)
+                options = await zitadel.CreateApiClientOptions(ct);
+                await RunInitializationAsync(new ZitadelInitializationContext(options, zitadel, services, logger, ct));
+            }
+            catch (Exception ex) when (!ct.IsCancellationRequested)
+            {
+                logger.LogError(ex, "Initialization of '{Resource}' failed.", zitadel.Name);
+                FailUnresolvedOutputs(zitadel, ex);
+            }
+
+            foreach (ZitadelProjectResource project in projects)
+            {
+                ILogger projectLogger = loggerService.GetLogger(project);
+                try
                 {
-                    if (options == null)
+                    if (options is null)
                     {
-                        options = await zitadel.CreateApiClientOptions(ct);
+                        throw new InvalidOperationException($"Zitadel API client for '{zitadel.Name}' is not available, see the logs of '{zitadel.Name}'.");
                     }
 
-                    await CreateZitadelProject(options, zitadelProject, notificationService);
+                    await CreateZitadelProject(new ZitadelInitializationContext(options, project, services, projectLogger, ct), notificationService);
+                }
+                catch (Exception ex) when (!ct.IsCancellationRequested)
+                {
+                    projectLogger.LogError(ex, "Initialization of '{Resource}' failed.", project.Name);
+                    FailUnresolvedOutputs(project, ex);
+                    await notificationService.PublishUpdateAsync(project,
+                        state => state with { State = new ResourceStateSnapshot(KnownResourceStates.FailedToStart, KnownResourceStateStyles.Error) });
                 }
             }
         });
@@ -539,6 +559,132 @@ public static class ZitadelBuilderExtensions
     }
 
     /// <summary>
+    /// Configures an initialization function that executes when the Zitadel resource becomes ready.
+    /// The context provides the API client options and lets the function set outputs (see <see cref="GetOutput(IResourceBuilder{ZitadelResource}, string)" />).
+    /// </summary>
+    /// <param name="builder">The Zitadel resource builder to configure with initialization logic.</param>
+    /// <param name="initialization">A function receiving the initialization context.</param>
+    /// <returns>The Zitadel resource builder for method chaining.</returns>
+    [AspireExportIgnore(Reason = "The initialization callback receives Zitadel API client options, which are not ATS-compatible.")]
+    public static IResourceBuilder<ZitadelResource> WithInitialization(this IResourceBuilder<ZitadelResource> builder,
+        Func<ZitadelInitializationContext, Task> initialization)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(initialization);
+        return builder.WithAnnotation(new ZitadelInitializationAnnotation(initialization));
+    }
+
+    /// <summary>
+    /// Configures an initialization function that executes when the Zitadel project has been created.
+    /// The context provides the API client options and lets the function set outputs (see <see cref="GetOutput(IResourceBuilder{ZitadelProjectResource}, string)" />).
+    /// </summary>
+    /// <param name="builder">The Zitadel project resource builder to configure with initialization logic.</param>
+    /// <param name="initialization">A function receiving the initialization context.</param>
+    /// <returns>The Zitadel project resource builder for method chaining.</returns>
+    [AspireExportIgnore(Reason = "The initialization callback receives Zitadel API client options, which are not ATS-compatible.")]
+    public static IResourceBuilder<ZitadelProjectResource> WithInitialization(this IResourceBuilder<ZitadelProjectResource> builder,
+        Func<ZitadelInitializationContext, Task> initialization)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(initialization);
+        return builder.WithAnnotation(new ZitadelInitializationAnnotation(initialization));
+    }
+
+    /// <summary>
+    /// Gets an output of the Zitadel resource, set by an initialization function with <see cref="ZitadelInitializationContext.SetOutput" />.
+    /// The value is resolved lazily when consumed, e.g. with <c>WithEnvironment(name, output)</c>.
+    /// </summary>
+    /// <param name="builder">The Zitadel resource builder.</param>
+    /// <param name="name">The name of the output.</param>
+    /// <returns>A reference to the output value.</returns>
+    [AspireExportIgnore(Reason = "ZitadelOutputReference is not ATS-compatible.")]
+    public static ZitadelOutputReference GetOutput(this IResourceBuilder<ZitadelResource> builder, string name)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        return ZitadelOutputsAnnotation.GetOrAdd(builder.Resource, name, isSecret: false);
+    }
+
+    /// <summary>
+    /// Gets a secret output of the Zitadel resource, set by an initialization function with <see cref="ZitadelInitializationContext.SetOutput" />.
+    /// </summary>
+    /// <param name="builder">The Zitadel resource builder.</param>
+    /// <param name="name">The name of the output.</param>
+    /// <returns>A reference to the output value.</returns>
+    [AspireExportIgnore(Reason = "ZitadelOutputReference is not ATS-compatible.")]
+    public static ZitadelOutputReference GetSecretOutput(this IResourceBuilder<ZitadelResource> builder, string name)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        return ZitadelOutputsAnnotation.GetOrAdd(builder.Resource, name, isSecret: true);
+    }
+
+    /// <summary>
+    /// Gets an output of the Zitadel project, set by an initialization function with <see cref="ZitadelInitializationContext.SetOutput" />,
+    /// e.g. the client id of an application created by the initialization. The value is resolved lazily when consumed,
+    /// e.g. with <c>WithEnvironment(name, output)</c>.
+    /// </summary>
+    /// <param name="builder">The Zitadel project resource builder.</param>
+    /// <param name="name">The name of the output.</param>
+    /// <returns>A reference to the output value.</returns>
+    [AspireExportIgnore(Reason = "ZitadelOutputReference is not ATS-compatible.")]
+    public static ZitadelOutputReference GetOutput(this IResourceBuilder<ZitadelProjectResource> builder, string name)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        return ZitadelOutputsAnnotation.GetOrAdd(builder.Resource, name, isSecret: false);
+    }
+
+    /// <summary>
+    /// Gets a secret output of the Zitadel project, set by an initialization function with <see cref="ZitadelInitializationContext.SetOutput" />,
+    /// e.g. the client secret of an application created by the initialization.
+    /// </summary>
+    /// <param name="builder">The Zitadel project resource builder.</param>
+    /// <param name="name">The name of the output.</param>
+    /// <returns>A reference to the output value.</returns>
+    [AspireExportIgnore(Reason = "ZitadelOutputReference is not ATS-compatible.")]
+    public static ZitadelOutputReference GetSecretOutput(this IResourceBuilder<ZitadelProjectResource> builder, string name)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        return ZitadelOutputsAnnotation.GetOrAdd(builder.Resource, name, isSecret: true);
+    }
+
+    /// <summary>
+    /// Binds an output of the Zitadel resource to a parameter. The output takes the parameter value instead of a value set by the initialization.
+    /// </summary>
+    /// <param name="builder">The Zitadel resource builder.</param>
+    /// <param name="name">The name of the output.</param>
+    /// <param name="parameter">The parameter providing the value.</param>
+    /// <returns>The Zitadel resource builder for method chaining.</returns>
+    [AspireExport("withZitadelOutput", MethodName = "withOutput")]
+    public static IResourceBuilder<ZitadelResource> WithOutput(this IResourceBuilder<ZitadelResource> builder, string name, IResourceBuilder<ParameterResource> parameter)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        BindOutput(builder.Resource, name, parameter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Binds an output of the Zitadel project to a parameter, e.g. to use the credentials of an existing application.
+    /// The output takes the parameter value instead of a value set by the initialization.
+    /// </summary>
+    /// <param name="builder">The Zitadel project resource builder.</param>
+    /// <param name="name">The name of the output.</param>
+    /// <param name="parameter">The parameter providing the value.</param>
+    /// <returns>The Zitadel project resource builder for method chaining.</returns>
+    [AspireExport("withZitadelProjectOutput", MethodName = "withOutput")]
+    public static IResourceBuilder<ZitadelProjectResource> WithOutput(this IResourceBuilder<ZitadelProjectResource> builder, string name, IResourceBuilder<ParameterResource> parameter)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        BindOutput(builder.Resource, name, parameter);
+        return builder;
+    }
+
+    private static void BindOutput(IResource resource, string name, IResourceBuilder<ParameterResource> parameter)
+    {
+        ArgumentNullException.ThrowIfNull(parameter);
+        ZitadelOutputReference output = ZitadelOutputsAnnotation.GetOrAdd(resource, name, parameter.Resource.Secret);
+        output.Parameter = parameter.Resource;
+    }
+
+    /// <summary>
     /// Adds a Zitadel project resource for organizing applications and configurations within the Zitadel instance.
     /// Projects in Zitadel are containers for applications, roles, and other identity management resources.
     /// </summary>
@@ -615,17 +761,20 @@ public static class ZitadelBuilderExtensions
             ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_LOG_EXPORTER_ENDPOINT"] = endpoint.Property(EndpointProperty.Host); // no port, zitadel has it hardcoded to 443
             ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_TRACE_EXPORTER_TYPE"] = exporterType;
             ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_TRACE_EXPORTER_ENDPOINT"] = endpoint.Property(EndpointProperty.Host); // no port, zitadel has it hardcoded to 443
+            ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_TRACE_TRUSTREMOTESPANS"] = "true";
             ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_METRIC_EXPORTER_TYPE"] = exporterType;
             ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_METRIC_EXPORTER_ENDPOINT"] = endpoint.Property(EndpointProperty.Host);
         });
     }
 
-    private static async Task CreateZitadelProject(Clients.Options options, ZitadelProjectResource zitadelProject, ResourceNotificationService resourceNotificationService)
+    private static async Task CreateZitadelProject(ZitadelInitializationContext context, ResourceNotificationService resourceNotificationService)
     {
+        ZitadelProjectResource zitadelProject = (ZitadelProjectResource)context.Resource;
+
         await resourceNotificationService.PublishUpdateAsync(zitadelProject,
             state => state with { State = new ResourceStateSnapshot(KnownResourceStates.Starting, KnownResourceStateStyles.Info) });
 
-        ManagementService.ManagementServiceClient managementService = Clients.ManagementService(options);
+        ManagementService.ManagementServiceClient managementService = Clients.ManagementService(context.Options);
 
         ListProjectsResponse? projects = await managementService.ListProjectsAsync(new ListProjectsRequest());
 
@@ -644,18 +793,96 @@ public static class ZitadelBuilderExtensions
 
         zitadelProject.ProjectId = projectId;
 
+        await RunInitializationAsync(context);
 
-        zitadelProject.TryGetAnnotationsOfType<ZitadelInitializationAnnotation>(out IEnumerable<ZitadelInitializationAnnotation>? initAnnotations);
-        if (initAnnotations != null)
+        List<ResourcePropertySnapshot> properties = [new("zitadel.projectId", projectId)];
+        foreach (ZitadelOutputReference output in ZitadelOutputsAnnotation.GetAll(zitadelProject))
         {
-            foreach (ZitadelInitializationAnnotation annotation in initAnnotations)
+            if (output.Parameter is null && output.TryGetResolvedValue(out string? value))
             {
-                await annotation.Initialization.Invoke(options, zitadelProject);
+                properties.Add(new ResourcePropertySnapshot($"zitadel.output.{output.Name}", value) { IsSensitive = output.IsSecret });
             }
         }
 
         await resourceNotificationService.PublishUpdateAsync(zitadelProject,
-            state => state with { State = new ResourceStateSnapshot(KnownResourceStates.Running, KnownResourceStateStyles.Success) });
+            state => state with
+            {
+                State = new ResourceStateSnapshot(KnownResourceStates.Running, KnownResourceStateStyles.Success),
+                Properties = [..state.Properties.Where(p => !p.Name.StartsWith("zitadel.", StringComparison.Ordinal)), ..properties]
+            });
+    }
+
+    /// <summary>
+    /// Runs the initialization callbacks of the resource and resolves its outputs. Outputs not set by a callback fall back to
+    /// the value persisted from a previous start; outputs still unresolved fail.
+    /// </summary>
+    private static async Task RunInitializationAsync(ZitadelInitializationContext context)
+    {
+        if (context.Resource.TryGetAnnotationsOfType(out IEnumerable<ZitadelInitializationAnnotation>? initAnnotations))
+        {
+            foreach (ZitadelInitializationAnnotation annotation in initAnnotations)
+            {
+                await annotation.Initialization.Invoke(context);
+            }
+        }
+
+        List<string> missing = [];
+        foreach (ZitadelOutputReference output in ZitadelOutputsAnnotation.GetAll(context.Resource))
+        {
+            if (output.Parameter is not null || output.IsResolved)
+            {
+                continue;
+            }
+
+            string? persisted = context.GetPersistedValue(context.Resource, output.Name);
+            if (persisted is not null)
+            {
+                output.Set(persisted);
+            }
+            else
+            {
+                missing.Add(output.Name);
+            }
+        }
+
+        if (missing.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Output(s) '{string.Join("', '", missing)}' of '{context.Resource.Name}' were not set by its initialization and are not available from configuration.");
+        }
+    }
+
+    private static void ResolveOutputsFromConfiguration(IResource resource, IServiceProvider services)
+    {
+        IConfiguration configuration = services.GetRequiredService<IConfiguration>();
+        foreach (ZitadelOutputReference output in ZitadelOutputsAnnotation.GetAll(resource))
+        {
+            if (output.Parameter is not null || output.IsResolved)
+            {
+                continue;
+            }
+
+            string? value = configuration[output.ConfigurationKey];
+            if (string.IsNullOrEmpty(value))
+            {
+                output.Fail(new InvalidOperationException($"Output '{output.Name}' of '{resource.Name}' has no initialization and is not available from configuration."));
+            }
+            else
+            {
+                output.Set(value);
+            }
+        }
+    }
+
+    private static void FailUnresolvedOutputs(IResource resource, Exception exception)
+    {
+        foreach (ZitadelOutputReference output in ZitadelOutputsAnnotation.GetAll(resource))
+        {
+            if (output.Parameter is null && !output.IsResolved)
+            {
+                output.Fail(new InvalidOperationException($"Output '{output.Name}' of '{resource.Name}' is not available, initialization failed.", exception));
+            }
+        }
     }
 
     private static string GetLocalKeysPath(string name, bool ensureExists = true)

@@ -11,4 +11,8 @@
     <PackageReference Include="Zitadel" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Zemires.Aspire.Hosting.Zitadel.Tests" />
+  </ItemGroup>
+
 </Project>
