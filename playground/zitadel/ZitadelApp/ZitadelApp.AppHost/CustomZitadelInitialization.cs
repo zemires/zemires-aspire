@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Zitadel.Api;
 using Zitadel.App.V1;
 using Zitadel.Management.V1;
@@ -8,30 +9,32 @@ using Zitadel.V1;
 namespace ZitadelApp.AppHost;
 
 /// <summary>
-/// 
+/// Custom initialization of the Zitadel instance and project of the playground.
 /// </summary>
 public static class CustomZitadelInitialization
 {
-    public static string ClientId { get; set; } = string.Empty;
-    public static string ClientSecret { get; set; } = string.Empty;
+    public const string ClientIdOutput = "webfrontend-client-id";
+    public const string ClientSecretOutput = "webfrontend-client-secret";
 
-    public static async Task Initialize(Clients.Options options, IResource _)
+    private const string AppName = "webfrontend-oidc";
+
+    public static async Task Initialize(ZitadelInitializationContext context)
     {
-        OrganizationService.OrganizationServiceClient orgService = Clients.OrganizationService(options);
+        OrganizationService.OrganizationServiceClient orgService = Clients.OrganizationService(context.Options);
         ListOrganizationsResponse? organizations = await orgService.ListOrganizationsAsync(new ListOrganizationsRequest());
         Organization? organization = organizations.Result[0];
-        Console.WriteLine($"Organization: {organization.Name} {organization.Id}");
+        context.Logger.LogInformation("Organization: {Name} {Id}", organization.Name, organization.Id);
     }
 
-    public static async Task InitializeProject(Clients.Options options, IResource resource)
+    public static async Task InitializeProject(ZitadelInitializationContext context)
     {
-        ZitadelProjectResource project = (ZitadelProjectResource)resource;
-        ManagementService.ManagementServiceClient managementService = Clients.ManagementService(options);
+        ZitadelProjectResource project = (ZitadelProjectResource)context.Resource;
+        ManagementService.ManagementServiceClient managementService = Clients.ManagementService(context.Options);
 
         // add OIDC app if not exists
         ListAppsResponse? appsResult = await managementService.ListAppsAsync(new ListAppsRequest
         {
-            ProjectId = project.ProjectId, Queries = { new AppQuery { NameQuery = new AppNameQuery { Name = "webfrontend-oidc", Method = TextQueryMethod.Equals } } }
+            ProjectId = project.ProjectId, Queries = { new AppQuery { NameQuery = new AppNameQuery { Name = AppName, Method = TextQueryMethod.Equals } } }
         });
 
         if (appsResult.Result.Count == 0)
@@ -39,7 +42,7 @@ public static class CustomZitadelInitialization
             AddOIDCAppRequest oidcAppRequest = new()
             {
                 AppType = OIDCAppType.Web,
-                Name = "webfrontend-oidc",
+                Name = AppName,
                 ProjectId = project.ProjectId,
                 AccessTokenType = OIDCTokenType.Jwt,
                 AuthMethodType = OIDCAuthMethodType.Basic
@@ -48,16 +51,26 @@ public static class CustomZitadelInitialization
             oidcAppRequest.PostLogoutRedirectUris.Add("https://localhost:8502/signout-callback-oidc");
             AddOIDCAppResponse? oidcApp = await managementService.AddOIDCAppAsync(oidcAppRequest);
 
-            ClientId = oidcApp.ClientId;
-            ClientSecret = oidcApp.ClientSecret;
-            await File.WriteAllTextAsync("./.zitadel/zitadel-keys/webfrontend-oidc.key", ClientSecret);
+            context.SetOutput(ClientIdOutput, oidcApp.ClientId);
+            context.SetOutput(ClientSecretOutput, oidcApp.ClientSecret);
         }
         else
         {
-            ClientId = appsResult.Result[0].OidcConfig.ClientId;
-            if (File.Exists("./.zitadel/zitadel-keys/webfrontend-oidc.key"))
+            App app = appsResult.Result[0];
+
+            // the secret is only returned on creation: reuse the one known from a previous start (user secrets or parameter)
+            // if it belongs to this client, otherwise generate a new one
+            string? knownClientId = await context.GetOutputValueAsync(ClientIdOutput);
+            string? knownSecret = await context.GetOutputValueAsync(ClientSecretOutput);
+
+            context.SetOutput(ClientIdOutput, app.OidcConfig.ClientId);
+
+            if (knownSecret is null || knownClientId != app.OidcConfig.ClientId)
             {
-                ClientSecret = await File.ReadAllTextAsync("./.zitadel/zitadel-keys/webfrontend-oidc.key");
+                RegenerateOIDCClientSecretResponse? regenerated = await managementService.RegenerateOIDCClientSecretAsync(
+                    new RegenerateOIDCClientSecretRequest { ProjectId = project.ProjectId, AppId = app.Id });
+                context.SetOutput(ClientSecretOutput, regenerated.ClientSecret);
+                context.Logger.LogInformation("Client secret of {App} regenerated", AppName);
             }
         }
 
