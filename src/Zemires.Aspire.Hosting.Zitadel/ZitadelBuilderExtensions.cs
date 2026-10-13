@@ -768,19 +768,19 @@ public static class ZitadelBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a connection string resource named <c>{zitadel}-{name}</c> holding <see cref="ZitadelResource.ApiConnectionString"/>
+    /// Adds a connection string resource holding <see cref="ZitadelResource.ApiConnectionString"/>
     /// (<c>Endpoint=...;ServiceAccountKey=...</c>) to call the Zitadel API with the machine user, e.g. via <c>AddZitadelApi</c> from <c>Zemires.Aspire.Zitadel</c>.
     /// </summary>
     /// <remarks>
     /// Consumers referencing it should wait for the Zitadel resource, as the machine user key is written on its first start.
     /// </remarks>
     /// <param name="builder">The Zitadel resource builder.</param>
-    /// <param name="name">The suffix of the connection string resource name, appended to the Zitadel resource name. Defaults to <c>api</c>.</param>
+    /// <param name="name">The suffix of the connection string resource name, appended to the Zitadel resource name. Defaults to <c>[zitadel]-api</c>.</param>
     /// <returns>A resource builder for the connection string resource.</returns>
     [AspireExport]
-    public static IResourceBuilder<ConnectionStringResource> AddApiConnectionString(this IResourceBuilder<ZitadelResource> builder, [ResourceName] string name = "api")
+    public static IResourceBuilder<ConnectionStringResource> AddApiConnectionString(this IResourceBuilder<ZitadelResource> builder, [ResourceName] string? name = null)
     {
-        var connectionString = builder.ApplicationBuilder.AddConnectionString($"{builder.Resource.Name}-{name}", builder.Resource.ApiConnectionString);
+        var connectionString = builder.ApplicationBuilder.AddConnectionString(name ?? $"{builder.Resource.Name}-api", builder.Resource.ApiConnectionString);
         connectionString.WithParentRelationship(builder);
         return connectionString;
     }
