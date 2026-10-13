@@ -35,8 +35,10 @@ jobs:
       - name: Restore
         run: dotnet restore Zemires.Aspire.slnx
 
+      # AppHosts default to AspireUseCliBundle=true, whose automatic bundle setup fails on CI
+      # runners with Aspire 13.6.1 (ASPIRE009). Use the DCP/dashboard NuGet packages instead.
       - name: Build
-        run: dotnet build Zemires.Aspire.slnx --configuration Release --no-restore
+        run: dotnet build Zemires.Aspire.slnx --configuration Release --no-restore -p:AspireUseCliBundle=false
 
       # Integration tests start containers through Aspire; Docker is available on ubuntu runners.
       - name: Test
