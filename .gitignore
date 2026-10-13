@@ -8,6 +8,9 @@
 
 aspire-output/
 
+# Aspire CLI settings created by `dotnet run` / `aspire run` next to the AppHost
+aspire.config.json
+
 # User-specific files
 *.rsuser
 *.suo
