@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+	<PropertyGroup>
+		<AdditionalPackageTags>hosting directus cms headless</AdditionalPackageTags>
+		<Description>A .NET Aspire hosting integration for Directus with SQLite, Postgres or SQL Server storage.</Description>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Aspire.Hosting" />
 	</ItemGroup>

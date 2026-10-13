@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <AdditionalPackageTags>client n8n api kiota</AdditionalPackageTags>
+    <Description>A Kiota-generated .NET client for the n8n public REST API.</Description>
     <!-- Kiota-generated code; regenerate instead of hand-editing docs. -->
     <NoWarn>$(NoWarn);CS1570;CS1591</NoWarn>
   </PropertyGroup>

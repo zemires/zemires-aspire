@@ -30,7 +30,10 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
 
       # AppHosts default to AspireUseCliBundle=true, whose automatic bundle setup fails on CI
       # runners with Aspire 13.6.1 (ASPIRE009). Use the DCP/dashboard NuGet packages instead;

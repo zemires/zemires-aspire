@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <AdditionalPackageTags>hosting n8n workflow automation</AdditionalPackageTags>
+    <Description>A .NET Aspire hosting integration for n8n, including workers, task runners, Postgres storage and Redis queue mode.</Description>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting" />
     <PackageReference Include="BCrypt.Net-Next" />

@@ -32,4 +32,13 @@
   <PropertyGroup>
     <WarningsAsErrors>$(DefaultWarningsAsErrors);$(WarningsAsErrors)</WarningsAsErrors>
   </PropertyGroup>
+
+  <!--
+    Every package declares its target system (e.g. n8n, zitadel) in AdditionalPackageTags,
+    hosting packages additionally the 'hosting' tag.
+  -->
+  <Target Name="ValidatePackageTags" BeforeTargets="Pack">
+    <Error Text="$(PackageId): set AdditionalPackageTags (at least the target system, e.g. 'n8n') and a Description in the project file." Condition="'$(AdditionalPackageTags.Trim())' == '' or '$(Description)' == '' or '$(Description)' == 'Package Description'" />
+    <Error Text="$(PackageId): hosting packages must include the 'hosting' tag in AdditionalPackageTags." Condition="$(PackageId.StartsWith('Zemires.Aspire.Hosting.')) and !$([System.Text.RegularExpressions.Regex]::IsMatch(' $(AdditionalPackageTags) ', '\shosting\s'))" />
+  </Target>
 </Project>

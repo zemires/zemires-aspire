@@ -1,6 +1,6 @@
 # Zemires.Aspire.Hosting.Terraform
 
-An Aspire integration that publishes the application model as [Terraform](https://www.terraform.io) configuration rendered from Handlebars (`*.tf.hbs`) templates, and deploys it with `terraform apply`.
+An Aspire integration that publishes the application model as [Terraform](https://www.terraform.io) configuration rendered from Handlebars (`*.tf.hbs`) templates, and deploys it with [OpenTofu](https://opentofu.org) (default) or Terraform.
 
 ## Install the package
 
@@ -26,7 +26,19 @@ builder.AddContainer("container1", "mcr.microsoft.com/azuredocs/aci-helloworld:l
 builder.Build().Run();
 ```
 
-`aspire publish` renders the templates (pipeline steps `prepare-terraform-<env>`, `publish-terraform-<env>`); `aspire deploy` runs `terraform apply` (`deploy-terraform-<env>`). Requires the `terraform` CLI.
+`aspire publish` renders the templates (pipeline steps `prepare-terraform-<env>`, `publish-terraform-<env>`); `aspire deploy` runs `tofu apply` (`deploy-terraform-<env>`).
+
+The default tool is [OpenTofu](https://opentofu.org): deployment requires the `tofu` CLI. To use another executable, e.g. the Terraform CLI, set `Terraform:Executor:ExecutablePath` in the AppHost's `appsettings.json`:
+
+```json
+{
+  "Terraform": {
+    "Executor": {
+      "ExecutablePath": "terraform"
+    }
+  }
+}
+```
 
 - `AddTerraformTemplate` / `AddTerraformTemplateString` — add custom templates.
 - `WithTerraformTemplate`, `WithParameter`, `WithTerraformTemplateParameter` — attach templates and parameters to resources.

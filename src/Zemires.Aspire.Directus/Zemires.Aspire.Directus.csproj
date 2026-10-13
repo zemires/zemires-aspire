@@ -1,5 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <AdditionalPackageTags>client directus cms headless</AdditionalPackageTags>
+    <Description>A .NET Aspire client integration registering the Directus client with health checks.</Description>
+    <!-- Qute.Directus only ships for net10.0. -->
+    <TargetFrameworks>$(DefaultTargetFramework)</TargetFrameworks>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Qute.Directus" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
