@@ -95,6 +95,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    permissions:
+      contents: read
+      id-token: write # GitHub OIDC token for NuGet trusted publishing
+
     steps:
       - uses: actions/setup-dotnet@v4
         with:
@@ -106,10 +110,18 @@ jobs:
           name: nuget-packages-${{ needs.build.outputs.version }}
           path: nuget
 
-      # Requires the repository secret NUGET_API_KEY (nuget.org API key with push rights for Zemires.*).
+      # Trusted publishing: exchanges the GitHub OIDC token for a short-lived (1 h) nuget.org API key.
+      # Requires a trusted publishing policy on nuget.org (owner: zemires, repository: zemires-aspire,
+      # workflow file: release.yml) and the repository secret NUGET_USER (nuget.org profile name, not email).
+      - name: NuGet login (OIDC)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Push to nuget.org
         run: >
           dotnet nuget push "nuget/*.nupkg"
-          --api-key "${{ secrets.NUGET_API_KEY }}"
+          --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}"
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
