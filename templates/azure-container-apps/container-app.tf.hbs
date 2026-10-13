@@ -1,0 +1,162 @@
+resource "azurerm_container_app" "{{name}}" {
+  name                         = "${replace(local.name_template, "<service>", "app")}-{{name}}"
+  resource_group_name          = azurerm_resource_group.app.name
+  container_app_environment_id = local.{{environment}}.id
+  tags                         = merge (local.tags, {
+    aspire-resource-name = "{{name}}"
+  })
+  revision_mode = "Single"
+  identity {
+    type         = "{{#if (Equal Parameters.IdentityType "SystemAssigned")}}SystemAssigned, {{/if}}UserAssigned"
+    identity_ids = [
+{{#if (Equal Parameters.IdentityType "UserAssigned")}}
+      {{TfRemoveBraces Parameters.IdentityId}},
+{{/if}}
+      azurerm_user_assigned_identity.app.id
+    ]
+  }
+{{#if bindings}}{{#FirstOrDefault bindings}}
+  ingress {
+    external_enabled           = {{#if value.external}}true{{else}}false{{/if}}
+    target_port                = {{value.targetport}}
+    transport                  = "{{value.transport}}"
+    allow_insecure_connections = false
+    traffic_weight {
+      latest_revision = true
+      percentage      = 100
+    }
+  }{{/FirstOrDefault}}{{/if}}
+  registry {
+    server   = local.{{environment}}.registry_server
+    identity = azurerm_user_assigned_identity.app.id
+  }
+  workload_profile_name = {{#if Parameters.WorkloadProfileName}}"{{Parameters.WorkloadProfileName}}"{{else}}"Consumption"{{/if}}
+{{#secretEnv}}
+  secret {
+    name  = "{{Replace (Lowercase @key) "_" "-"}}"
+{{#if (Contains @value ".key_vault_secret_id") }}
+    identity            = azurerm_user_assigned_identity.app.id
+    key_vault_secret_id = {{TfRemoveBraces @value}}
+{{else}}
+    value = "{{TfEscape @value}}"
+{{/if}}
+  }
+{{/secretEnv}}
+  template {
+{{#volumes}}
+    volume {
+      name         = "{{name}}"
+      storage_name = azurerm_container_app_environment_storage.{{name}}.name
+      storage_type = "AzureFile"
+    } 
+{{/volumes}}
+    container {
+      name   = "{{name}}"
+      image  = "{{#if image}}{{image}}{{else}}${local.{{environment}}.registry_server}/{{name}}:${ var.image_tags.{{name}} }{{/if}}"
+      cpu    = "{{#if Parameters.CPU }}{{Parameters.CPU}}{{else}}0.25{{/if}}"
+      memory = "{{#if Parameters.Memory }}{{Parameters.Memory}}{{else}}0.5Gi{{/if}}"
+{{#if Entrypoint}}      
+      command = [ "{{#Entrypoint}}" ]
+{{/if}}
+      args = [ {{#args}}{{#if @index}}, {{/if}}"{{TfEscape @value}}"{{/args}} ]
+{{#if (Equal Parameters.IdentityType "UserAssigned")}}
+      env {
+        name = "AZURE_CLIENT_ID"
+        value = {{TfRemoveBraces Parameters.IdentityClientId}}
+      }
+{{/if}}
+{{#env}}
+      env {
+        name  = "{{@key}}"
+        value = "{{TfEscape @value}}"
+      }
+{{/env}}
+{{#secretEnv}}
+      env {
+        name  = "{{@key}}"
+        secret_name = "{{Replace (Lowercase @key) "_" "-"}}"
+      }
+{{/secretEnv}}
+{{#volumes}}
+      volume_mounts {
+        name = "{{name}}"
+        path = "{{target}}"
+      } 
+{{/volumes}}
+    }
+    min_replicas = {{Replicas}}
+  }
+}
+{{#volumes}}
+
+resource "azurerm_storage_share" "{{name}}" {
+  name                 = "{{name}}"
+  storage_account_id   = local.{{../environment}}.storage_account_id
+  quota                = 5
+}
+
+resource "azurerm_container_app_environment_storage" "{{name}}" {
+  name                         = "{{name}}"
+  container_app_environment_id = local.{{../environment}}.id
+  account_name                 = local.{{../environment}}.storage_account_name
+  share_name                   = azurerm_storage_share.{{name}}.name
+  access_key                   = local.{{../environment}}.storage_access_key
+  access_mode                  = {{#if IsReadonly}}"ReadOnly"{{else}}"ReadWrite"{{/if}}
+}
+{{/volumes}}
+
+{{#Parameters.RoleAssignments}}
+{{#Roles}}
+{{#if Id}}
+data "azurerm_role_definition" "{{../../Name}}_{{../Target.Name}}_{{@index}}" {
+  role_definition_id = "{{Id}}"
+  scope              = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
+}
+{{/if}}
+resource "azurerm_role_assignment" "{{../../Name}}_{{../Target.Name}}_{{@index}}" {
+  scope                = local.{{TfRemoveBraces ../Target.Name}}.id
+{{#if Id}}  
+  role_definition_id   = data.azurerm_role_definition.{{../../Name}}_{{../Target.Name}}_{{@index}}.id
+{{else}}
+  role_definition_name = "{{Name}}"
+{{/if}}
+  principal_type       = "ServicePrincipal"
+  principal_id         = azurerm_user_assigned_identity.app.principal_id
+}
+
+{{/Roles}}
+{{/Parameters.RoleAssignments}}
+{{#if (Equal Type "project")}}
+resource "azapi_resource_action" "{{name}}_dotnet_runtime" {
+  type        = "Microsoft.App/containerApps@2025-10-02-preview"
+  resource_id = azurerm_container_app.{{name}}.id
+  method      = "PATCH"
+  body = {
+    properties = {
+       configuration = {
+        runtime = {
+          dotnet = {
+            autoConfigureDataProtection = true
+          }
+        }
+      }
+    }
+  }
+  depends_on = [azurerm_container_app.{{name}}]
+  lifecycle {
+    replace_triggered_by = [azurerm_container_app.{{name}}]
+  }
+}
+
+{{/if}}
+locals {
+  {{name}} = {
+    id = azurerm_container_app.{{name}}.id
+    name = azurerm_container_app.{{name}}.name
+    fqdn = length(azurerm_container_app.{{name}}.ingress) > 0 ? azurerm_container_app.{{name}}.ingress[0].fqdn : null
+  }
+}
+
+output "{{name}}" {
+  value = local.{{name}}
+}

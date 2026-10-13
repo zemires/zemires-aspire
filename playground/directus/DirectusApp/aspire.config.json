@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "DirectusApp.AppHost/DirectusApp.AppHost.csproj"
+  }
+}

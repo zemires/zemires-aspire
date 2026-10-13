@@ -1,0 +1,18 @@
+resource "random_string" "{{name}}" {
+  length  = {{Parameters.len}}
+  lower   = true
+  upper   = false
+  special = false
+  numeric = false
+}
+
+locals {
+{{name}} = {
+    value = random_string.{{name}}.result
+  }
+}
+
+output "result" {
+  value = local.{{name}}
+}
+

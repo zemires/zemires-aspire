@@ -1,0 +1,51 @@
+﻿using Aspire.Hosting.ApplicationModel;
+
+#pragma warning disable IDE0130
+namespace Aspire.Hosting;
+#pragma warning restore IDE0130
+
+/// <summary>
+/// Extension methods for working with <see cref="TerraformTemplateResource"/> builders.
+/// </summary>
+public static class TerraformTemplateResourceExtensions
+{
+    /// <summary>
+    /// Gets the reference to a terraform template output.
+    /// </summary>
+    /// <param name="name">Output name.</param>
+    /// <param name="builder">The terraform template resource builder.</param>
+    /// <returns>The reference expression.</returns>
+    [AspireExportIgnore(Reason = "Returns TerraformOutputReference, which is not ATS-compatible; use GetTerraformOutput instead.")]
+    public static TerraformOutputReference GetOutput(this IResourceBuilder<TerraformTemplateResource> builder, string name)
+    {
+        builder.Resource.AddOutput(name);
+        return new TerraformOutputReference(name, builder.Resource);
+    }
+
+    /// <summary>
+    /// Gets the reference to a terraform template output.
+    /// </summary>
+    /// <param name="name">Output name.</param>
+    /// <param name="builder">The terraform template resource builder.</param>
+    /// <returns>The reference expression.</returns>
+    [AspireExportIgnore(Reason = "Returns TerraformSecretOutputReference, which is not ATS-compatible.")]
+    public static TerraformSecretOutputReference GetSecretOutput(this IResourceBuilder<TerraformTemplateResource> builder, string name)
+    {
+        builder.Resource.AddOutput(name);
+        return new TerraformSecretOutputReference(name, builder.Resource);
+    }
+
+    /// <summary>
+    /// Adds a parameter to use inside the template.
+    /// </summary>
+    /// <param name="parameterName">Parameter name.</param>
+    /// <param name="value">Parameter value.</param>
+    /// <param name="builder">The terraform template resource builder.</param>
+    /// <returns>The builder for chaining.</returns>
+    [AspireExport("withTerraformTemplateResourceParameter", MethodName = "withParameter")]
+    public static IResourceBuilder<TerraformTemplateResource> WithParameter(this IResourceBuilder<TerraformTemplateResource> builder, string parameterName, object? value)
+    {
+        builder.WithTerraformTemplateParameter(parameterName, value);
+        return builder;
+    }
+}

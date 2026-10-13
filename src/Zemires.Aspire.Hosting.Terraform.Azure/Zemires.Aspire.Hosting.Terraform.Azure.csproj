@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AdditionalPackageTags>hosting terraform azure</AdditionalPackageTags>
+    <Description>A .NET Aspire integration that publishes Azure resources and Azure Container Apps as Terraform configuration.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" />
+    <PackageReference Include="Aspire.Hosting.Azure" />
+    <PackageReference Include="Aspire.Hosting.Azure.KeyVault" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zemires.Aspire.Hosting.Terraform\Zemires.Aspire.Hosting.Terraform.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "CockroachDBTest.AppHost/CockroachDBTest.AppHost.csproj"
+  }
+}

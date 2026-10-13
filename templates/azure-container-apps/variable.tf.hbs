@@ -1,0 +1,10 @@
+variable "{{name}}" {
+  type      = string
+{{#if default}}
+  default   = "{{TfEscape default}}"
+{{/if}}
+{{#if secret}}
+  sensitive = true
+{{/if}}
+}
+

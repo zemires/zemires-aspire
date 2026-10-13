@@ -1,0 +1,77 @@
+<Solution>
+  <Folder Name="/examples/">
+    <Project Path="examples/Zemires.Aspire.Hosting.N8n.AppHost/Zemires.Aspire.Hosting.N8n.AppHost.csproj" />
+  </Folder>
+  <Folder Name="/playground/" />
+  <Folder Name="/playground/cockroach/" />
+  <Folder Name="/playground/cockroach/CockroachDBTest/">
+    <Project Path="playground/cockroach/CockroachDBTest/CockroachDBTest.ApiService/CockroachDBTest.ApiService.csproj" />
+    <Project Path="playground/cockroach/CockroachDBTest/CockroachDBTest.AppHost/CockroachDBTest.AppHost.csproj" Id="c38302ed-89c7-49a5-850e-9b978ba2f1a9" />
+    <Project Path="playground/cockroach/CockroachDBTest/CockroachDBTest.ServiceDefaults/CockroachDBTest.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/playground/directus/" />
+  <Folder Name="/playground/directus/DirectusApp/">
+    <Project Path="playground/directus/DirectusApp/DirectusApp.ApiService/DirectusApp.ApiService.csproj" />
+    <Project Path="playground/directus/DirectusApp/DirectusApp.AppHost/DirectusApp.AppHost.csproj" Id="e8c4f2f1-b628-4b18-9e8c-044a99dc8b47" />
+    <Project Path="playground/directus/DirectusApp/DirectusApp.ServiceDefaults/DirectusApp.ServiceDefaults.csproj" />
+    <Project Path="playground/directus/DirectusApp/DirectusApp.Web/DirectusApp.Web.csproj" />
+  </Folder>
+  <Folder Name="/playground/n8n/" />
+  <Folder Name="/playground/n8n/AzureContainerApp/">
+    <Project Path="playground/n8n/AzureContainerApp/AzureContainerApp.AppHost/AzureContainerApp.AppHost.csproj" Id="99d256f9-0b6b-4718-a00d-de19986965bc" />
+    <Project Path="playground/n8n/AzureContainerApp/AzureContainerApp.ServiceDefaults/AzureContainerApp.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/playground/n8n/AzureN8n/">
+    <Project Path="playground/n8n/AzureN8n/AzureN8n.ApiService/AzureN8n.ApiService.csproj" />
+    <Project Path="playground/n8n/AzureN8n/AzureN8n.AppHost/AzureN8n.AppHost.csproj" Id="5a80ad28-9419-4a14-b6b0-8639bff23002" />
+    <Project Path="playground/n8n/AzureN8n/AzureN8n.ServiceDefaults/AzureN8n.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/playground/n8n/EntraIdSSOApp/">
+    <Project Path="playground/n8n/EntraIdSSOApp/EntraIdSSOApp.AppHost/EntraIdSSOApp.AppHost.csproj" />
+  </Folder>
+  <Folder Name="/playground/n8n/WorkflowApp/">
+    <Project Path="playground/n8n/WorkflowApp/WorkflowApp.ApiService/WorkflowApp.ApiService.csproj" />
+    <Project Path="playground/n8n/WorkflowApp/WorkflowApp.AppHost/WorkflowApp.AppHost.csproj" />
+    <Project Path="playground/n8n/WorkflowApp/WorkflowApp.McpService/WorkflowApp.McpService.csproj" />
+    <Project Path="playground/n8n/WorkflowApp/WorkflowApp.ServiceDefaults/WorkflowApp.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/playground/terraform/" />
+  <Folder Name="/playground/terraform/AzureContainerApps/">
+    <Project Path="playground/terraform/AzureContainerApps/AzureContainerApps.ApiService/AzureContainerApps.ApiService.csproj" />
+    <Project Path="playground/terraform/AzureContainerApps/AzureContainerApps.AppHost/AzureContainerApps.AppHost.csproj" />
+    <Project Path="playground/terraform/AzureContainerApps/AzureContainerApps.ServiceDefaults/AzureContainerApps.ServiceDefaults.csproj" />
+    <Project Path="playground/terraform/AzureContainerApps/AzureContainerApps.Web/AzureContainerApps.Web.csproj" />
+  </Folder>
+  <Folder Name="/playground/terraform/TerraformApp/">
+    <Project Path="playground/terraform/TerraformApp/TerraformApp.AppHost/TerraformApp.AppHost.csproj" />
+    <Project Path="playground/terraform/TerraformApp/TerraformApp.ServiceDefaults/TerraformApp.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/playground/zitadel/" />
+  <Folder Name="/playground/zitadel/ZitadelApp/">
+    <Project Path="playground/zitadel/ZitadelApp/ZitadelApp.AppHost/ZitadelApp.AppHost.csproj" />
+    <Project Path="playground/zitadel/ZitadelApp/ZitadelApp.ServiceDefaults/ZitadelApp.ServiceDefaults.csproj" />
+    <Project Path="playground/zitadel/ZitadelApp/ZitadelApp.Web/ZitadelApp.Web.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Zemires.Aspire.Hosting.N8n.Tests/Zemires.Aspire.Hosting.N8n.Tests.csproj" Id="8b300e87-83a6-4a1c-99fe-7df19076c9c1" />
+    <Project Path="tests/Zemires.Aspire.Hosting.Terraform.Azure.Tests/Zemires.Aspire.Hosting.Terraform.Azure.Tests.csproj" />
+    <Project Path="tests/Zemires.Aspire.Hosting.Terraform.Tests/Zemires.Aspire.Hosting.Terraform.Tests.csproj" />
+  </Folder>
+  <Project Path="src/Zemires.Aspire.Directus/Zemires.Aspire.Directus.csproj" Id="b6ddbedb-5914-413f-8f80-23a6c60fe4c5" />
+  <Project Path="src/Zemires.Aspire.Hosting.CockroachDB/Zemires.Aspire.Hosting.CockroachDB.csproj" Id="db497c52-1e17-4889-a826-c4c66bf8efa1" />
+  <Project Path="src/Zemires.Aspire.Hosting.Directus/Zemires.Aspire.Hosting.Directus.csproj" Id="924cf920-366d-49f1-baa3-e734bd0b4fb5" />
+  <Project Path="src/Zemires.Aspire.Hosting.N8n/Zemires.Aspire.Hosting.N8n.csproj" />
+  <Project Path="src/Zemires.Aspire.Hosting.Terraform.Azure/Zemires.Aspire.Hosting.Terraform.Azure.csproj" />
+  <Project Path="src/Zemires.Aspire.Hosting.Terraform/Zemires.Aspire.Hosting.Terraform.csproj" />
+  <Project Path="src/Zemires.Aspire.Hosting.Zitadel/Zemires.Aspire.Hosting.Zitadel.csproj" />
+  <Project Path="src/Zemires.Aspire.N8n/Zemires.Aspire.N8n.csproj" />
+  <Project Path="src/Zemires.N8n.Api/Zemires.N8n.Api.csproj" />
+</Solution>

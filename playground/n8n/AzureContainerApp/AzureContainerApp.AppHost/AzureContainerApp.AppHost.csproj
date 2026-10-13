@@ -1,0 +1,21 @@
+<Project Sdk="Aspire.AppHost.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<UserSecretsId>7469e973-38e2-4fac-af63-f885bcd489bc</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.N8n\Zemires.Aspire.Hosting.N8n.csproj" IsAspireProjectResource="false" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.Azure" />
+		<PackageReference Include="Aspire.Hosting.Azure.AIFoundry" />
+		<PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
+		<PackageReference Include="Aspire.Hosting.Azure.ApplicationInsights" />
+		<PackageReference Include="Aspire.Hosting.PostgreSQL" />
+		<PackageReference Include="CommunityToolkit.Aspire.Hosting.OpenTelemetryCollector" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,94 @@
+
+resource "azurerm_container_registry" "{{name}}" {
+  name                = replace(local.name_template_short_unique, "<service>", "cr")
+  resource_group_name = azurerm_resource_group.app.name
+  location            = var.location
+  sku                 = "{{#if Parameters.SKU }}{{Parameters.SKU}}{{else}}Basic{{/if}}"
+  tags                = local.tags
+}
+
+resource "azurerm_log_analytics_workspace" "{{name}}" {
+  name                = replace(local.name_template, "<service>", "law")
+  resource_group_name = azurerm_resource_group.app.name
+  location            = var.location
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
+resource "azurerm_container_app_environment" "{{name}}" {
+  name                = replace(local.name_template, "<service>", "cae")
+  resource_group_name = azurerm_resource_group.app.name
+  location            = var.location
+  tags                = local.tags
+  workload_profile {
+    name                  = "{{#if Parameters.WorkloadProfile }}{{Parameters.WorkloadProfile}}{{else}}Consumption{{/if}}"
+    workload_profile_type = "{{#if Parameters.WorkloadProfile }}{{Parameters.WorkloadProfile}}{{else}}Consumption{{/if}}"
+  }
+  identity {
+    type = "UserAssigned"
+    identity_ids = [
+      azurerm_user_assigned_identity.app.id
+    ]
+  }
+  logs_destination           = "log-analytics"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.{{name}}.id
+}
+
+resource "azapi_resource" "aspire_dashboard" {
+  type      = "Microsoft.App/managedEnvironments/dotNetComponents@2023-11-02-preview"
+  name      = "aspire-dashboard"
+  parent_id = azurerm_container_app_environment.{{name}}.id
+  body = {
+    properties = {
+      componentType = "AspireDashboard"
+    }
+  }
+}
+
+resource "azurerm_role_assignment" "uai-acrpull" {
+  scope                = azurerm_container_registry.{{name}}.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.app.principal_id
+}
+
+resource "azurerm_storage_account" "{{name}}-volume" {
+  name                     = "${replace(local.name_template_short_unique, "<service>", "sa")}v"
+  resource_group_name      = azurerm_resource_group.app.name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  tags                     = local.tags
+}
+
+resource "azurerm_role_assignment" "{{name}}_file_share_contributor" {
+  scope                = azurerm_storage_account.{{name}}-volume.id
+  role_definition_name = "Storage File Data SMB Share Contributor"
+  principal_id         = azurerm_user_assigned_identity.app.principal_id
+}
+
+locals {
+  {{name}} = {
+    id                         = azurerm_container_app_environment.{{name}}.id
+    name                       = azurerm_container_app_environment.{{name}}.name
+    storage_account_name       = azurerm_storage_account.{{name}}-volume.name
+    storage_account_id         = azurerm_storage_account.{{name}}-volume.id
+    storage_access_key         = azurerm_storage_account.{{name}}-volume.primary_access_key
+    registry_name              = azurerm_container_registry.{{name}}.name
+    registry_server            = azurerm_container_registry.{{name}}.login_server
+    log_analytics_workspace    = azurerm_log_analytics_workspace.{{name}}.name
+    log_analytics_workspace_id = azurerm_log_analytics_workspace.{{name}}.id
+  }
+}
+
+output "{{name}}" {
+  value = local.{{name}}
+  sensitive = true
+}
+
+output "container_registry_server_{{name}}" {
+  value = azurerm_container_registry.{{name}}.login_server
+}
+
+output "container_registry_name_{{name}}" {
+  value = azurerm_container_registry.{{name}}.name
+}

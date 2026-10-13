@@ -1,0 +1,22 @@
+<Project Sdk="Aspire.AppHost.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>20c0cad2-f445-44ee-a9e0-987c74f8b0dc</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.N8n\Zemires.Aspire.Hosting.N8n.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\WorkflowApp.ApiService\WorkflowApp.ApiService.csproj" />
+    <ProjectReference Include="..\WorkflowApp.McpService\WorkflowApp.McpService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Milvus" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" />
+    <PackageReference Include="BCrypt.Net-Next" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,6 @@
+@AzureN8n.ApiService_HostAddress = http://localhost:5245
+
+GET {{AzureN8n.ApiService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

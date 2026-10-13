@@ -1,0 +1,26 @@
+﻿<Project Sdk="Aspire.AppHost.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>e9fdc790-cb02-4508-b9d6-ab9c29b95027</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Terraform.Azure\Zemires.Aspire.Hosting.Terraform.Azure.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Terraform\Zemires.Aspire.Hosting.Terraform.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\AzureContainerApps.ApiService\AzureContainerApps.ApiService.csproj" />
+    <ProjectReference Include="..\AzureContainerApps.Web\AzureContainerApps.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Azure.KeyVault" />
+    <PackageReference Include="Aspire.Hosting.Azure.Sql" />
+    <PackageReference Include="Aspire.Hosting.Azure.Redis" />
+    <PackageReference Include="Aspire.Hosting.Azure.Storage" />
+    <PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
+    <PackageReference Include="Aspire.Hosting.Azure.ApplicationInsights" />
+    <PackageReference Include="Aspire.Hosting.Azure.SignalR" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+<Project Sdk="Aspire.AppHost.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>5a1f0eba-4224-43fc-9a6a-08e7602858dd</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Directus\Zemires.Aspire.Hosting.Directus.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\DirectusApp.ApiService\DirectusApp.ApiService.csproj" />
+    <ProjectReference Include="..\DirectusApp.Web\DirectusApp.Web.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.JavaScript" />
+		<PackageReference Include="Aspire.Hosting.PostgreSQL" />
+		<PackageReference Include="Aspire.Hosting.SqlServer" />
+		<PackageReference Include="CommunityToolkit.Aspire.Hosting.JavaScript.Extensions" />
+	</ItemGroup>
+
+</Project>

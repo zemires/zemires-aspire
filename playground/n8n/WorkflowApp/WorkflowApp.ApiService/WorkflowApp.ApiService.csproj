@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <UserSecretsId>493d796d-aec2-40d5-a4f9-7cbeb58b1699</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Scalar.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.N8n\Zemires.Aspire.N8n.csproj" />
+    <ProjectReference Include="..\WorkflowApp.ServiceDefaults\WorkflowApp.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>
