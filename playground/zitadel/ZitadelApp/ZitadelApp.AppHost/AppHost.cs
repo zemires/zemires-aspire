@@ -41,8 +41,7 @@ builder.AddProject<ZitadelApp_Web>("webfrontend")
     .WithEnvironment("OpenIDConnectSettings__ClientSecret", clientSecret)
     .WaitFor(project);
 
-// "Endpoint=...;ServiceAccountKey=<base64 machine user key>" passed as ConnectionStrings__zitadel-api
-var zitadelApi = builder.AddConnectionString("zitadel-api", zitadel.Resource.ApiConnectionString);
+var zitadelApi = zitadel.AddApiConnectionString();
 
 builder.AddProject<ZitadelApp_AdminConsoleApp>("admin-console")
     .WithReference(zitadelApi)

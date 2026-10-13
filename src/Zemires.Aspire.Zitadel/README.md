@@ -10,12 +10,12 @@ dotnet add package Zemires.Aspire.Zitadel
 
 ## Usage
 
-In the AppHost, pass `ZitadelResource.ApiConnectionString` (`Endpoint=...;ServiceAccountKey=<base64 machine user key>`, see `Zemires.Aspire.Hosting.Zitadel`) as a connection string resource:
+In the AppHost, add a connection string resource with `AddApiConnectionString()` (holds `ZitadelResource.ApiConnectionString`: `Endpoint=...;ServiceAccountKey=<base64 machine user key>`, see `Zemires.Aspire.Hosting.Zitadel`):
 
 ```csharp
 var zitadel = builder.AddZitadel("zitadel").WithMachineUser();
 
-var zitadelApi = builder.AddConnectionString("zitadel-api", zitadel.Resource.ApiConnectionString);
+var zitadelApi = zitadel.AddApiConnectionString(); // resource "zitadel-api"
 
 builder.AddProject<Projects.AdminApp>("admin")
     .WithReference(zitadelApi)

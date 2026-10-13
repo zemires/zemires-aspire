@@ -37,7 +37,7 @@ public class ZitadelResource(string name, ParameterResource? admin, ParameterRes
     /// Without a machine user only the endpoint is included.
     /// </summary>
     /// <remarks>
-    /// Pass it to consumers with <c>builder.AddConnectionString("zitadel-api", zitadel.Resource.ApiConnectionString)</c>
+    /// Pass it to consumers with <c>zitadel.AddApiConnectionString()</c>
     /// and <c>WithReference</c>, and let them wait for the Zitadel resource, as the key file is written on its first start.
     /// </remarks>
     public ReferenceExpression ApiConnectionString
