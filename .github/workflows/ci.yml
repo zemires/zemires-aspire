@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # SourceLink / versioning
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore Zemires.Aspire.slnx
+
+      - name: Build
+        run: dotnet build Zemires.Aspire.slnx --configuration Release --no-restore
+
+      # Integration tests start containers through Aspire; Docker is available on ubuntu runners.
+      - name: Test
+        run: >
+          dotnet test --solution Zemires.Aspire.slnx
+          --configuration Release --no-build
+          --report-xunit-trx --results-directory ${{ github.workspace }}/TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/**/*.trx
+          if-no-files-found: ignore
+
+      # Verifies every src project is packable (e.g. README.md present).
+      - name: Pack
+        run: |
+          for proj in src/*/*.csproj; do
+            dotnet pack "$proj" --configuration Release --no-build --output ${{ github.workspace }}/nuget
+          done
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: nuget/*.nupkg
