@@ -36,4 +36,11 @@ builder.AddProject<ZitadelApp_Web>("webfrontend")
     .WithEnvironment("OpenIDConnectSettings__ClientSecret", () => CustomZitadelInitialization.ClientSecret)
     .WaitFor(project);
 
+// "Endpoint=...;ServiceAccountKey=<base64 machine user key>" passed as ConnectionStrings__zitadel-api
+var zitadelApi = builder.AddConnectionString("zitadel-api", zitadel.Resource.ApiConnectionString);
+
+builder.AddProject<ZitadelApp_AdminConsoleApp>("admin-console")
+    .WithReference(zitadelApi)
+    .WaitFor(zitadel); // the machine user key file is written on the first start of zitadel
+
 await builder.Build().RunAsync();

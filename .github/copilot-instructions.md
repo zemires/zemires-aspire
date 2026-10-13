@@ -10,7 +10,7 @@ Shared guidance for AI coding agents (GitHub Copilot, Claude Code via `CLAUDE.md
 |-------------|------------------------------------------------------------|------------------------------------------------|
 | n8n         | `Zemires.Aspire.Hosting.N8n`                               | `Zemires.Aspire.N8n`, `Zemires.N8n.Api`        |
 | Terraform   | `Zemires.Aspire.Hosting.Terraform`, `.Terraform.Azure`     | templates in `templates/azure-container-apps`  |
-| Zitadel     | `Zemires.Aspire.Hosting.Zitadel`                           | —                                              |
+| Zitadel     | `Zemires.Aspire.Hosting.Zitadel`                           | `Zemires.Aspire.Zitadel`                       |
 | Directus    | `Zemires.Aspire.Hosting.Directus`                          | `Zemires.Aspire.Directus`                      |
 | CockroachDB | `Zemires.Aspire.Hosting.CockroachDB`                       | —                                              |
 
@@ -83,7 +83,8 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
 - `playground/terraform/terragrunt` shows consuming the generated module with Terragrunt.
 
 ### Zitadel
-- **`Zemires.Aspire.Hosting.Zitadel`** — `AddZitadel()` (container `zitadel/zitadel`) with `WithDatabase` (Postgres), `WithOrganizationName`, `WithMachineUser`, `WithLoginClientKey`, `WithExternalDomain`, `WithCertificate`, `WithOpenTelemetry`, `WithInitialization` (callback using the Zitadel .NET SDK). `AddZitadelLoginClient()` adds the v2 login UI container; `AddProject()` creates a `ZitadelProjectResource`. `ZitadelResourceExtensions` provides `GetMachineServiceAccount` / `CreateApiClientOptions` for initialization code.
+- **`Zemires.Aspire.Hosting.Zitadel`** — `AddZitadel()` (container `zitadel/zitadel`) with `WithDatabase` (Postgres), `WithOrganizationName`, `WithMachineUser`, `WithLoginClientKey`, `WithExternalDomain`, `WithCertificate`, `WithOpenTelemetry`, `WithInitialization` (callback using the Zitadel .NET SDK). `AddZitadelLoginClient()` adds the v2 login UI container; `AddProject()` creates a `ZitadelProjectResource`. `ZitadelResource` implements `IResourceWithConnectionString` (`{scheme}://{host}:{port}`). `ZitadelResourceExtensions` provides `GetMachineServiceAccount` / `CreateApiClientOptions` for initialization code.
+- **`Zemires.Aspire.Zitadel`** — client integration: `AddZitadelApi()` / `AddKeyedZitadelApi()` on `IHostApplicationBuilder`. Config from `Aspire:Zitadel:Client` (`Endpoint`, `PersonalAccessToken`, `ServiceAccountKey`, `ServiceAccountKeyPath`), connection string `ConnectionStrings:{name}` is a URL or `Endpoint=…;PersonalAccessToken=…`. Registers `Clients.Options` plus the Zitadel SDK gRPC service clients (Admin, Auth, Management, User/Organization/Session/Settings/OIDC v2) as singletons and a `ZitadelHealthCheck` (`/healthz`) unless `DisableHealthChecks`.
 
 ### Directus
 - **`Zemires.Aspire.Hosting.Directus`** — `AddDirectus()` (container `directus/directus`) with `WithUserName`, `WithPassword`, `WithAdminToken`, and storage via `WithSqlite3Database`, `WithPostgresDatabase`, `WithSqlServerDatabase`, data volume / bind mount.
@@ -97,7 +98,7 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
 - Tests that start resources (containers) through `DistributedApplicationTestingBuilder` need Docker/Podman: mark them with `[Trait("Category", "Integration")]`. CI excludes this category; run them locally. Publish-mode tests (e.g. Terraform template rendering) need no container runtime and stay unmarked.
 - n8n integration tests use `DistributedApplicationTestingBuilder.CreateAsync<Projects.Zemires_Aspire_Hosting_N8n_AppHost>()` to boot the example AppHost, then `app.CreateHttpClient(resourceName)` and wait for `KnownResourceStates.Running` via `ResourceNotificationService`.
 - Terraform tests verify the rendered templates of the publisher (`TerraformTemplatePublisherTests`).
-- Zitadel, Directus and CockroachDB have no test projects yet — add `tests/<SrcProject>.Tests` when changing them.
+- `Zemires.Aspire.Zitadel.Tests` covers the Zitadel client registration. Zitadel hosting, Directus and CockroachDB have no test projects yet — add `tests/<SrcProject>.Tests` when changing them.
 
 ## Key conventions
 
