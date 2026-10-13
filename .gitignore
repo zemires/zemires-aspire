@@ -213,6 +213,8 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
+# Kiota-generated n8n API client has a "Publish" request builder folder
+!src/Zemires.N8n.Api/**/[Pp]ublish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
