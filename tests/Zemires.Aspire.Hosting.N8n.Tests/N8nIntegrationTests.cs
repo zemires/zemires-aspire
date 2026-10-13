@@ -1,5 +1,7 @@
 ﻿namespace Zemires.Aspire.Hosting.N8n.Tests;
 
+// Starts the example AppHost via DistributedApplicationTestingBuilder, which needs a container runtime.
+[Trait("Category", "Integration")]
 public class N8nIntegrationTests(ITestOutputHelper testOutputHelper)
 {
     [Fact]

@@ -41,11 +41,13 @@ jobs:
       - name: Build
         run: dotnet build Zemires.Aspire.slnx --configuration Release --no-restore -p:AspireUseCliBundle=false
 
-      # Integration tests start containers through Aspire; Docker is available on ubuntu runners.
+      # Integration tests ([Trait("Category", "Integration")]) start containers via
+      # DistributedApplicationTestingBuilder and need Docker; they are excluded here.
       - name: Test
         run: >
           dotnet test --solution Zemires.Aspire.slnx
           --configuration Release --no-build
+          --filter-not-trait "Category=Integration"
           --report-xunit-trx --results-directory ${{ github.workspace }}/TestResults
 
       - name: Upload test results
