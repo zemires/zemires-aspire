@@ -48,6 +48,7 @@
   </Folder>
   <Folder Name="/playground/zitadel/" />
   <Folder Name="/playground/zitadel/ZitadelApp/">
+    <Project Path="playground/zitadel/ZitadelApp/ZitadelApp.AdminConsoleApp/ZitadelApp.AdminConsoleApp.csproj" />
     <Project Path="playground/zitadel/ZitadelApp/ZitadelApp.AppHost/ZitadelApp.AppHost.csproj" />
     <Project Path="playground/zitadel/ZitadelApp/ZitadelApp.ServiceDefaults/ZitadelApp.ServiceDefaults.csproj" />
     <Project Path="playground/zitadel/ZitadelApp/ZitadelApp.Web/ZitadelApp.Web.csproj" />
@@ -64,6 +65,7 @@
     <Project Path="tests/Zemires.Aspire.Hosting.N8n.Tests/Zemires.Aspire.Hosting.N8n.Tests.csproj" Id="8b300e87-83a6-4a1c-99fe-7df19076c9c1" />
     <Project Path="tests/Zemires.Aspire.Hosting.Terraform.Azure.Tests/Zemires.Aspire.Hosting.Terraform.Azure.Tests.csproj" />
     <Project Path="tests/Zemires.Aspire.Hosting.Terraform.Tests/Zemires.Aspire.Hosting.Terraform.Tests.csproj" />
+    <Project Path="tests/Zemires.Aspire.Zitadel.Tests/Zemires.Aspire.Zitadel.Tests.csproj" />
   </Folder>
   <Project Path="src/Zemires.Aspire.Directus/Zemires.Aspire.Directus.csproj" Id="b6ddbedb-5914-413f-8f80-23a6c60fe4c5" />
   <Project Path="src/Zemires.Aspire.Hosting.CockroachDB/Zemires.Aspire.Hosting.CockroachDB.csproj" Id="db497c52-1e17-4889-a826-c4c66bf8efa1" />
@@ -73,5 +75,6 @@
   <Project Path="src/Zemires.Aspire.Hosting.Terraform/Zemires.Aspire.Hosting.Terraform.csproj" />
   <Project Path="src/Zemires.Aspire.Hosting.Zitadel/Zemires.Aspire.Hosting.Zitadel.csproj" />
   <Project Path="src/Zemires.Aspire.N8n/Zemires.Aspire.N8n.csproj" />
+  <Project Path="src/Zemires.Aspire.Zitadel/Zemires.Aspire.Zitadel.csproj" />
   <Project Path="src/Zemires.N8n.Api/Zemires.N8n.Api.csproj" />
 </Solution>
