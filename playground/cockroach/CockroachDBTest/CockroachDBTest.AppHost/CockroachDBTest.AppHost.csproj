@@ -1,0 +1,13 @@
+<Project Sdk="Aspire.AppHost.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>52335f36-b4a3-4462-ac13-d252c3974332</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.CockroachDB\Zemires.Aspire.Hosting.CockroachDB.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\CockroachDBTest.ApiService\CockroachDBTest.ApiService.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,45 @@
+﻿receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1000
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+
+exporters:
+  azuremonitor:
+    connection_string: "${env:APPLICATIONINSIGHTS_CONNECTION_STRING}"
+    spaneventsenabled: true
+
+  otlp:
+    endpoint: "${env:OTEL_EXPORTER_OTLP_ENDPOINT}"
+    headers: 
+      x-otlp-api-key: "${env:OTEL_EXPORTER_OTLP_API_KEY}" 
+    tls:
+      insecure: false
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [azuremonitor, otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [azuremonitor, otlp]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [azuremonitor, otlp]
+  telemetry:
+    logs:
+      level: "INFO" 

@@ -1,0 +1,25 @@
+resource "azurerm_mssql_database" "{{name}}" {
+  name        = "{{Resource.DatabaseName}}"
+  server_id   = azurerm_mssql_server.{{parent.name}}.id
+  collation   = "{{#if Parameters.Collation}}{{Parameters.Collation}}{{else}}SQL_Latin1_General_CP1_CI_AS{{/if}}"
+  sku_name    = "{{#if Parameters.SkuName}}{{Parameters.SkuName}}{{else}}S0{{/if}}"
+  max_size_gb = {{#if Parameters.MaxSizeGB}}{{Parameters.MaxSizeGB}}{{else}}2{{/if}}
+
+  tags = merge (local.tags, {
+    aspire-resource-name = "{{name}}"
+  })
+
+  lifecycle {
+    prevent_destroy = true
+  }  
+}
+
+locals {
+  {{name}} = {
+    id = azurerm_mssql_database.{{name}}.id
+  }
+}
+
+output "{{name}}" {
+  value = local.{{name}}
+}

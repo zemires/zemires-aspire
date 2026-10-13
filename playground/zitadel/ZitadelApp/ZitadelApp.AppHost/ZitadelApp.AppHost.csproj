@@ -1,0 +1,18 @@
+<Project Sdk="Aspire.AppHost.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>80d3264f-9d23-444a-8cc8-6b3a2d28c5af</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Zitadel\Zemires.Aspire.Hosting.Zitadel.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\ZitadelApp.Web\ZitadelApp.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.OpenTelemetryCollector" />
+  </ItemGroup>
+
+</Project>

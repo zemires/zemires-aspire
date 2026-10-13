@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Qute.Directus" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+	  <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+</Project>

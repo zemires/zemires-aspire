@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "TerraformApp.AppHost/TerraformApp.AppHost.csproj"
+  }
+}

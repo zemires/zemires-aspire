@@ -1,0 +1,68 @@
+﻿using System.Text.Json.Serialization;
+using Aspire.Hosting.ApplicationModel;
+
+namespace Zemires.Aspire.Hosting.Terraform.Models;
+
+/// <summary>
+/// Base class for template resource models used in Terraform generation.
+/// </summary>
+public class TemplateResource
+{
+    /// <summary>
+    /// Gets or sets the original Aspire resource.
+    /// </summary>
+    [JsonIgnore]
+    public IResource Resource { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the resource name.
+    /// </summary>
+    public string Name { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the Terraform outputs for this resource.
+    /// </summary>
+    public Dictionary<string, string> Outputs { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Gets or sets the Terraform outputs for this resource.
+    /// </summary>
+    public Dictionary<string, string> Secrets { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Gets or sets the parent resource if this is a child resource.
+    /// </summary>
+    public TemplateResource? Parent { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom parameters for template processing.
+    /// </summary>
+    [JsonIgnore]
+    public Dictionary<string, object?> Parameters { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Gets all references of this resource.
+    /// </summary>
+    public List<TemplateResource> References { get; set; } = new();
+
+    /// <summary>
+    /// Gets all resources referencing this resource.
+    /// </summary>
+    public List<TemplateResource> ReferencedBy { get; set; } = new();
+
+    /// <summary>
+    /// Gets type name of the resource.
+    /// </summary>
+    public string Type => TerraformTemplatePublisher.NormalizeTypeName(Resource.GetType().Name);
+
+    /// <summary>
+    /// Gets or sets the name of the aspire terraform environment for this resource.
+    /// </summary>
+    public string Environment { get; set; } = "env";
+
+    /// <summary>
+    /// Info
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString() => $"{Name} ({Resource})";
+}

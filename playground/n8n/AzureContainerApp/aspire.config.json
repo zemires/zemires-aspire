@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "AzureContainerApp.AppHost/AzureContainerApp.AppHost.csproj"
+  }
+}

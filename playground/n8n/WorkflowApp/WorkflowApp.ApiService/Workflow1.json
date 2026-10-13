@@ -1,0 +1,95 @@
+{
+  "name": "Workflow1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "workflow1-trigger",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "62054197-5158-4b7b-a2b2-ce8cbdf91ff2",
+      "name": "Webhook",
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "c1fc54d3-58fd-4052-9577-f04ed37694e6"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"resumeUrl\": \"{{$execution.resumeUrl}}\"\n}",
+        "options": {}
+      },
+      "id": "7add93da-3bc7-404a-a2fb-30d6f065379d",
+      "name": "Respond to Webhook",
+      "position": [
+        208,
+        0
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      },
+      "id": "e297d526-bd99-4dbb-b7b2-905f07ddab28",
+      "name": "Wait",
+      "position": [
+        416,
+        0
+      ],
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "webhookId": "ee5e036e-d683-4f8c-851a-8fa54a5c4706"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f0cebfe0-d6cb-4ad4-a146-b895f61f8822",
+  "meta": {
+    "instanceId": "182942eea49875da01a736d89a45a90fa3c935abee89e4dbc28ee9f301d7e4ba"
+  },
+  "id": "5aMUsqaJSl7eAT82",
+  "tags": []
+}

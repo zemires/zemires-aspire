@@ -1,0 +1,56 @@
+<Project>
+  
+  <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
+  <PropertyGroup>
+    
+    <DefaultTargetFramework>net10.0</DefaultTargetFramework>
+    <TargetFrameworks>$(DefaultTargetFramework)</TargetFrameworks>
+    <AllTargetFrameworks>$(DefaultTargetFramework);net8.0;net9.0</AllTargetFrameworks>
+    <LangVersion>latest</LangVersion>
+
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <AspireMajorVersion>13</AspireMajorVersion>
+    <AspireVersion>$(AspireMajorVersion).6.1</AspireVersion>
+    <AspirePreviewSuffix>-preview.1.26506.6</AspirePreviewSuffix> <!-- Used for Aspire packages that still only ship as prerelease packages on nuget.org. -->
+    <AspNetCoreVersion>10.0.12</AspNetCoreVersion>
+    <DotNetExtensionsVersion>10.0.12</DotNetExtensionsVersion>
+    <ServiceDiscoveryVersion>10.9.0</ServiceDiscoveryVersion>
+    <IsPackable>false</IsPackable>
+
+    <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
+    <SharedDir>$(RepoRoot)src\Shared</SharedDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Work around the missing in-proc RID selection task in the current .NET 10 SDKs. -->
+    <_AspireUseSdkPickBestRid>false</_AspireUseSdkPickBestRid>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ContinuousIntegrationBuild>false</ContinuousIntegrationBuild>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Versioning -->
+  <PropertyGroup>
+    <ToolkitMinorVersion>6</ToolkitMinorVersion>
+    <ToolkitPatchVersion>0</ToolkitPatchVersion>
+    <ToolkitPreviewVersion>preview.1</ToolkitPreviewVersion>
+
+    <VersionPrefix>$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)</VersionPrefix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-4mjw-xr5x-prpc" />
+    <!-- SQLitePCLRaw.lib.e_sqlite3 <= 2.1.11 depends on vulnerable SQLite < 3.50.2 (memory corruption).
+         No patched NuGet version available yet. Suppress until upstream ships a fix. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-2m69-gcr7-jv3q" />
+  </ItemGroup>
+</Project>

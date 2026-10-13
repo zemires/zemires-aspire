@@ -1,0 +1,65 @@
+﻿# OpenTelemetry Collector config for use with .NET Aspire
+# - Receives OTLP over gRPC WITHOUT TLS (insecure) on 0.0.0.0:4317
+# - Forwards traces, metrics and logs to the Aspire dashboard OTLP endpoint
+#   including the dashboard API key header (x-otlp-api-key)
+#
+# Expected environment variables (set from the AppHost, see snippet below):
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:443      # no tls block => plaintext / insecure gRPC
+        tls:
+          cert_file: ${env:OTEL_TLS_CERT_FILE:-/etc/otelcol-contrib/certs/collector.crt}   # PEM certificate (incl. chain)
+          key_file: ${env:OTEL_TLS_KEY_FILE:-/etc/otelcol-contrib/certs/collector.key}     # PEM private key (unencrypted)
+      # optional: also accept OTLP/HTTP without TLS
+      # http:
+      #   endpoint: 0.0.0.0:4318
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 80
+    spike_limit_percentage: 25
+  batch: {}
+
+  # Drop log records with severity Trace or Debug (severity_number 1-8).
+  # Records without a severity (UNSPECIFIED = 0) are kept.
+  filter/drop-debug:
+    error_mode: ignore
+    logs:
+      log_record:
+        - severity_number > SEVERITY_NUMBER_UNSPECIFIED and severity_number < SEVERITY_NUMBER_INFO
+ 
+exporters:
+  otlp/aspire:
+    endpoint: ${env:ASPIRE_ENDPOINT}
+    headers: 
+      x-otlp-api-key: ${env:ASPIRE_API_KEY}
+    tls:
+      # Aspire dashboard uses the ASP.NET dev certificate in local dev,
+      # which the collector container does not trust.
+      insecure_skip_verify: true
+      # If the dashboard runs on plain http (ASPIRE_ALLOW_UNSECURED_TRANSPORT=true),
+      # replace the line above with:
+      # insecure: true
+
+  # optional: print received telemetry to the collector log for troubleshooting
+  # debug:
+  #   verbosity: basic
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/aspire]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/aspire]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, filter/drop-debug]
+      exporters: [otlp/aspire]

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AdditionalPackageTags>hosting terraform</AdditionalPackageTags>
+    <Description>A .NET Aspire integration that publishes the application model as Terraform configuration from Handlebars templates.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" />
+    <PackageReference Include="Handlebars.Net" />
+    <PackageReference Include="Handlebars.Net.Extension.Json" />
+    <PackageReference Include="Handlebars.Net.Helpers" />
+    <PackageReference Include="Handlebars.Net.Helpers.DynamicLinq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Zemires.Aspire.Hosting.Terraform.Azure" />
+  </ItemGroup>
+
+</Project>

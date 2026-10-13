@@ -1,0 +1,12 @@
+<Project Sdk="Aspire.AppHost.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>b2f528ad-25e3-479c-878c-ed093fc877de</UserSecretsId>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Terraform\Zemires.Aspire.Hosting.Terraform.csproj" IsAspireProjectResource="false" />
+	</ItemGroup>
+
+</Project>

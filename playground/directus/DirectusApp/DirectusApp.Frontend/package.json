@@ -1,0 +1,22 @@
+{
+  "name": "directus-next-cms",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@directus/sdk": "25.0.1",
+    "next": "16.3.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "eslint": "10.10.0",
+    "eslint-config-next": "16.3.4"
+  }
+}

@@ -1,0 +1,6 @@
+@DirectusApp.ApiService_HostAddress = http://localhost:5190
+
+GET {{DirectusApp.ApiService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
