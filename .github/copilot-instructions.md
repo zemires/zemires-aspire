@@ -33,7 +33,7 @@ New projects must be added to `Zemires.Aspire.slnx` in the matching solution fol
 
 - Never commit directly to `main`. Create a feature branch (e.g. `feature/<topic>`, `fix/<topic>`) for every change.
 - Merge into `main` via a pull request using **squash merge**; the PR title becomes the commit message, so make it descriptive.
-- Before opening a PR, `dotnet build Zemires.Aspire.slnx` must pass (`src` treats warnings as errors) and relevant tests must pass.
+- Before opening a PR, `dotnet build Zemires.Aspire.slnx` must pass (`src` treats warnings as errors) and relevant tests must pass; the CI workflow must be green before merging.
 
 ## Commands
 
@@ -41,6 +41,7 @@ New projects must be added to `Zemires.Aspire.slnx` in the matching solution fol
 dotnet restore
 dotnet build Zemires.Aspire.slnx
 dotnet test --solution Zemires.Aspire.slnx
+dotnet test --solution Zemires.Aspire.slnx --filter-not-trait "Category=Integration"   # skip container-based tests (as CI does)
 dotnet test --project tests\Zemires.Aspire.Hosting.N8n.Tests\Zemires.Aspire.Hosting.N8n.Tests.csproj
 dotnet test --project tests\Zemires.Aspire.Hosting.N8n.Tests\Zemires.Aspire.Hosting.N8n.Tests.csproj --filter-method "*TestMethod"
 dotnet test --project tests\Zemires.Aspire.Hosting.Terraform.Tests\Zemires.Aspire.Hosting.Terraform.Tests.csproj
@@ -93,6 +94,7 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
 
 ### Tests
 - xUnit v3 (`xunit.v3`) with explicit `<Using>` elements and `IsTestProject` metadata.
+- Tests that start resources (containers) through `DistributedApplicationTestingBuilder` need Docker/Podman: mark them with `[Trait("Category", "Integration")]`. CI excludes this category; run them locally. Publish-mode tests (e.g. Terraform template rendering) need no container runtime and stay unmarked.
 - n8n integration tests use `DistributedApplicationTestingBuilder.CreateAsync<Projects.Zemires_Aspire_Hosting_N8n_AppHost>()` to boot the example AppHost, then `app.CreateHttpClient(resourceName)` and wait for `KnownResourceStates.Running` via `ResourceNotificationService`.
 - Terraform tests verify the rendered templates of the publisher (`TerraformTemplatePublisherTests`).
 - Zitadel, Directus and CockroachDB have no test projects yet — add `tests/<SrcProject>.Tests` when changing them.
@@ -106,4 +108,4 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
 - Each hosting extension follows the same shape: `<Name>Resource` (`ContainerResource`, usually `IResourceWithConnectionString`), `<Name>BuilderExtensions` with `Add<Name>()` and fluent `With…()` methods, parameters via `IResourceBuilder<ParameterResource>` for secrets.
 - Client integrations bind settings from `Aspire:<name>:Client`, fall back to `ConnectionStrings:{name}`, support keyed registration and register a health check unless disabled.
 - Do not commit local runtime data: `.n8n_data/`, `.data/`, `aspire-output/`, `.terragrunt-cache/`, `node_modules/`, `*.user` are git-ignored.
-- No CI workflow exists yet in `.github/workflows/` — use the commands above locally.
+- CI: `.github/workflows/ci.yml` runs restore, Release build, all tests except `Category=Integration` and `dotnet pack` of every `src` project on pull requests and pushes to `main`. Keep it green; run the same commands locally before pushing.
