@@ -693,7 +693,7 @@ public static class ZitadelBuilderExtensions
     /// <param name="projectName">The display name of the project within Zitadel.</param>
     /// <returns>A resource builder for the Zitadel project resource that can be used for further configuration.</returns>
     [AspireExport]
-    public static IResourceBuilder<ZitadelProjectResource> AddProject(this IResourceBuilder<ZitadelResource> builder, string name, string projectName)
+    public static IResourceBuilder<ZitadelProjectResource> AddProject(this IResourceBuilder<ZitadelResource> builder, [ResourceName] string name, string projectName)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentException.ThrowIfNullOrEmpty(name);
@@ -709,7 +709,7 @@ public static class ZitadelBuilderExtensions
     /// <param name="projectRequest">A detailed project creation request containing all project configuration options.</param>
     /// <returns>A resource builder for the Zitadel project resource that can be used for further configuration.</returns>
     [AspireExportIgnore(Reason = "AddProjectRequest is a Zitadel gRPC type that is not ATS-compatible; use the projectName overload.")]
-    public static IResourceBuilder<ZitadelProjectResource> AddProject(this IResourceBuilder<ZitadelResource> builder, string name, AddProjectRequest projectRequest)
+    public static IResourceBuilder<ZitadelProjectResource> AddProject(this IResourceBuilder<ZitadelResource> builder, [ResourceName] string name, AddProjectRequest projectRequest)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(name);
@@ -765,6 +765,24 @@ public static class ZitadelBuilderExtensions
             ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_METRIC_EXPORTER_TYPE"] = exporterType;
             ctx.EnvironmentVariables["ZITADEL_INSTRUMENTATION_METRIC_EXPORTER_ENDPOINT"] = endpoint.Property(EndpointProperty.Host);
         });
+    }
+
+    /// <summary>
+    /// Adds a connection string resource holding <see cref="ZitadelResource.ApiConnectionString"/>
+    /// (<c>Endpoint=...;ServiceAccountKey=...</c>) to call the Zitadel API with the machine user, e.g. via <c>AddZitadelApi</c> from <c>Zemires.Aspire.Zitadel</c>.
+    /// </summary>
+    /// <remarks>
+    /// Consumers referencing it should wait for the Zitadel resource, as the machine user key is written on its first start.
+    /// </remarks>
+    /// <param name="builder">The Zitadel resource builder.</param>
+    /// <param name="name">The suffix of the connection string resource name, appended to the Zitadel resource name. Defaults to <c>[zitadel]-api</c>.</param>
+    /// <returns>A resource builder for the connection string resource.</returns>
+    [AspireExport]
+    public static IResourceBuilder<ConnectionStringResource> AddApiConnectionString(this IResourceBuilder<ZitadelResource> builder, [ResourceName] string? name = null)
+    {
+        var connectionString = builder.ApplicationBuilder.AddConnectionString(name ?? $"{builder.Resource.Name}-api", builder.Resource.ApiConnectionString);
+        connectionString.WithParentRelationship(builder);
+        return connectionString;
     }
 
     private static async Task CreateZitadelProject(ZitadelInitializationContext context, ResourceNotificationService resourceNotificationService)

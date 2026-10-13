@@ -27,8 +27,6 @@ zitadel.AddZitadelLoginClient("zitadel-login", port: 8503)
 var project = zitadel.AddProject("zitadel-project", "Aspire")
     .WithInitialization(CustomZitadelInitialization.InitializeProject);
 
-// set by the project initialization, persisted in the AppHost user secrets (Parameters:zitadel-project-webfrontend-client-*)
-// to use an existing app instead: project.WithOutput(CustomZitadelInitialization.ClientSecretOutput, builder.AddParameter("webfrontend-client-secret", secret: true));
 var clientId = project.GetOutput(CustomZitadelInitialization.ClientIdOutput);
 var clientSecret = project.GetSecretOutput(CustomZitadelInitialization.ClientSecretOutput);
 
@@ -41,8 +39,7 @@ builder.AddProject<ZitadelApp_Web>("webfrontend")
     .WithEnvironment("OpenIDConnectSettings__ClientSecret", clientSecret)
     .WaitFor(project);
 
-// "Endpoint=...;ServiceAccountKey=<base64 machine user key>" passed as ConnectionStrings__zitadel-api
-var zitadelApi = builder.AddConnectionString("zitadel-api", zitadel.Resource.ApiConnectionString);
+var zitadelApi = zitadel.AddApiConnectionString();
 
 builder.AddProject<ZitadelApp_AdminConsoleApp>("admin-console")
     .WithReference(zitadelApi)
