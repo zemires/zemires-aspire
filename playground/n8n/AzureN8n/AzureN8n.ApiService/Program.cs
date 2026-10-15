@@ -19,8 +19,6 @@ builder.Services.AddHttpClient("WeatherApi", client =>
 
 var app = builder.Build();
 
-app.UseExceptionHandler();
-
 // Configure the HTTP request pipeline.
 app.MapOpenApi();
 

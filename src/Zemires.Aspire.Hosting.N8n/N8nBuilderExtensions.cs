@@ -49,8 +49,11 @@ public static partial class N8nBuilderExtensions
         var n8n = new N8nResource(name, encryptionKeyParameter);
 
         var n8nBuilder = builder.AddResource(n8n)
-            .WithAnnotation(new ContainerImageAnnotation { Image = N8nContainerImageTags.Image, Tag = N8nContainerImageTags.Tag, Registry = N8nContainerImageTags.Registry })
+            .WithImage(N8nContainerImageTags.Image)
+            .WithImageTag(N8nContainerImageTags.Tag)
+            .WithImageRegistry(N8nContainerImageTags.Registry)
             .WithHttpEndpoint(targetPort: N8nPort, port: port, name: N8nResource.PrimaryEndpointName, env: "N8N_PORT")
+            .WithUrlForEndpoint(N8nResource.PrimaryEndpointName, e => e.DisplayText = "n8n App")
             .WithHttpHealthCheck("/healthz", 200, N8nResource.PrimaryEndpointName)
             .WithEnvironment("QUEUE_HEALTH_CHECK_ACTIVE", "true")
             .WithIconName("BranchFork", IconVariant.Regular)
@@ -315,7 +318,7 @@ public static partial class N8nBuilderExtensions
             => WithLicenseKey(builder, builder.ApplicationBuilder.AddParameter(builder.Resource.Name + "-license-key", secret: true));
 
     /// <summary>
-    /// Adds an OTLP exporter using HTTP/protobuf and maps n8n-specific environment variables to standard OpenTelemetry
+    /// Adds an OTLP exporter and maps n8n-specific environment variables to standard OpenTelemetry
     /// environment variables.
     /// </summary>
     /// <remarks>Sets N8N_OTEL_ENABLED to "true" and maps N8N_OTEL_EXPORTER_OTLP_ENDPOINT,
@@ -328,8 +331,9 @@ public static partial class N8nBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        return builder.WithOtlpExporter(OtlpProtocol.HttpProtobuf)
-            .WithEnvironment(ctx =>
+        OtlpConfigurationExtensions.WithOtlpExporter(builder); // default
+
+        return builder.WithEnvironment(ctx =>
             {
                 if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_OTLP_ENDPOINT", out var otelEndpoint))
                 {
@@ -339,14 +343,29 @@ public static partial class N8nBuilderExtensions
                 else
                 {
                     ctx.Logger.LogWarning("OTEL_EXPORTER_OTLP_ENDPOINT is not set. N8n OTLP exporter will not be enabled.");
-                }    
+                }
+
                 if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_OTLP_HEADERS", out var otelHeaders))
                 {
-                    ctx.EnvironmentVariables["OTEL_EXPORTER_OTLP_HEADERS"] = otelHeaders;
+                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_OTLP_HEADERS"] = otelHeaders;
                 }
-                if (ctx.EnvironmentVariables.TryGetValue("N8N_OTEL_EXPORTER_SERVICE_NAME", out var otelServiceName))
+
+                if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_SERVICE_NAME", out var otelServiceName))
                 {
                     ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_SERVICE_NAME"] = otelServiceName;
+                }
+                else
+                {
+                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_SERVICE_NAME"] = builder.Resource.Name;
+                }
+
+                if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_OTLP_PROTOCOL", out var otelProtocol))
+                {
+                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_OTLP_PROTOCOL"] = otelProtocol;
+                }
+                else
+                {
+                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_OTLP_PROTOCOL"] = "grpc";
                 }
             });
     }

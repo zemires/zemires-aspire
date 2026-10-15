@@ -41,7 +41,9 @@ public static partial class N8nBuilderExtensions
         var brokerEndpoint = n8nBuilder.Resource.GetEndpoint(BrokerEndpointName);
 
         var runnerBuilder = n8nBuilder.ApplicationBuilder.AddResource(runner)
-            .WithAnnotation(new ContainerImageAnnotation { Image = N8nContainerImageTags.ImageRunners, Tag = N8nContainerImageTags.Tag, Registry = N8nContainerImageTags.Registry })
+            .WithImage(N8nContainerImageTags.ImageRunners)
+            .WithImageTag(N8nContainerImageTags.Tag)
+            .WithImageRegistry(N8nContainerImageTags.Registry)
             .WithIconName("SettingsCogMultiple", IconVariant.Filled)
             .WithHttpEndpoint(targetPort: N8nRunnersPort, port: port, name: N8nResource.PrimaryEndpointName, env: "N8N_PORT")
             .WithHttpHealthCheck("/healthz", 200, N8nResource.PrimaryEndpointName)

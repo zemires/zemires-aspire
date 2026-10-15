@@ -751,7 +751,7 @@ public static class ZitadelBuilderExtensions
     /// <param name="exporterType"></param>
     /// <returns></returns>
     [AspireExport]
-    public static IResourceBuilder<ZitadelResource> WithOpenTelemetry(this IResourceBuilder<ZitadelResource> builder, EndpointReference endpoint, string exporterType = "grpc")
+    public static IResourceBuilder<ZitadelResource> WithOtlpExporter(this IResourceBuilder<ZitadelResource> builder, EndpointReference endpoint, string exporterType = "grpc")
     {
         return builder.WithEnvironment((ctx) =>
         {
