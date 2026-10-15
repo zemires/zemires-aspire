@@ -61,7 +61,7 @@ builder.AddProject<Projects.WebApp>("webapp")
 
 To call the Zitadel API from a service with the machine user, use `zitadel.AddApiConnectionString()` (connection string resource `zitadel-api` holding `Endpoint=...;ServiceAccountKey=<base64 key>`) and `AddZitadelApi("zitadel-api")` from `Zemires.Aspire.Zitadel`.
 
-Further options: `WithExternalDomain`, `WithCertificate`, `WithHostPort`, `WithOpenTelemetry`, `WithInitialization`. Initialization callbacks receive ready-to-use Zitadel API client options (authenticated as the machine user).
+Further options: `WithExternalDomain`, `WithCertificate`, `WithHostPort`, `WithOtlpExporter`, `WithInitialization`. Initialization callbacks receive ready-to-use Zitadel API client options (authenticated as the machine user).
 
 See https://zitadel.com/docs/guides/overview.
 

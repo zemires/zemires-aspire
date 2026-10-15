@@ -19,7 +19,7 @@ var zitadel = builder.AddZitadel("zitadel", port: 8501)
     .WithMachineUser()
     .WithLoginClientKey()
     .WithInitialization(CustomZitadelInitialization.Initialize)
-    .WithOpenTelemetry(otelCollector.Resource.GetEndpoint("grpc"));
+    .WithOtlpExporter(otelCollector.Resource.GetEndpoint("grpc"));
 
 zitadel.AddZitadelLoginClient("zitadel-login", port: 8503)
     .WithExternalHttpEndpoints();

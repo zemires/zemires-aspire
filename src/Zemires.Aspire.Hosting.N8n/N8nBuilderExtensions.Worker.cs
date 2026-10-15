@@ -29,7 +29,9 @@ public static partial class N8nBuilderExtensions
         var worker = new N8nWorkerResource(n8nBuilder.Resource.Name + "-" + name, n8nBuilder.Resource);
 
         var workerBuilder = n8nBuilder.ApplicationBuilder.AddResource(worker)
-            .WithAnnotation(new ContainerImageAnnotation { Image = N8nContainerImageTags.Image, Tag = N8nContainerImageTags.Tag, Registry = N8nContainerImageTags.Registry })
+            .WithImage(N8nContainerImageTags.Image)
+            .WithImageTag(N8nContainerImageTags.Tag)
+            .WithImageRegistry(N8nContainerImageTags.Registry)
             .WithArgs("worker")
             .WithIconName("SettingsCogMultiple", IconVariant.Filled)
             .WithHttpEndpoint(targetPort: N8nPort, port: port, name: N8nResource.PrimaryEndpointName, env: "N8N_PORT")
