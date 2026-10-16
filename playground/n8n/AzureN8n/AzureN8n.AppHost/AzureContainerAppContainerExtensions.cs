@@ -23,7 +23,7 @@ public static class AzureContainerAppContainerExtensions
         sidecarContainer
             .PublishAsAzureContainerApp((infra, app) => 
             {
-                container.WithAnnotation(new ContainerAppContainerSidecarAnnotation(infra.GetProvisionableResources().ToList(), app), ResourceAnnotationMutationBehavior.Replace);
+                container.WithAnnotation(new ContainerAppContainerSidecarAnnotation(app), ResourceAnnotationMutationBehavior.Replace);
                 foreach(var resource in infra.GetProvisionableResources().ToList())
                 {
                     infra.Remove(resource); // remove all

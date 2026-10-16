@@ -15,7 +15,7 @@ var n8nConfig = builder.Configuration.GetSection("N8n");
 
 builder.Services.AddHttpClient<WorkflowClient>(httpClient =>
 {
-    httpClient.BaseAddress = new Uri(builder.Configuration.GetConnectionString("n8n"));
+    httpClient.BaseAddress = new Uri(builder.Configuration.GetConnectionString("n8n")!);
 });
 
 builder.AddN8nClient("n8n");
@@ -41,7 +41,7 @@ app.MapGet("/start", async (WorkflowClient client) =>
 app.MapGet("/testapi", async (N8nClient client, ILogger<Program> logger, CancellationToken ct) =>
 {
     var wfs = await client.Workflows.GetAsync(cancellationToken: ct);
-    foreach (var wf in wfs.Data)
+    foreach (var wf in wfs!.Data!)
     {
         logger.LogInformation("Workflow: {id} - {name}", wf.Id, wf.Name);
 
@@ -50,7 +50,7 @@ app.MapGet("/testapi", async (N8nClient client, ILogger<Program> logger, Cancell
             p.QueryParameters.WorkflowId = wf.Id;
             p.QueryParameters.Status = GetStatusQueryParameterType.Running;
         }, ct);
-        var exeIds = string.Join(",", execs.Data.Select(e => e.Id));
+        var exeIds = string.Join(",", execs!.Data!.Select(e => e.Id));
 
         logger.LogInformation("Workflow running: {id} - {execs}", wf.Id, exeIds);
     }
@@ -61,14 +61,14 @@ app.MapGet("/loadwf", async (N8nClient client, CancellationToken ct) =>
 {
     using var fs = File.OpenRead("Workflow1.json");
 
-    var wf = await KiotaJsonSerializer.DeserializeAsync<Workflow>(fs);
+    var wf = (await KiotaJsonSerializer.DeserializeAsync<Workflow>(fs))!;
     var existingWf = await client.Workflows.GetAsync(p =>
     {
         p.QueryParameters.Name = wf.Name;
         p.QueryParameters.Active = Zemires.N8n.Api.Workflows.GetActiveQueryParameterType.True;
     });
 
-    if (existingWf.Data.Count > 0)
+    if (existingWf!.Data!.Count > 0)
     {
         var id = existingWf.Data.First().Id;
         var put = await client.Workflows[id].PutAsync(wf);
@@ -77,8 +77,8 @@ app.MapGet("/loadwf", async (N8nClient client, CancellationToken ct) =>
 
     fs.Position = 0;
     var wfCreate = await KiotaJsonSerializer.DeserializeAsync<WorkflowCreate>(fs);
-    var result = await client.Workflows.PostAsync(wfCreate, cancellationToken: ct);
-    await client.Workflows[result.Id].Activate.PostAsync(new ActivatePostRequestBody());
+    var result = await client.Workflows.PostAsync(wfCreate!, cancellationToken: ct);
+    await client.Workflows[result!.Id].Activate.PostAsync(new ActivatePostRequestBody());
     return result.Id ?? "";
 });
 
