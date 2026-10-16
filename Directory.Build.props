@@ -14,9 +14,9 @@
     <AspireMajorVersion>13</AspireMajorVersion>
     <AspireVersion>$(AspireMajorVersion).6.1</AspireVersion>
     <AspirePreviewSuffix>-preview.1.26506.6</AspirePreviewSuffix> <!-- Used for Aspire packages that still only ship as prerelease packages on nuget.org. -->
-    <AspNetCoreVersion>10.0.12</AspNetCoreVersion>
-    <DotNetExtensionsVersion>10.0.12</DotNetExtensionsVersion>
-    <ServiceDiscoveryVersion>10.9.0</ServiceDiscoveryVersion>
+    <AspNetCoreVersion>10.0.13</AspNetCoreVersion>
+    <DotNetExtensionsVersion>10.0.13</DotNetExtensionsVersion>
+    <ServiceDiscoveryVersion>10.11.0</ServiceDiscoveryVersion>
     <IsPackable>false</IsPackable>
 
     <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>

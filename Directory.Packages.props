@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup Label="Aspire Packages">
     <PackageVersion Include="Aspire.Hosting" Version="$(AspireVersion)" />
@@ -27,52 +28,58 @@
     <PackageVersion Include="Aspire.Microsoft.Azure.StackExchangeRedis" Version="13.6.1" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="$(AspireVersion)" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.JavaScript.Extensions" Version="13.5.0" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.5.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.JavaScript.Extensions" Version="13.6.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.6.0" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.OpenTelemetryCollector" Version="13.6.0" />
   </ItemGroup>
   <ItemGroup Label="Core Packages">
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(AspNetCoreVersion)" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="$(DotNetExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(DotNetExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(DotNetExtensionsVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(DotNetExtensionsVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.9.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="$(ServiceDiscoveryVersion)" />
     <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.402" />
     <!-- OpenTelemetry packages -->
     <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.18.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.20.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.20.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.20.0" />
   </ItemGroup>
   <ItemGroup Label="Integration Packages">
-    <PackageVersion Include="BCrypt.Net-Next" Version="4.2.0" />
+    <PackageVersion Include="BCrypt.Net-Next" Version="4.2.1" />
     <PackageVersion Include="CockroachDB.EFCore.Provider" Version="0.1.0" />
-    <PackageVersion Include="Handlebars.Net" Version="2.1.6" />
+    <PackageVersion Include="Handlebars.Net" Version="2.4.3" />
     <PackageVersion Include="Handlebars.Net.Extension.Json" Version="1.0.0" />
     <PackageVersion Include="Handlebars.Net.Helpers" Version="2.5.5" />
     <PackageVersion Include="Handlebars.Net.Helpers.DynamicLinq" Version="2.5.5" />
-    <PackageVersion Include="Microsoft.Kiota.Bundle" Version="2.0.0" />
+    <PackageVersion Include="Microsoft.Kiota.Bundle" Version="2.1.2" />
     <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageVersion Include="Qute.Directus" Version="11.0.1" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.13.22" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.18.0" />
     <!-- Must be >= the version Microsoft.SourceLink.GitHub pulls into src restore graphs, or consumers get an older assembly than src compiled against. -->
-    <PackageVersion Include="System.IO.Hashing" Version="10.0.12" />
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.13" />
     <PackageVersion Include="Zitadel" Version="7.0.44" />
+  </ItemGroup>
+  <ItemGroup Label="Transitive Security Pins">
+    <!-- Aspire.Hosting 13.6.1 (via StreamJsonRpc) pulls MessagePack 2.5.302: GHSA-qhrr-8q5h-9q3h. -->
+    <PackageVersion Include="MessagePack" Version="2.5.307" />
+    <!-- CVE-2026-70162 / CVE-2026-84008, fixed in 10.0.13. -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
   </ItemGroup>
   <ItemGroup Label="Testing">
     <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
-    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
-    <PackageVersion Include="xunit.v3" Version="4.0.0" />
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3" Version="4.0.2" />
   </ItemGroup>
 </Project>
