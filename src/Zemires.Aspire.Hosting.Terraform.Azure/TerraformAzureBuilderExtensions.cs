@@ -4,8 +4,9 @@ using Aspire.Hosting.Lifecycle;
 using Aspire.Hosting.Pipelines;
 using Aspire.Hosting.Publishing;
 using Microsoft.Extensions.DependencyInjection;
-using Zemires.Aspire.Hosting.Terraform.Azure;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Zemires.Aspire.Hosting.Terraform;
+using Zemires.Aspire.Hosting.Terraform.Azure;
 
 #pragma warning disable ASPIREPIPELINES001
 #pragma warning disable IDE0130
@@ -13,119 +14,93 @@ using Zemires.Aspire.Hosting.Terraform;
 namespace Aspire.Hosting;
 
 /// <summary>
-/// Provides extension methods for configuring Azure-specific Terraform template publishing.
+/// Extension methods for publishing Azure resources and Azure Container Apps as Terraform configuration.
 /// </summary>
 public static class TerraformAzureBuilderExtensions
 {
+    private const string DefaultTemplatesLocation = "https://raw.githubusercontent.com/zemires/zemires-aspire/refs/heads/main/templates/azure-container-apps/";
+
     /// <summary>
-    /// Adds Azure-specific Terraform template publishing capabilities with enhanced Azure resource support.
+    /// Registers the Azure Terraform template publisher and removes the Bicep pipeline steps of Azure resources.
+    /// Called by <see cref="AddTerraformAzureEnvironment"/>; call it directly only to configure the options.
     /// </summary>
-    /// <param name="builder">The distributed application builder instance.</param>
-    /// <param name="configureOptions">Optional action to configure publishing options.</param>
-    /// <returns>The distributed application builder for method chaining.</returns>
-    /// <remarks>
-    /// This method extends the base Terraform template functionality with Azure-specific features
-    /// and optionally disables the built-in Bicep provisioner to avoid conflicts.
-    /// </remarks>
+    /// <param name="builder">The distributed application builder.</param>
+    /// <param name="configureOptions">Configures the publishing options.</param>
+    /// <returns>The builder.</returns>
     [AspireExportIgnore(Reason = "Configured through a TerraformTemplatePublishingOptions callback, which is not ATS-compatible; AddTerraformAzureEnvironment registers publishing with defaults.")]
     public static IDistributedApplicationBuilder AddTerraformAzureTemplatePublishing(this IDistributedApplicationBuilder builder, Action<TerraformTemplatePublishingOptions>? configureOptions = null)
     {
-        var configuration = builder.Configuration.GetSection("Terraform:Templates");
+        ArgumentNullException.ThrowIfNull(builder);
 
-        var optionsBuilder = builder.Services.AddOptions<TerraformTemplatePublishingOptions>()
-            .Bind(configuration);
+        builder.AddTerraformServices(configureOptions);
 
-        if (configureOptions != null)
-            optionsBuilder.Configure(configureOptions);
+        if (builder.Services.Any(d => d.ImplementationType == typeof(TerraformAzureTemplatePublisher)))
+        {
+            return builder;
+        }
 
+        builder.Services.Replace(ServiceDescriptor.Singleton<ITerraformTemplatePublisher, TerraformAzureTemplatePublisher>());
         builder.Services.AddOptions<AzureProvisioningOptions>()
-            .Configure(options =>
-            {
-                options.SupportsTargetedRoleAssignments = true;
-            });
-
+            .Configure(options => options.SupportsTargetedRoleAssignments = true);
         builder.Services.TryAddEventingSubscriber<TerraformAzureContainerInfrastructure>();
 
-        builder.Services.AddSingleton<ITerraformTemplatePublisher, TerraformAzureTemplatePublisher>();
-        builder.Services.AddTransient<TerraformTemplateProcessor>();
-        builder.Services.AddTransient<TerraformExecutor>();
-
-        // Remove Bicep Azure PipelineAnnotations
-        builder.Eventing.Subscribe<BeforePublishEvent>(async (evt, ct) =>
-        {
-#pragma warning disable ASPIREAZURE001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            var azureenv = evt.Model.Resources.OfType<AzureEnvironmentResource>().FirstOrDefault();
-            if (azureenv != null)
-                evt.Model.Resources.Remove(azureenv);
-
-            var azureResoures = evt.Model.Resources.Where(p => p is AzureProvisioningResource || p is AzureBicepResource).ToList();
-            foreach (var resource in azureResoures)
-            {
-                var psa = resource.Annotations.OfType<PipelineStepAnnotation>().ToList();
-                foreach (var annotation in psa)
-                {
-                    resource.Annotations.Remove(annotation);
-                }
-            }
-#pragma warning restore ASPIREAZURE001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-        });
-
-        builder.Eventing.Subscribe<BeforeStartEvent>(async (evt, ct) =>
-        {
-#pragma warning disable ASPIREAZURE001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            var azureenv = evt.Model.Resources.OfType<AzureEnvironmentResource>().FirstOrDefault();
-            if (azureenv != null)
-                evt.Model.Resources.Remove(azureenv);
-
-            var azureResoures = evt.Model.Resources.Where(p => p is AzureProvisioningResource || p is AzureBicepResource).ToList();
-            foreach (var resource in azureResoures)
-            {
-                var psa = resource.Annotations.OfType<PipelineStepAnnotation>().ToList();
-                foreach (var annotation in psa)
-                {
-                    resource.Annotations.Remove(annotation);
-                }
-            }
-
-#pragma warning restore ASPIREAZURE001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-        });
+        builder.Eventing.Subscribe<BeforePublishEvent>((evt, _) => RemoveBicepDeployment(evt.Model));
+        builder.Eventing.Subscribe<BeforeStartEvent>((evt, _) => RemoveBicepDeployment(evt.Model));
 
         return builder;
     }
 
     /// <summary>
-    /// Adds an Azure Terraform environment that publishes the resources deployed to it as Terraform configuration,
-    /// deploys the container registry first, and registers Azure Terraform template publishing with default options.
+    /// Adds an Azure Terraform environment. Deploying first provisions the container registry, then applies the configuration.
     /// </summary>
     /// <param name="builder">The distributed application builder.</param>
-    /// <param name="name">The name of the environment resource.</param>
-    /// <param name="templatesLocation">The directory or URL containing the Handlebars templates.</param>
-    /// <returns>The resource builder for chaining.</returns>
+    /// <param name="name">The resource name.</param>
+    /// <param name="templatesLocation">The directory or URL of the Handlebars templates.</param>
+    /// <returns>The environment resource builder.</returns>
     [AspireExport]
-    public static IResourceBuilder<TerraformAzureEnvironmentResource> AddTerraformAzureEnvironment(this IDistributedApplicationBuilder builder, string name, string templatesLocation)
+    public static IResourceBuilder<TerraformAzureEnvironmentResource> AddTerraformAzureEnvironment(this IDistributedApplicationBuilder builder, [ResourceName] string name, string templatesLocation)
     {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(templatesLocation);
+
         builder.AddTerraformAzureTemplatePublishing();
 
-        var resource = new TerraformAzureEnvironmentResource(name, templatesLocation);
-
-        return builder.AddResource(resource)
-            .ExcludeFromManifest()
-            .WithInitialState(new()
-            {
-                ResourceType = nameof(TerraformAzureEnvironmentResource),
-                Properties = [],
-                IsHidden = true // hidden from the dashboard
-            });
+        return builder.AddEnvironmentResource(new TerraformAzureEnvironmentResource(name, templatesLocation));
     }
 
     /// <summary>
-    /// Adds an Azure Terraform environment that deploys to Azure Container Apps, using the published Azure Container Apps templates by default.
+    /// Adds an Azure Terraform environment deploying to Azure Container Apps, by default with the
+    /// <c>templates/azure-container-apps</c> templates of the <c>main</c> branch on GitHub.
     /// </summary>
     /// <param name="builder">The distributed application builder.</param>
-    /// <param name="name">The name of the environment resource.</param>
-    /// <param name="templatesLocation">The directory or URL containing the Handlebars templates.</param>
-    /// <returns>The resource builder for chaining.</returns>
+    /// <param name="name">The resource name.</param>
+    /// <param name="templatesLocation">The directory or URL of the Handlebars templates.</param>
+    /// <returns>The environment resource builder.</returns>
     [AspireExport]
-    public static IResourceBuilder<TerraformAzureEnvironmentResource> AddTerraformAzureContainerAppEnvironment(this IDistributedApplicationBuilder builder, string name, string templatesLocation = "https://raw.githubusercontent.com/zemires/zemires-aspire/refs/heads/main/templates/azure-container-apps/")
+    public static IResourceBuilder<TerraformAzureEnvironmentResource> AddTerraformAzureContainerAppEnvironment(this IDistributedApplicationBuilder builder, [ResourceName] string name, string templatesLocation = DefaultTemplatesLocation)
         => builder.AddTerraformAzureEnvironment(name, templatesLocation);
+
+    /// <summary>
+    /// Removes the Azure (Bicep) environment and the pipeline steps of Azure resources; Terraform deploys them instead.
+    /// </summary>
+    private static Task RemoveBicepDeployment(DistributedApplicationModel model)
+    {
+#pragma warning disable ASPIREAZURE001
+        if (model.Resources.OfType<AzureEnvironmentResource>().FirstOrDefault() is { } azureEnvironment)
+        {
+            model.Resources.Remove(azureEnvironment);
+        }
+#pragma warning restore ASPIREAZURE001
+
+        foreach (var resource in model.Resources.Where(r => r is AzureProvisioningResource or AzureBicepResource))
+        {
+            foreach (var annotation in resource.Annotations.OfType<PipelineStepAnnotation>().ToList())
+            {
+                resource.Annotations.Remove(annotation);
+            }
+        }
+
+        return Task.CompletedTask;
+    }
 }

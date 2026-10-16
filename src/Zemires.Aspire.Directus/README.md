@@ -25,7 +25,7 @@ app.MapGet("/users", async (DirectusClient client, CancellationToken ct) =>
 
 ## Configuration
 
-Options are bound from the `Aspire:Directus:Client` section (or a custom section via the overload). The connection string `ConnectionStrings:{name}` must contain `BaseUrl` and may contain `Token` (static token).
+Options are bound from the `Aspire:Directus:Client` section (or a custom section via the overload). The connection string `ConnectionStrings:{name}` must contain `BaseUrl` and may contain `Token` (static token); it takes precedence over the section. Set `DisableHealthChecks` / `HealthCheckTimeout` (ms) in the same section to configure the health check.
 
 ## Feedback & contributing
 

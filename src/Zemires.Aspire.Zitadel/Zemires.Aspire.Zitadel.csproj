@@ -9,11 +9,16 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Zitadel" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Zemires.Aspire.Zitadel.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\HealthCheckExtensions.cs" Link="Shared\HealthCheckExtensions.cs" />
   </ItemGroup>
 
 </Project>

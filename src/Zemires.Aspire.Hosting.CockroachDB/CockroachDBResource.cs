@@ -1,126 +1,89 @@
 namespace Aspire.Hosting.ApplicationModel;
 
 /// <summary>
-/// A resource that represents a CockroachDB server.
+/// A CockroachDB container resource. Its connection string is <c>Host=...;Port=...;Username=...;Password=...</c> (PostgreSQL wire protocol).
 /// </summary>
-public class CockroachDBResource : ContainerResource, IResourceWithConnectionString
+/// <param name="name">The resource name.</param>
+/// <param name="userName">The user name; <c>cockroach</c> when <see langword="null"/>.</param>
+/// <param name="password">The password.</param>
+public class CockroachDBResource(string name, ParameterResource? userName, ParameterResource password) : ContainerResource(name), IResourceWithConnectionString
 {
     internal const string PrimaryEndpointName = "tcp";
     internal const string ConsoleEndpointName = "http";
     private const string DefaultUserName = "cockroach";
 
-    /// <summary>
-    /// Initializes a new <see cref="CockroachDBResource"/>.
-    /// </summary>
-    /// <param name="name">The name of the resource.</param>
-    /// <param name="userName">A parameter that contains the user name, or <see langword="null"/> to use the default user.</param>
-    /// <param name="password">A parameter that contains the password.</param>
-    public CockroachDBResource(string name, ParameterResource? userName, ParameterResource password) : base(name)
-    {
-        UserNameParameter = userName;
-        PasswordParameter = password;
-    }
-
+    private readonly Dictionary<string, string> _databases = new(StringComparer.OrdinalIgnoreCase);
     private EndpointReference? _primaryEndpoint;
     private EndpointReference? _consoleEndpoint;
 
     /// <summary>
-    /// Gets the primary endpoint for the N8n. This endpoint is used for all API calls over HTTP.
+    /// Gets the SQL endpoint.
     /// </summary>
     public EndpointReference PrimaryEndpoint => _primaryEndpoint ??= new(this, PrimaryEndpointName);
 
     /// <summary>
-    /// Gets the console endpoint for the N8n. This endpoint is used for the web UI.
+    /// Gets the DB console (HTTP) endpoint.
     /// </summary>
     public EndpointReference ConsoleEndpoint => _consoleEndpoint ??= new(this, ConsoleEndpointName);
 
-
     /// <summary>
-    /// Gets or sets the parameter that contains the PostgreSQL server user name.
-    /// </summary>
-    public ParameterResource? UserNameParameter { get; set; }
-
-    /// <summary>
-    /// Gets a reference to the user name for the PostgreSQL server.
-    /// </summary>
-    /// <remarks>
-    /// Returns the user name parameter if specified, otherwise returns the default user name "postgres".
-    /// </remarks>
-    public ReferenceExpression UserNameReference =>
-        UserNameParameter is not null ?
-            ReferenceExpression.Create($"{UserNameParameter}") :
-            ReferenceExpression.Create($"{DefaultUserName}");
-
-    /// <summary>
-    /// Gets or sets the parameter that contains the PostgreSQL server password.
-    /// </summary>
-    public ParameterResource PasswordParameter { get; set; }
-
-
-    private ReferenceExpression ConnectionString =>
-        ReferenceExpression.Create(
-            $"Host={PrimaryEndpoint.Property(EndpointProperty.Host)};Port={PrimaryEndpoint.Property(EndpointProperty.Port)};Username={UserNameReference};Password={PasswordParameter}");
-
-    /// <summary>
-    /// Gets the connection string expression for the PostgreSQL server.
-    /// </summary>
-    public ReferenceExpression ConnectionStringExpression
-    {
-        get
-        {
-            if (this.TryGetLastAnnotation<ConnectionStringRedirectAnnotation>(out var connectionStringAnnotation))
-            {
-                return connectionStringAnnotation.Resource.ConnectionStringExpression;
-            }
-
-            return ConnectionString;
-        }
-    }
-
-    /// <summary>
-    /// Gets the connection string for the PostgreSQL server.
-    /// </summary>
-    /// <param name="cancellationToken"> A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
-    /// <returns>A connection string for the PostgreSQL server in the form "Host=host;Port=port;Username=postgres;Password=password".</returns>
-    public ValueTask<string?> GetConnectionStringAsync(CancellationToken cancellationToken = default)
-    {
-        if (this.TryGetLastAnnotation<ConnectionStringRedirectAnnotation>(out var connectionStringAnnotation))
-        {
-            return connectionStringAnnotation.Resource.GetConnectionStringAsync(cancellationToken);
-        }
-
-        return ConnectionStringExpression.GetValueAsync(cancellationToken);
-    }
-
-    private readonly Dictionary<string, string> _databases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>
-    /// A dictionary where the key is the resource name and the value is the database name.
-    /// </summary>
-    public IReadOnlyDictionary<string, string> Databases => _databases;
-
-    internal void AddDatabase(string name, string databaseName)
-    {
-        _databases.TryAdd(name, databaseName);
-    }
-
-    /// <summary>
-    /// Gets the host endpoint reference for this service.
+    /// Gets the host of <see cref="PrimaryEndpoint"/>.
     /// </summary>
     public EndpointReferenceExpression Host => PrimaryEndpoint.Property(EndpointProperty.Host);
 
     /// <summary>
-    /// Gets the endpoint reference expression that identifies the port for this endpoint.
+    /// Gets the port of <see cref="PrimaryEndpoint"/>.
     /// </summary>
     public EndpointReferenceExpression Port => PrimaryEndpoint.Property(EndpointProperty.Port);
 
     /// <summary>
-    /// Gets the connection URI expression for the PostgreSQL server.
+    /// Gets or sets the user name parameter, or <see langword="null"/> for the default <c>cockroach</c>.
     /// </summary>
-    /// <remarks>
-    /// Format: <c>postgresql://{user}:{password}@{host}:{port}</c>.
-    /// </remarks>
+    public ParameterResource? UserNameParameter { get; set; } = userName;
+
+    /// <summary>
+    /// Gets the user name.
+    /// </summary>
+    public ReferenceExpression UserNameReference =>
+        UserNameParameter is not null
+            ? ReferenceExpression.Create($"{UserNameParameter}")
+            : ReferenceExpression.Create($"{DefaultUserName}");
+
+    /// <summary>
+    /// Gets or sets the password parameter.
+    /// </summary>
+    public ParameterResource PasswordParameter { get; set; } = password;
+
+    /// <summary>
+    /// Gets the connection string <c>Host=...;Port=...;Username=...;Password=...</c>.
+    /// </summary>
+    public ReferenceExpression ConnectionStringExpression =>
+        ReferenceExpression.Create($"Host={Host};Port={Port};Username={UserNameReference};Password={PasswordParameter}");
+
+    /// <summary>
+    /// Resolves the connection string.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The connection string <c>Host=...;Port=...;Username=...;Password=...</c>.</returns>
+    public ValueTask<string?> GetConnectionStringAsync(CancellationToken cancellationToken = default) =>
+        ConnectionStringExpression.GetValueAsync(cancellationToken);
+
+    /// <summary>
+    /// Gets the databases added with <c>AddDatabase</c> (resource name to database name).
+    /// </summary>
+    public IReadOnlyDictionary<string, string> Databases => _databases;
+
+    /// <summary>
+    /// Gets the URI <c>postgresql://{user}:{password}@{host}:{port}</c>.
+    /// </summary>
     public ReferenceExpression UriExpression => BuildUri();
+
+    /// <summary>
+    /// Gets the JDBC connection string <c>jdbc:postgresql://{host}:{port}</c>, without credentials (see the <c>Username</c> and <c>Password</c> connection properties).
+    /// </summary>
+    public ReferenceExpression JdbcConnectionString => BuildJdbcConnectionString();
+
+    internal void AddDatabase(string name, string databaseName) => _databases.TryAdd(name, databaseName);
 
     internal ReferenceExpression BuildUri(string? databaseName = null)
     {
@@ -158,23 +121,13 @@ public class CockroachDBResource : ContainerResource, IResourceWithConnectionStr
         return builder.Build();
     }
 
-    /// <summary>
-    /// Gets the JDBC connection string for the CockroachDB server.
-    /// </summary>
-    /// <remarks>
-    /// <para>Format: <c>jdbc:postgresql://{host}:{port}</c>.</para>
-    /// <para>User and password credentials are not included in the JDBC connection string. Use the <c>Username</c> and <c>Password</c> connection properties to access credentials.</para>
-    /// </remarks>
-    public ReferenceExpression JdbcConnectionString => BuildJdbcConnectionString();
-
     IEnumerable<KeyValuePair<string, ReferenceExpression>> IResourceWithConnectionString.GetConnectionProperties() =>
     [
-        new ("Host", ReferenceExpression.Create($"{Host}")),
-        new ("Port", ReferenceExpression.Create($"{Port}")),
-        new ("Username", ReferenceExpression.Create($"{UserNameReference}")),
-        new ("Password", ReferenceExpression.Create($"{PasswordParameter}")),
-        new ("Uri", UriExpression),
-        new ("JdbcConnectionString", JdbcConnectionString),
+        new("Host", ReferenceExpression.Create($"{Host}")),
+        new("Port", ReferenceExpression.Create($"{Port}")),
+        new("Username", UserNameReference),
+        new("Password", ReferenceExpression.Create($"{PasswordParameter}")),
+        new("Uri", UriExpression),
+        new("JdbcConnectionString", JdbcConnectionString),
     ];
 }
-

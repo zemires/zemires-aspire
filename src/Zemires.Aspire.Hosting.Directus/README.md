@@ -29,7 +29,7 @@ builder.AddProject<Projects.ApiService>("api")
 builder.Build().Run();
 ```
 
-- Database: `WithSqlite3Database()`, `WithPostgresDatabase(db)`, `WithSqlServerDatabase(db)`.
+- Database (required): `WithSqlite3Database()`, `WithPostgresDatabase(db)`, `WithSqlServerDatabase(db)`.
 - Credentials: `WithUserName`, `WithPassword`, `WithAdminToken` (generated when not provided).
 - Storage: `WithDataVolume`, `WithDataBindMount`.
 

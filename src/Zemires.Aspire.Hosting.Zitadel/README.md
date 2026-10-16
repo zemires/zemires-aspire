@@ -59,6 +59,8 @@ builder.AddProject<Projects.WebApp>("webapp")
 - `WithOutput(name, parameter)` binds an output to a parameter, e.g. for an existing application; `SetOutput` does not change it then.
 - If a callback throws or an output stays unset, the project goes to `FailedToStart` and the output fails instead of resolving to an empty value.
 
+`WithMachineUser()` and `WithLoginClientKey()` write the machine user key and login client PAT to `.zitadel/{name}-keys` in the AppHost directory; add `.zitadel/` to `.gitignore`.
+
 To call the Zitadel API from a service with the machine user, use `zitadel.AddApiConnectionString()` (connection string resource `zitadel-api` holding `Endpoint=...;ServiceAccountKey=<base64 key>`) and `AddZitadelApi("zitadel-api")` from `Zemires.Aspire.Zitadel`.
 
 Further options: `WithExternalDomain`, `WithCertificate`, `WithHostPort`, `WithOtlpExporter`, `WithInitialization`. Initialization callbacks receive ready-to-use Zitadel API client options (authenticated as the machine user).

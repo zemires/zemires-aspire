@@ -1,4 +1,4 @@
-﻿using Aspire.Hosting.ApplicationModel;
+using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Pipelines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -56,7 +56,7 @@ public class TerraformEnvironmentResource : TerraformTemplateResource, ITerrafor
 
                     var taskPrepare = await context.ReportingStep.CreateTaskAsync("Init publishing");
 
-                    var templates = await publisher.GetTerraformTemplateAnnotations(context.Model); // TODO filter by env
+                    var templates = await publisher.GetTerraformTemplateAnnotations(context.Model);
 
                     await publisher.InitPublishing(TemplatesLocation, templates);
 
@@ -79,7 +79,7 @@ public class TerraformEnvironmentResource : TerraformTemplateResource, ITerrafor
                 Name = "deploy-terraform-" + name,
                 Action = async context =>
                 {
-                    // get deployment tag
+                    // image tags of the pushed images
                     var deploymentTags = new Dictionary<string, string>();
                     foreach (var resource in context.Model.GetBuildResources())
                     {
@@ -91,10 +91,7 @@ public class TerraformEnvironmentResource : TerraformTemplateResource, ITerrafor
                             var pushOptions = new ContainerImagePushOptionsCallbackContext()
                             {
                                 Resource = resource,
-                                Options = new ContainerImagePushOptions()
-                                {
-                                    // Set default options here if needed
-                                },
+                                Options = new ContainerImagePushOptions(),
                                 CancellationToken = context.CancellationToken
                             };
                             await imagePush.Callback(pushOptions);
@@ -103,10 +100,8 @@ public class TerraformEnvironmentResource : TerraformTemplateResource, ITerrafor
 #pragma warning restore ASPIREPIPELINES003 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
                     }
 
-                    var tfVars = new Dictionary<string, string>() { { "image_tags", "{" + string.Join(",", deploymentTags.Select(kvp => $"{kvp.Key}:\"{kvp.Value}\"")) + "}" } };
-
-                    var terraformTemplatePublisher = context.Services.GetRequiredService<TerraformExecutor>();
-                    await terraformTemplatePublisher.Apply(context.CancellationToken, terraformVariables: tfVars);
+                    var executor = context.Services.GetRequiredService<TerraformExecutor>();
+                    await executor.Apply(context.CancellationToken, terraformVariables: ImageTagVariables(deploymentTags));
                 },
                 RequiredBySteps = [WellKnownPipelineSteps.Deploy],
                 DependsOnSteps = ["publish-terraform-" + name, WellKnownPipelineSteps.DeployPrereq, WellKnownPipelineSteps.Push]
@@ -117,13 +112,10 @@ public class TerraformEnvironmentResource : TerraformTemplateResource, ITerrafor
                 Name = "destroy-terraform-" + name,
                 Action = async context =>
                 {
-                    var deploymentTags = new Dictionary<string, string>();
-                    foreach (var resource in context.Model.GetBuildResources())
-                            deploymentTags.Add(resource.Name, "none");
-                    var tfVars = new Dictionary<string, string>() { { "image_tags", "{" + string.Join(",", deploymentTags.Select(kvp => $"{kvp.Key}:\"{kvp.Value}\"")) + "}" } };
+                    var deploymentTags = context.Model.GetBuildResources().ToDictionary(r => r.Name, _ => "none");
 
-                    var terraformTemplatePublisher = context.Services.GetRequiredService<TerraformExecutor>();
-                    await terraformTemplatePublisher.Destroy(context.CancellationToken, terraformVariables: tfVars);
+                    var executor = context.Services.GetRequiredService<TerraformExecutor>();
+                    await executor.Destroy(context.CancellationToken, terraformVariables: ImageTagVariables(deploymentTags));
                 },
                 RequiredBySteps = [WellKnownPipelineSteps.Destroy],
                 DependsOnSteps = ["publish-terraform-" + name, WellKnownPipelineSteps.DestroyPrereq]
@@ -139,17 +131,14 @@ public class TerraformEnvironmentResource : TerraformTemplateResource, ITerrafor
     /// Gets the container registry referenced by this environment, if any.
     /// </summary>
     /// <returns>The referenced container registry, or <see langword="null"/> if none is configured.</returns>
-    protected IContainerRegistry? GetContainerRegistry()
-    {
-        // Check for explicit container registry reference annotation
-        if (this.TryGetLastAnnotation<ContainerRegistryReferenceAnnotation>(out var annotation))
-        {
-            return annotation.Registry;
-        }
+    protected IContainerRegistry? GetContainerRegistry() =>
+        this.TryGetLastAnnotation<ContainerRegistryReferenceAnnotation>(out var annotation) ? annotation.Registry : null;
 
-        // Fall back to default container registry
-        return null;
-    }
+    /// <summary>
+    /// Creates the <c>image_tags</c> Terraform variable, a map of resource name to image tag.
+    /// </summary>
+    private static Dictionary<string, string> ImageTagVariables(IEnumerable<KeyValuePair<string, string>> tags) =>
+        new() { ["image_tags"] = "{" + string.Join(",", tags.Select(t => $"{t.Key}:\"{t.Value}\"")) + "}" };
 }
 
 /// <summary>
@@ -158,60 +147,55 @@ public class TerraformEnvironmentResource : TerraformTemplateResource, ITerrafor
 public static class TerraformEnvironmentResourceExtensions
 {
     /// <summary>
-    /// Adds a specific Terraform template resource to the distributed application builder.
+    /// Adds a Terraform template to the environment.
     /// </summary>
-    /// <param name="builder">The distributed application builder.</param>
-    /// <param name="name">Resource name.</param>
-    /// <param name="terraformFile">Path to the template file.</param>
-    /// <param name="outputFile">Optional output file name.</param>
-    /// <param name="appendFile"></param>
-    /// <returns>The resource builder for chaining.</returns>
+    /// <param name="builder">The environment resource builder.</param>
+    /// <param name="name">The resource name.</param>
+    /// <param name="terraformFile">The Handlebars template file.</param>
+    /// <param name="outputFile">The output file name. Derived from the template when <see langword="null"/>.</param>
+    /// <param name="appendFile">Whether to append to an existing output file.</param>
+    /// <returns>The template resource builder.</returns>
     [AspireExport("addEnvironmentTerraformTemplate", MethodName = "addTerraformTemplate")]
     public static IResourceBuilder<TerraformTemplateResource> AddTerraformTemplate(this IResourceBuilder<TerraformEnvironmentResource> builder, [ResourceName] string name, string terraformFile, string? outputFile = null, bool appendFile = false)
     {
-        var resource = new TerraformTemplateResource(name);
-
-        return builder.ApplicationBuilder.AddResource(resource)
-            .WithAnnotation(new TerraformTemplateAnnotation<ValueTemplateResource>
-            {
-                TemplateFile = terraformFile,
-                OutputFile = outputFile,
-                AppendFile = appendFile,
-                TemplateResource = new ValueTemplateResource() { Name = name, Resource = resource, Outputs = resource.Outputs }
-            })
-            .WithAnnotation(new DeploymentTargetAnnotation(builder.Resource)
-            {
-                ComputeEnvironment = builder.Resource
-            })
-            .ExcludeFromManifest();
+        ArgumentException.ThrowIfNullOrEmpty(terraformFile);
+        return builder.AddTemplate(name, outputFile, appendFile, annotation => annotation.TemplateFile = terraformFile);
     }
 
     /// <summary>
-    /// Adds a specific Terraform template resource to the distributed application builder.
+    /// Adds a Terraform template given as string to the environment.
     /// </summary>
-    /// <param name="builder">The distributed application builder.</param>
-    /// <param name="name">Resource name.</param>
-    /// <param name="terraformString">content to the template file.</param>
-    /// <param name="outputFile">Optional output file name.</param>
-    /// <param name="appendFile"></param>
-    /// <returns>The resource builder for chaining.</returns>
+    /// <param name="builder">The environment resource builder.</param>
+    /// <param name="name">The resource name.</param>
+    /// <param name="terraformString">The Handlebars template content.</param>
+    /// <param name="outputFile">The output file name. Derived from the resource name when <see langword="null"/>.</param>
+    /// <param name="appendFile">Whether to append to an existing output file.</param>
+    /// <returns>The template resource builder.</returns>
     [AspireExport("addEnvironmentTerraformTemplateString", MethodName = "addTerraformTemplateString")]
     public static IResourceBuilder<TerraformTemplateResource> AddTerraformTemplateString(this IResourceBuilder<TerraformEnvironmentResource> builder, [ResourceName] string name, string terraformString, string? outputFile = null, bool appendFile = false)
     {
+        ArgumentException.ThrowIfNullOrEmpty(terraformString);
+        return builder.AddTemplate(name, outputFile, appendFile, annotation => annotation.TemplateString = terraformString);
+    }
+
+    private static IResourceBuilder<TerraformTemplateResource> AddTemplate(this IResourceBuilder<TerraformEnvironmentResource> builder, string name, string? outputFile, bool appendFile,
+        Action<TerraformTemplateAnnotation<ValueTemplateResource>> configureTemplate)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
         var resource = new TerraformTemplateResource(name);
+        var annotation = new TerraformTemplateAnnotation<ValueTemplateResource>
+        {
+            OutputFile = outputFile,
+            AppendFile = appendFile,
+            TemplateResource = new ValueTemplateResource { Name = name, Resource = resource, Outputs = resource.Outputs }
+        };
+        configureTemplate(annotation);
 
         return builder.ApplicationBuilder.AddResource(resource)
-            .WithAnnotation(new TerraformTemplateAnnotation<ValueTemplateResource>
-            {
-                TemplateString = terraformString,
-                OutputFile = outputFile,
-                AppendFile = appendFile,
-                TemplateResource = new ValueTemplateResource() { Name = name, Resource = resource, Outputs = resource.Outputs },
-            })
-            .WithAnnotation(new DeploymentTargetAnnotation(builder.Resource)
-            {
-                ComputeEnvironment = builder.Resource
-            })
+            .WithAnnotation(annotation)
+            .WithAnnotation(new DeploymentTargetAnnotation(builder.Resource) { ComputeEnvironment = builder.Resource })
             .ExcludeFromManifest();
     }
 }

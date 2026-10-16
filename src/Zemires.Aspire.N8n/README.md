@@ -31,7 +31,7 @@ app.MapGet("/workflows", async (N8nClient client) => await client.Workflows.GetA
 
 ## Configuration
 
-Settings (`Endpoint`, `ApiKey`, `DisableHealthChecks`, `HealthCheckTimeout`) are read from the `Aspire:N8n:Client` configuration section and fall back to `ConnectionStrings:{name}`.
+Settings (`Endpoint`, `ApiKey`, `DisableHealthChecks`, `HealthCheckTimeout`) are read from `Aspire:N8n:Client` (keyed: overridden by `Aspire:N8n:Client:{name}`). `ConnectionStrings:{name}` (the n8n URL) takes precedence over `Endpoint`.
 
 ## Feedback & contributing
 

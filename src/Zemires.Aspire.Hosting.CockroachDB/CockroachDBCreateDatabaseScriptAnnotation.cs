@@ -1,24 +1,13 @@
-using Aspire.Hosting.ApplicationModel;
-
 namespace Aspire.Hosting.ApplicationModel;
 
 /// <summary>
-/// Represents an annotation for defining a script to create a database in CockroachDB.
+/// The SQL script creating a CockroachDB database, see <c>WithCreationScript</c>.
 /// </summary>
-internal sealed class CockroachDBCreateDatabaseScriptAnnotation : IResourceAnnotation
+/// <param name="script">The SQL script.</param>
+internal sealed class CockroachDBCreateDatabaseScriptAnnotation(string script) : IResourceAnnotation
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CockroachDBCreateDatabaseScriptAnnotation"/> class.
+    /// Gets the SQL script.
     /// </summary>
-    /// <param name="script">The script used to create the database.</param>
-    public CockroachDBCreateDatabaseScriptAnnotation(string script)
-    {
-        ArgumentNullException.ThrowIfNull(script);
-        Script = script;
-    }
-
-    /// <summary>
-    /// Gets the script used to create the database.
-    /// </summary>
-    public string Script { get; }
+    public string Script { get; } = script ?? throw new ArgumentNullException(nameof(script));
 }

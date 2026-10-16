@@ -6,9 +6,9 @@ using Zemires.Aspire.Hosting.Terraform.Models;
 namespace Aspire.Hosting;
 
 /// <summary>
-/// Provides Azure-specific extension methods for associating Terraform templates with Azure Bicep resources.
+/// Extension methods for attaching Terraform templates to Azure resources.
 /// </summary>
-public static class TerraformResourceExtensions
+public static class TerraformAzureResourceExtensions
 {
     /// <summary>
     /// Associates a Handlebars template with an Azure Bicep resource for Terraform configuration generation.

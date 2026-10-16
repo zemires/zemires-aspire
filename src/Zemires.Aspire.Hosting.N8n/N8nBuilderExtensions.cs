@@ -1,39 +1,31 @@
 using Aspire.Hosting.ApplicationModel;
-using Zemires.Aspire.Hosting.N8n;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using Zemires.Aspire.Hosting.N8n;
 
 namespace Aspire.Hosting;
 
 /// <summary>
-/// Provides extension methods for adding N8n resources to the application model.
+/// Extension methods for adding n8n resources to the application model.
 /// </summary>
 public static partial class N8nBuilderExtensions
 {
     private const int N8nPort = 5678;
+    private const string DataPath = "/home/node/.n8n";
 
     /// <summary>
-    /// Adds an n8n container resource to the application model.
-    /// The default image is <inheritdoc cref="N8nContainerImageTags.Image"/> and the tag is <inheritdoc cref="N8nContainerImageTags.Tag"/>.
+    /// Adds an n8n container resource (image <inheritdoc cref="N8nContainerImageTags.Image"/>:<inheritdoc cref="N8nContainerImageTags.Tag"/>).
     /// </summary>
     /// <param name="builder">The <see cref="IDistributedApplicationBuilder"/>.</param>
-    /// <param name="name">The name of the resource. This name will be used as the connection string name when referenced in a dependency.</param>
-    /// <param name="port">The host port to bind the underlying container to.</param>
-    /// <param name="encryptionKey">The parameter used to provide the master key for the N8n. If <see langword="null"/> a random master key will be generated.</param>
-    /// <returns>A reference to the <see cref="IResourceBuilder{T}"/>.</returns>
-    /// <remarks>
+    /// <param name="name">The resource name, also used as connection string name.</param>
+    /// <param name="encryptionKey">The n8n encryption key. Generated when <see langword="null"/>.</param>
+    /// <param name="port">The host port of the HTTP endpoint.</param>
+    /// <returns>The resource builder.</returns>
     /// <example>
-    /// Add an N8n container to the application model and reference it in a .NET project.
     /// <code lang="csharp">
-    /// var builder = DistributedApplication.CreateBuilder(args);
-    ///
-    /// var N8n = builder.AddN8n("n8n");
-    ///  
-    /// builder.Build().Run(); 
+    /// var n8n = builder.AddN8n("n8n");
     /// </code>
     /// </example>
-    /// </remarks>
     [AspireExport]
     public static IResourceBuilder<N8nResource> AddN8n(
         this IDistributedApplicationBuilder builder,
@@ -49,180 +41,109 @@ public static partial class N8nBuilderExtensions
         var n8n = new N8nResource(name, encryptionKeyParameter);
 
         var n8nBuilder = builder.AddResource(n8n)
-            .WithImage(N8nContainerImageTags.Image)
-            .WithImageTag(N8nContainerImageTags.Tag)
-            .WithImageRegistry(N8nContainerImageTags.Registry)
+            .WithN8nImage(N8nContainerImageTags.Image)
             .WithHttpEndpoint(targetPort: N8nPort, port: port, name: N8nResource.PrimaryEndpointName, env: "N8N_PORT")
             .WithUrlForEndpoint(N8nResource.PrimaryEndpointName, e => e.DisplayText = "n8n App")
             .WithHttpHealthCheck("/healthz", 200, N8nResource.PrimaryEndpointName)
-            .WithEnvironment("QUEUE_HEALTH_CHECK_ACTIVE", "true")
             .WithIconName("BranchFork", IconVariant.Regular)
+            .WithEnvironment("QUEUE_HEALTH_CHECK_ACTIVE", "true")
             .WithEnvironment("OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS", "true")
             .WithEnvironment("N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS", "false")
             .WithEnvironment("N8N_ENCRYPTION_KEY", encryptionKeyParameter)
-            .WithEnvironment("N8N_WEBHOOK_URL", n8n.GetEndpoint(N8nResource.PrimaryEndpointName, builder.ExecutionContext.IsPublishMode ? KnownNetworkIdentifiers.PublicInternet : KnownNetworkIdentifiers.LocalhostNetwork))
+            .WithEnvironment("WEBHOOK_URL", n8n.GetWebhookEndpoint(builder.ExecutionContext))
             .WithEnvironment("N8N_PROXY_HOPS", "1");
 
 #pragma warning disable ASPIRECERTIFICATES001
-        n8nBuilder.WithHttpsCertificateConfiguration(ctx =>
-        {
-            ctx.EnvironmentVariables["N8N_PROTOCOL"] = "https";
-            ctx.EnvironmentVariables["N8N_SSL_KEY"] = ctx.KeyPath;
-            ctx.EnvironmentVariables["N8N_SSL_CERT"] = ctx.CertificatePath;
-            ctx.EnvironmentVariables["NODE_EXTRA_CA_CERTS"] = ctx.CertificatePath;
-            return Task.CompletedTask;
-        });
-#pragma warning restore ASPIRECERTIFICATES001
-
-        if (builder.ExecutionContext.IsRunMode)
-        {
-#pragma warning disable ASPIRECERTIFICATES001
-            builder.Eventing.Subscribe<BeforeStartEvent>((@event, cancellationToken) =>
+        n8nBuilder
+            .WithHttpsCertificateConfiguration(ctx =>
             {
-                var developerCertificateService = @event.Services.GetRequiredService<IDeveloperCertificateService>();
-
-                bool addHttps = false;
-                if (!n8nBuilder.Resource.TryGetLastAnnotation<HttpsCertificateAnnotation>(out var annotation))
-                {
-                    if (developerCertificateService.UseForHttps)
-                    {
-                        addHttps = true;
-                    }
-                }
-                else if (annotation.UseDeveloperCertificate.GetValueOrDefault(developerCertificateService.UseForHttps) || annotation.Certificate is not null)
-                {
-                    addHttps = true;
-                }
-
-                if (addHttps)
-                {
-                    // If a TLS certificate is configured, override the endpoint to use HTTPS instead of HTTP
-                    n8nBuilder.WithEndpoint(N8nResource.PrimaryEndpointName, ep => ep.UriScheme = "https");
-                }
-
+                ctx.EnvironmentVariables["N8N_PROTOCOL"] = "https";
+                ctx.EnvironmentVariables["N8N_SSL_KEY"] = ctx.KeyPath;
+                ctx.EnvironmentVariables["N8N_SSL_CERT"] = ctx.CertificatePath;
+                ctx.EnvironmentVariables["NODE_EXTRA_CA_CERTS"] = ctx.CertificatePath;
                 return Task.CompletedTask;
-            });
+            })
+            .SubscribeHttpsEndpointsUpdate(_ => n8nBuilder.WithEndpoint(N8nResource.PrimaryEndpointName, ep => ep.UriScheme = "https"));
 #pragma warning restore ASPIRECERTIFICATES001
-        }
 
         return n8nBuilder;
     }
 
     /// <summary>
-    /// Adds a named volume for the data folder to a N8n container resource.
+    /// Adds a named volume for the n8n data folder.
     /// </summary>
     /// <param name="builder">The resource builder.</param>
-    /// <param name="name">The name of the volume. Defaults to an auto-generated name based on the application and resource names.</param>
-    /// <returns>The <see cref="IResourceBuilder{T}"/>.</returns>
-    /// <remarks>
-    /// <example>
-    /// Add an N8n container to the application model and reference it in a .NET project. Additionally, in this
-    /// example a data volume is added to the container to allow data to be persisted across container restarts.
-    /// <code lang="csharp">
-    /// var builder = DistributedApplication.CreateBuilder(args);
-    ///
-    /// var N8n = builder.AddN8n("N8n")
-    /// .WithDataVolume();
-    /// var api = builder.AddProject&lt;Projects.Api&gt;("api")
-    ///   .WithReference(N8n);
-    ///  
-    /// builder.Build().Run(); 
-    /// </code>
-    /// </example>
-    /// </remarks>
+    /// <param name="name">The volume name. Generated when <see langword="null"/>.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<N8nResource> WithDataVolume(this IResourceBuilder<N8nResource> builder, string? name = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        return builder.WithVolume(name ?? VolumeNameGenerator.Generate(builder, "data"), "/home/node/.n8n");
+        return builder.WithVolume(name ?? VolumeNameGenerator.Generate(builder, "data"), DataPath);
     }
 
     /// <summary>
-    /// Configures the N8n resource to use a PostgreSQL database.
-    /// This method reads connection properties from the provided <paramref name="database"/>
-    /// (which must implement <see cref="IResourceWithConnectionString"/>) and sets the
-    /// environment variables required by the n8n image to connect to a Postgres backend.
-    /// It also creates a reference relationship and waits for the database resource.
-    /// </summary>
-    /// <param name="builder">The N8n resource builder to configure.</param>
-    /// <param name="database">A resource builder for the PostgreSQL database. Must expose connection string information.</param>
-    /// <param name="useTls">Use of TLS for connection.</param>
-    /// <returns>The same <see cref="IResourceBuilder{N8nResource}"/> instance for chaining.</returns>
-    /// <exception cref="ArgumentException">Thrown when the provided <paramref name="database"/> does not expose connection string information.</exception>
-    [AspireExport]
-    public static IResourceBuilder<N8nResource> WithPostgresDatabase(this IResourceBuilder<N8nResource> builder, IResourceBuilder<IResource> database, bool useTls = false)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(database);
-
-        if (database.Resource is IResourceWithConnectionString resourceWithConnection)
-        {
-            builder.WithEnvironment("DB_TYPE", "postgresdb")
-                .WithEnvironment("DB_POSTGRESDB_DATABASE", $"{resourceWithConnection.GetConnectionProperty("DatabaseName")}")
-                .WithEnvironment("DB_POSTGRESDB_HOST", $"{resourceWithConnection.GetConnectionProperty("Host")}")
-                .WithEnvironment("DB_POSTGRESDB_PORT", $"{resourceWithConnection.GetConnectionProperty("Port")}")
-                .WithEnvironment("DB_POSTGRESDB_USER", $"{resourceWithConnection.GetConnectionProperty("Username")}")
-                .WithEnvironment("DB_POSTGRESDB_PASSWORD", $"{resourceWithConnection.GetConnectionProperty("Password")}")
-                .WithReferenceRelationship(database)
-                .WaitFor(database);
-
-            if (useTls)
-            {
-                builder.WithEnvironment("DB_POSTGRESDB_SSL_ENABLED", "true")
-                    .WithEnvironment("DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED", "true");
-            }
-
-            return builder;
-        }
-        else
-        {
-            throw new ArgumentException($"The provided resource '{database.Resource.Name}' does not contain connection string information and cannot be used as a database for N8n.", nameof(database));
-        }
-    }
-
-    /// <summary>
-    /// Adds a bind mount for the data folder to a n8n container resource.
+    /// Adds a bind mount for the n8n data folder.
     /// </summary>
     /// <param name="builder">The resource builder.</param>
-    /// <param name="source">The source directory on the host to mount into the container.</param>
-    /// <returns>The <see cref="IResourceBuilder{T}"/>.</returns>
-    /// <remarks>
-    /// <example>
-    /// Add an N8n container to the application model and reference it in a .NET project. Additionally, in this
-    /// example a bind mount is added to the container to allow data to be persisted across container restarts.
-    /// <code lang="csharp">
-    /// var builder = DistributedApplication.CreateBuilder(args);
-    ///
-    /// var n8n = builder.AddN8n("n8n")
-    /// .WithDataBindMount("./data/N8n/data");
-    /// var api = builder.AddProject&lt;Projects.Api&gt;("api")
-    ///   .WithReference(n8n);
-    ///  
-    /// builder.Build().Run(); 
-    /// </code>
-    /// </example>
-    /// </remarks>
+    /// <param name="source">The host directory to mount.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<N8nResource> WithDataBindMount(this IResourceBuilder<N8nResource> builder, string source)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentException.ThrowIfNullOrEmpty(source);
 
-        return builder.WithBindMount(source, "/home/node/.n8n");
+        return builder.WithBindMount(source, DataPath);
     }
 
     /// <summary>
-    /// Sets the timezone for the N8n container by configuring the standard
-    /// environment variables used by the image (GENERIC_TIMEZONE and TZ).
+    /// Stores n8n data in a PostgreSQL database. Reads <c>Host</c>, <c>Port</c>, <c>DatabaseName</c>, <c>Username</c> and
+    /// <c>Password</c> from the connection properties of <paramref name="database"/> and waits for it.
     /// </summary>
-    /// <param name="builder">The N8n resource builder to configure.</param>
-    /// <param name="timeZone">The timezone identifier (for example "UTC" or "America/Los_Angeles").</param>
-    /// <returns>The same <see cref="IResourceBuilder{N8nResource}"/> instance for chaining.</returns>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="database">The PostgreSQL database.</param>
+    /// <param name="useTls">Whether to connect with TLS.</param>
+    /// <returns>The resource builder.</returns>
+    /// <exception cref="ArgumentException"><paramref name="database"/> has no connection string.</exception>
+    [AspireExport]
+    public static IResourceBuilder<N8nResource> WithPostgresDatabase(this IResourceBuilder<N8nResource> builder, IResourceBuilder<IResource> database, bool useTls = false)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(database);
+
+        var db = GetConnectionStringResource(database, "database");
+
+        builder.WithEnvironment("DB_TYPE", "postgresdb")
+            .WithEnvironment("DB_POSTGRESDB_DATABASE", db.GetConnectionProperty("DatabaseName"))
+            .WithEnvironment("DB_POSTGRESDB_HOST", db.GetConnectionProperty("Host"))
+            .WithEnvironment("DB_POSTGRESDB_PORT", db.GetConnectionProperty("Port"))
+            .WithEnvironment("DB_POSTGRESDB_USER", db.GetConnectionProperty("Username"))
+            .WithEnvironment("DB_POSTGRESDB_PASSWORD", db.GetConnectionProperty("Password"))
+            .WithReferenceRelationship(database)
+            .WaitFor(database);
+
+        if (useTls)
+        {
+            builder.WithEnvironment("DB_POSTGRESDB_SSL_ENABLED", "true")
+                .WithEnvironment("DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED", "true");
+        }
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Sets the time zone (<c>GENERIC_TIMEZONE</c> and <c>TZ</c>).
+    /// </summary>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="timeZone">The IANA time zone, e.g. <c>Europe/Zurich</c>.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<N8nResource> WithTimeZone(this IResourceBuilder<N8nResource> builder, string timeZone)
     {
         ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(timeZone);
 
         return builder
             .WithEnvironment("GENERIC_TIMEZONE", timeZone)
@@ -230,18 +151,14 @@ public static partial class N8nBuilderExtensions
     }
 
     /// <summary>
-    /// Configures the n8n instance owner via environment variables.
+    /// Creates the instance owner account. The password is passed bcrypt-hashed (<c>N8N_INSTANCE_OWNER_PASSWORD_HASH</c>).
     /// </summary>
-    /// <param name="builder">The N8n resource builder to configure.</param>
-    /// <param name="email">The instance owner email address (<c>N8N_INSTANCE_OWNER_EMAIL</c>).</param>
-    /// <param name="firstName">The instance owner first name (<c>N8N_INSTANCE_OWNER_FIRST_NAME</c>).</param>
-    /// <param name="lastName">The instance owner last name (<c>N8N_INSTANCE_OWNER_LAST_NAME</c>).</param>
-    /// <param name="password">
-    /// The parameter used to provide the plaintext password. The password is bcrypt-hashed before being passed
-    /// to the container as <c>N8N_INSTANCE_OWNER_PASSWORD_HASH</c>.
-    /// If <see langword="null"/> a random password will be generated.
-    /// </param>
-    /// <returns>The same <see cref="IResourceBuilder{N8nResource}"/> instance for chaining.</returns>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="email">The owner email address.</param>
+    /// <param name="firstName">The owner first name.</param>
+    /// <param name="lastName">The owner last name.</param>
+    /// <param name="password">The owner password. Generated when <see langword="null"/>.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<N8nResource> WithInstanceOwner(
         this IResourceBuilder<N8nResource> builder,
@@ -263,21 +180,19 @@ public static partial class N8nBuilderExtensions
             .WithEnvironment("N8N_INSTANCE_OWNER_EMAIL", email)
             .WithEnvironment("N8N_INSTANCE_OWNER_FIRST_NAME", firstName)
             .WithEnvironment("N8N_INSTANCE_OWNER_LAST_NAME", lastName)
-            .WithEnvironment("N8N_INSTANCE_OWNER_PASSWORD", passwordParameter) // not used but to store value in aspire json file
             .WithEnvironment(async ctx =>
             {
-                var plainPassword = await passwordParameter.GetValueAsync(ctx.CancellationToken);
+                var plainPassword = await passwordParameter.GetValueAsync(ctx.CancellationToken).ConfigureAwait(false);
                 ctx.EnvironmentVariables["N8N_INSTANCE_OWNER_PASSWORD_HASH"] = BCrypt.Net.BCrypt.HashPassword(plainPassword);
             });
     }
 
     /// <summary>
-    /// Configures the N8n resource with an enterprise license key.
-    /// Sets <c>N8N_LICENSE_ACTIVATION_KEY</c> and suppresses the usage page via <c>N8N_HIDE_USAGE_PAGE</c>.
+    /// Sets the enterprise license key (<c>N8N_LICENSE_ACTIVATION_KEY</c>) and hides the usage page.
     /// </summary>
-    /// <param name="builder">The N8n resource builder to configure.</param>
-    /// <param name="licenseKey">The parameter that contains the license activation key.</param>
-    /// <returns>The same <see cref="IResourceBuilder{N8nResource}"/> instance for chaining.</returns>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="licenseKey">The license activation key.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport("withLicenseKeyParameter")]
     public static IResourceBuilder<N8nResource> WithLicenseKey(
         this IResourceBuilder<N8nResource> builder,
@@ -292,176 +207,153 @@ public static partial class N8nBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a license key parameter to the resource's application builder.
+    /// Sets the enterprise license key from a value, stored as secret parameter <c>{name}-license-key</c>.
     /// </summary>
-    /// <remarks>Registers a parameter named "{resourceName}-license-key" (using the resource's Name) via
-    /// ApplicationBuilder.AddParameter.</remarks>
-    /// <param name="builder">The resource builder to configure.</param>
-    /// <param name="licenseKey">The license key value to register as a parameter.</param>
-    /// <returns>The same resource builder instance for chaining.</returns>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="licenseKey">The license activation key.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport("withLicenseKeyString")]
     public static IResourceBuilder<N8nResource> WithLicenseKey(
         this IResourceBuilder<N8nResource> builder,
-        string licenseKey) 
-            => WithLicenseKey(builder, builder.ApplicationBuilder.AddParameter(builder.Resource.Name + "-license-key", value: licenseKey, secret: true));
+        string licenseKey)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(licenseKey);
+
+        return builder.WithLicenseKey(builder.ApplicationBuilder.AddParameter($"{builder.Resource.Name}-license-key", value: licenseKey, secret: true));
+    }
 
     /// <summary>
-    /// Adds a license key parameter to the resource's application builder.
+    /// Sets the enterprise license key from the secret parameter <c>{name}-license-key</c>.
     /// </summary>
-    /// <remarks>Registers a parameter named "{resourceName}-license-key" (using the resource's Name) via
-    /// ApplicationBuilder.AddParameter.</remarks>
-    /// <param name="builder">The resource builder to configure.</param>
-    /// <returns>The same resource builder instance for chaining.</returns>
-    [AspireExport()]
+    /// <param name="builder">The resource builder.</param>
+    /// <returns>The resource builder.</returns>
+    [AspireExport]
     public static IResourceBuilder<N8nResource> WithLicenseKey(
         this IResourceBuilder<N8nResource> builder)
-            => WithLicenseKey(builder, builder.ApplicationBuilder.AddParameter(builder.Resource.Name + "-license-key", secret: true));
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return builder.WithLicenseKey(builder.ApplicationBuilder.AddParameter($"{builder.Resource.Name}-license-key", secret: true));
+    }
 
     /// <summary>
-    /// Adds an OTLP exporter and maps n8n-specific environment variables to standard OpenTelemetry
-    /// environment variables.
+    /// Adds the Aspire OTLP exporter and maps its <c>OTEL_*</c> variables to the <c>N8N_OTEL_*</c> variables read by n8n.
     /// </summary>
-    /// <remarks>Sets N8N_OTEL_ENABLED to "true" and maps N8N_OTEL_EXPORTER_OTLP_ENDPOINT,
-    /// N8N_OTEL_EXPORTER_OTLP_HEADERS, and N8N_OTEL_EXPORTER_SERVICE_NAME to the corresponding
-    /// OTEL_EXPORTER_OTLP_ENDPOINT, OTEL_EXPORTER_OTLP_HEADERS, and OTEL_SERVICE_NAME environment variables.</remarks>
-    /// <param name="builder">The resource builder to configure.</param>
-    /// <returns>The configured resource builder for chaining.</returns>
+    /// <param name="builder">The resource builder.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<N8nResource> WithOtlpExporter(this IResourceBuilder<N8nResource> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        OtlpConfigurationExtensions.WithOtlpExporter(builder); // default
+        OtlpConfigurationExtensions.WithOtlpExporter(builder);
 
         return builder.WithEnvironment(ctx =>
+        {
+            var env = ctx.EnvironmentVariables;
+            if (env.TryGetValue("OTEL_EXPORTER_OTLP_ENDPOINT", out var endpoint))
             {
-                if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_OTLP_ENDPOINT", out var otelEndpoint))
-                {
-                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_OTLP_ENDPOINT"] = otelEndpoint;
-                    ctx.EnvironmentVariables["N8N_OTEL_ENABLED"] = "true";
-                }
-                else
-                {
-                    ctx.Logger.LogWarning("OTEL_EXPORTER_OTLP_ENDPOINT is not set. N8n OTLP exporter will not be enabled.");
-                }
+                env["N8N_OTEL_EXPORTER_OTLP_ENDPOINT"] = endpoint;
+                env["N8N_OTEL_ENABLED"] = "true";
+            }
+            else
+            {
+                ctx.Logger.LogWarning("OTEL_EXPORTER_OTLP_ENDPOINT is not set, the n8n OTLP exporter is not enabled.");
+            }
 
-                if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_OTLP_HEADERS", out var otelHeaders))
-                {
-                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_OTLP_HEADERS"] = otelHeaders;
-                }
+            if (env.TryGetValue("OTEL_EXPORTER_OTLP_HEADERS", out var headers))
+            {
+                env["N8N_OTEL_EXPORTER_OTLP_HEADERS"] = headers;
+            }
 
-                if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_SERVICE_NAME", out var otelServiceName))
-                {
-                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_SERVICE_NAME"] = otelServiceName;
-                }
-                else
-                {
-                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_SERVICE_NAME"] = builder.Resource.Name;
-                }
-
-                if (ctx.EnvironmentVariables.TryGetValue("OTEL_EXPORTER_OTLP_PROTOCOL", out var otelProtocol))
-                {
-                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_OTLP_PROTOCOL"] = otelProtocol;
-                }
-                else
-                {
-                    ctx.EnvironmentVariables["N8N_OTEL_EXPORTER_OTLP_PROTOCOL"] = "grpc";
-                }
-            });
+            env["N8N_OTEL_EXPORTER_SERVICE_NAME"] = env.TryGetValue("OTEL_SERVICE_NAME", out var serviceName) ? serviceName : builder.Resource.Name;
+            env["N8N_OTEL_EXPORTER_OTLP_PROTOCOL"] = env.TryGetValue("OTEL_EXPORTER_OTLP_PROTOCOL", out var protocol) ? protocol : "grpc";
+        });
     }
 
     /// <summary>
-    /// Enables Community Packages and if packages are given, installs the packages as predefined packages.
+    /// Enables community packages and installs the given packages.
     /// </summary>
-    /// <param name="builder">The resource builder to configure.</param>
-    /// <param name="packageNames">package name, e.g.n8n-nodes-foo or n8n-nodes-foo@version </param>
-    /// <returns></returns>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="packageNames">Package names, e.g. <c>n8n-nodes-foo</c> or <c>n8n-nodes-foo@1.0.0</c>.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<N8nResource> WithCommunityPackages(this IResourceBuilder<N8nResource> builder, params string[] packageNames)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(packageNames);
 
-        return builder.WithEnvironment(ctx =>
+        builder.WithEnvironment("N8N_COMMUNITY_PACKAGES_ENABLED", "true");
+
+        if (packageNames.Length > 0)
         {
-            ctx.EnvironmentVariables["N8N_COMMUNITY_PACKAGES_ENABLED"] = "true";
-            if (packageNames.Length > 0)
-            {
-                ctx.EnvironmentVariables["N8N_COMMUNITY_PACKAGES_MANAGED_BY_ENV"] = "true";
-                ctx.EnvironmentVariables["N8N_COMMUNITY_PACKAGES"] = JsonSerializer.Serialize(packageNames.Select(p => new { name = p }).ToArray(), JsonSerializerOptions.Web);
-            }
-        });
+            builder.WithEnvironment("N8N_COMMUNITY_PACKAGES_MANAGED_BY_ENV", "true")
+                .WithEnvironment("N8N_COMMUNITY_PACKAGES", JsonSerializer.Serialize(packageNames.Select(p => new { name = p }), JsonSerializerOptions.Web));
+        }
+
+        return builder;
     }
 
     /// <summary>
-    /// Enables metrics collection for the N8n resource and configures which metrics to include.
+    /// Enables the metrics endpoint (<c>N8N_METRICS</c>).
     /// </summary>
-    /// <param name="builder">The N8n resource builder to configure.</param>
-    /// <param name="configureOptions">An optional action to configure the metric options. If <see langword="null"/>, all metrics are enabled by default.</param>
-    /// <returns>The same <see cref="IResourceBuilder{N8nResource}"/> instance for chaining.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method enables the N8n metrics endpoint by setting <c>N8N_METRICS</c> to <c>true</c> and allows fine-grained control
-    /// over which metric categories to include through the <see cref="N8nMetricOptions"/> configuration.
-    /// </para>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="configureOptions">Configures the metric categories. All are enabled by default.</param>
+    /// <returns>The resource builder.</returns>
     /// <example>
-    /// Enable all metrics (default behavior):
     /// <code lang="csharp">
-    /// var n8n = builder.AddN8n("n8n")
-    ///     .WithMetrics();
+    /// builder.AddN8n("n8n").WithMetrics(options => options.IncludeWebhookMetrics = false);
     /// </code>
     /// </example>
-    /// <example>
-    /// Enable metrics with custom configuration:
-    /// <code lang="csharp">
-    /// var n8n = builder.AddN8n("n8n")
-    ///     .WithMetrics(options =>
-    ///     {
-    ///         options.IncludeWebhookMetrics = false;
-    ///         options.IncludeQueueMetrics = true;
-    ///     });
-    /// </code>
-    /// </example>
-    /// </remarks>
     [AspireExport(RunSyncOnBackgroundThread = true)]
     public static IResourceBuilder<N8nResource> WithMetrics(this IResourceBuilder<N8nResource> builder, Action<N8nMetricOptions>? configureOptions = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         var options = new N8nMetricOptions();
-
-        if (configureOptions != null)
-        {
-            configureOptions(options);
-        }
+        configureOptions?.Invoke(options);
 
         return builder.WithEnvironment("N8N_METRICS", "true")
-            .WithEnvironment("N8N_METRICS_INCLUDE_WEBHOOK_METRICS", options.IncludeWebhookMetrics.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_WORKFLOW_INFO", options.IncludeWorkflowInfo.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_FORM_METRICS", options.IncludeFormMetrics.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL", options.IncludeWorkflowIdLabel.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_NODE_TYPE_LABEL", options.IncludeNodeTypeLabel.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL", options.IncludeCredentialTypeLabel.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_API_ENDPOINTS", options.IncludeApiEndpoints.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_API_PATH_LABEL", options.IncludeApiPathLabel.ToString().ToLower())
-            .WithEnvironment("N8N_METRICS_INCLUDE_QUEUE_METRICS", options.IncludeQueueMetrics.ToString().ToLower());
+            .WithEnvironment("N8N_METRICS_INCLUDE_WEBHOOK_METRICS", ToEnv(options.IncludeWebhookMetrics))
+            .WithEnvironment("N8N_METRICS_INCLUDE_WORKFLOW_INFO", ToEnv(options.IncludeWorkflowInfo))
+            .WithEnvironment("N8N_METRICS_INCLUDE_FORM_METRICS", ToEnv(options.IncludeFormMetrics))
+            .WithEnvironment("N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL", ToEnv(options.IncludeWorkflowIdLabel))
+            .WithEnvironment("N8N_METRICS_INCLUDE_NODE_TYPE_LABEL", ToEnv(options.IncludeNodeTypeLabel))
+            .WithEnvironment("N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL", ToEnv(options.IncludeCredentialTypeLabel))
+            .WithEnvironment("N8N_METRICS_INCLUDE_API_ENDPOINTS", ToEnv(options.IncludeApiEndpoints))
+            .WithEnvironment("N8N_METRICS_INCLUDE_API_PATH_LABEL", ToEnv(options.IncludeApiPathLabel))
+            .WithEnvironment("N8N_METRICS_INCLUDE_QUEUE_METRICS", ToEnv(options.IncludeQueueMetrics));
     }
 
     /// <summary>
-    /// Configures the external webhook url for the n8n resource. This overrides the default url in <see cref="AddN8n"/>.
+    /// Sets the public URL used for webhooks (<c>WEBHOOK_URL</c>), replacing the default endpoint URL.
     /// </summary>
-    /// <ats-summary>Configures the external url for the n8n resource used by webhooks.</ats-summary>
-    /// <param name="builder">The n8n resource builder.</param>
-    /// <param name="webhookUrl">The external url to use (e.g., "https://n8n.example.com"). Cannot be null or empty.</param>
-    /// <returns>The resource builder for chaining.</returns>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="webhookUrl"/> is null or whitespace.</exception>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="webhookUrl">The public URL, e.g. <c>https://n8n.example.com</c>.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<N8nResource> WithWebhookUrl(
         this IResourceBuilder<N8nResource> builder,
         string webhookUrl)
     {
+        ArgumentNullException.ThrowIfNull(builder);
         ArgumentException.ThrowIfNullOrWhiteSpace(webhookUrl);
 
-        return builder.WithEnvironment("N8N_WEBHOOK_URL", webhookUrl);
+        return builder.WithEnvironment("WEBHOOK_URL", webhookUrl);
     }
+
+    private static IResourceBuilder<T> WithN8nImage<T>(this IResourceBuilder<T> builder, string image) where T : ContainerResource =>
+        builder.WithImage(image)
+            .WithImageTag(N8nContainerImageTags.Tag)
+            .WithImageRegistry(N8nContainerImageTags.Registry);
+
+    private static EndpointReference GetWebhookEndpoint(this N8nResource n8n, DistributedApplicationExecutionContext executionContext) =>
+        n8n.GetEndpoint(N8nResource.PrimaryEndpointName, executionContext.IsPublishMode ? KnownNetworkIdentifiers.PublicInternet : KnownNetworkIdentifiers.LocalhostNetwork);
+
+    private static IResourceWithConnectionString GetConnectionStringResource(IResourceBuilder<IResource> resource, string usage) =>
+        resource.Resource as IResourceWithConnectionString
+            ?? throw new ArgumentException($"Resource '{resource.Resource.Name}' has no connection string and cannot be used as {usage} for n8n.", usage);
+
+    private static string ToEnv(bool value) => value ? "true" : "false";
 }

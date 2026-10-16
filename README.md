@@ -66,7 +66,7 @@ var n8n = builder.AddN8n("n8n", port: 5678)
     .WithTimeZone("Europe/Zurich")
     .WithOtlpExporter();
 
-var worker = n8n.AddWorker("n8n-worker", port: 5679)
+var worker = n8n.AddWorker("worker", port: 5679) // resource "n8n-worker"
     .WithPostgresDatabase(db)
     .WithQueueMode(redis);
 

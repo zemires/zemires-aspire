@@ -1,69 +1,62 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Threading;
-using Zitadel.Api;
+﻿using Zitadel.Api;
 using Zitadel.Credentials;
 
 // ReSharper disable once CheckNamespace
 namespace Aspire.Hosting.ApplicationModel;
 
 /// <summary>
-///     Extensions for <see cref="ZitadelResource" /> to provide easy access to service accounts and client options.
+/// Access to the machine user of a <see cref="ZitadelResource"/>, e.g. in initialization code.
 /// </summary>
 public static class ZitadelResourceExtensions
 {
     /// <summary>
-    ///     Gets the machine service account from the Zitadel resource.
+    /// Loads the machine user service account from <see cref="ZitadelResource.MachineUserKeyParameter"/> or the key file.
     /// </summary>
-    /// <param name="zitadel"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <param name="zitadel">The Zitadel resource.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The service account.</returns>
+    /// <exception cref="InvalidOperationException">No machine user key is available.</exception>
     [AspireExportIgnore(Reason = "Returns a Zitadel ServiceAccount, which is not ATS-compatible.")]
     public static async Task<ServiceAccount> GetMachineServiceAccount(this ZitadelResource zitadel, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(zitadel);
 
-        if (zitadel.MachineUserKeyParameter != null)
+        if (zitadel.MachineUserKeyParameter is not null)
         {
-            var machineKey = await zitadel.MachineUserKeyParameter.GetValueAsync(cancellationToken);
+            var machineKey = await zitadel.MachineUserKeyParameter.GetValueAsync(cancellationToken).ConfigureAwait(false)
+                ?? throw new InvalidOperationException($"The machine user key of '{zitadel.Name}' has no value.");
 
-            if (machineKey == null)
-            {
-                throw new InvalidOperationException("MachineUserKey not available or KeyFile does not exists");
-            }
-
-            var machineKeyBytes = Convert.FromBase64String(machineKey);
-            using var machineKeyBuffer = new MemoryStream(machineKeyBytes);
-            return await ServiceAccount.LoadFromJsonStreamAsync(machineKeyBuffer);
+            using var machineKeyBuffer = new MemoryStream(Convert.FromBase64String(machineKey));
+            return await ServiceAccount.LoadFromJsonStreamAsync(machineKeyBuffer).ConfigureAwait(false);
         }
 
         if (string.IsNullOrEmpty(zitadel.MachineUserKeyPath) || !File.Exists(zitadel.MachineUserKeyPath))
         {
-            throw new InvalidOperationException("MachineUserKeyPath not available or KeyFile does not exists");
+            throw new InvalidOperationException($"The machine user key file of '{zitadel.Name}' does not exist, configure it with WithMachineUser.");
         }
 
-        return await ServiceAccount.LoadFromJsonFileAsync(zitadel.MachineUserKeyPath);
+        return await ServiceAccount.LoadFromJsonFileAsync(zitadel.MachineUserKeyPath).ConfigureAwait(false);
     }
 
     /// <summary>
-    ///     Creates an API client options instance for the Zitadel resource using the machine service account.
+    /// Creates API client options authenticated as the machine user.
     /// </summary>
-    /// <param name="zitadel"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="zitadel">The Zitadel resource.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The API client options.</returns>
+    /// <exception cref="InvalidOperationException">No machine user key is available.</exception>
     [AspireExportIgnore(Reason = "Returns Zitadel API client options, which are not ATS-compatible.")]
     public static async Task<Clients.Options> CreateApiClientOptions(this ZitadelResource zitadel, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(zitadel);
 
-        ServiceAccount serviceAccount = await zitadel.GetMachineServiceAccount(cancellationToken);
+        ServiceAccount serviceAccount = await zitadel.GetMachineServiceAccount(cancellationToken).ConfigureAwait(false);
 
         ITokenProvider tokenProvider = ITokenProvider.ServiceAccount(
             zitadel.PrimaryEndpoint.Url,
             serviceAccount,
             new ServiceAccount.AuthOptions { ApiAccess = true });
 
-        Clients.Options options = new(zitadel.PrimaryEndpoint.Url, tokenProvider);
-        return options;
+        return new Clients.Options(zitadel.PrimaryEndpoint.Url, tokenProvider);
     }
 }
