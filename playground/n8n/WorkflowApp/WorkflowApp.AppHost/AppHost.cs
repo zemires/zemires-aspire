@@ -25,7 +25,7 @@ var model_embedding = ollama.AddModel("embeddinggemma");
 
 var credentials = ReferenceExpression.Create($"{{" +
     $"\"ollamaApi\":{{\"baseUrl\":\"{ollama.Resource.PrimaryEndpoint}\"}}" +
-    $",\"redis\":{{ \"host\":\"{redis.Resource.Host}\", \"port\":{redis.Resource.Port}, \"ssl\":true, \"password\":\"{redis.Resource.PasswordParameter}\" }}" +
+    $",\"redis\":{{ \"host\":\"{redis.Resource.Host}\", \"port\":{redis.Resource.Port}, \"ssl\":true, \"password\":\"{redis.Resource.PasswordParameter!}\" }}" +
     //$",\"milvusApi\":{{ \"baseUrl\":\"{milvus.Resource.UriExpression}\", \"password\":\"{milvus.Resource.ApiKeyParameter}\", \"username\":\"root\" }}" +
     $"}}");
 

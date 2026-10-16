@@ -193,7 +193,7 @@ public class TerraformTemplateProcessor
             return;
 
         var sb = new StringBuilder();
-        foreach (var c in arguments[0].ToString()!)
+        foreach (var c in arguments[0]?.ToString() ?? string.Empty)
             if (c == '\r')
                 sb.Append("\\r");
             else if (c == '\n')

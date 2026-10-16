@@ -11,6 +11,7 @@ var tenantId = builder.Configuration["Azure:TenantId"];
 
 var clientSecret = builder.AddParameter("client-secret", true); // password from: az ad app credential reset --id $APP_ID --display-name "client-app-secret". can be set via cli: aspire secret set client-secret R0W8Q~z....
 var n8nExternalDomain = builder.AddParameter("n8n-external-domain");
+var n8nExternalDomainValue = await n8nExternalDomain.Resource.GetValueAsync(CancellationToken.None);
 
 var law = builder.AddAzureLogAnalyticsWorkspace("law");
 var appi = builder.AddAzureApplicationInsights("appi", law);
@@ -30,7 +31,7 @@ var redis = builder.AddAzureManagedRedis("redis")
     .WithAccessKeyAuthentication()
     .ConfigureInfrastructure((infra) =>
     {
-        var redisEnterprise = infra.GetProvisionableResources().OfType<RedisEnterpriseCluster>().FirstOrDefault();
+        var redisEnterprise = infra.GetProvisionableResources().OfType<RedisEnterpriseCluster>().First();
         var redisDb = infra.GetProvisionableResources().OfType<RedisEnterpriseDatabase>().FirstOrDefault();
 
         var redisEnterpriseDatabase = infra.GetProvisionableResources()
@@ -66,8 +67,8 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
   web: {
     redirectUris: [
       'https://localhost:5678/auth/oidc/callback'
-      '" + n8nExternalDomain.Resource.Value + @"/auth/oidc/callback'
-      '" + n8nExternalDomain.Resource.Value + @"/rest/oauth2-credential/callback'
+      '" + n8nExternalDomainValue + @"/auth/oidc/callback'
+      '" + n8nExternalDomainValue + @"/rest/oauth2-credential/callback'
     ]
     implicitGrantSettings: { enableIdTokenIssuance: true }
   }
@@ -162,8 +163,8 @@ if (builder.ExecutionContext.IsPublishMode)
     taskRunner.PublishAsAzureContainerAppSidecar(worker, (sidecar) =>
     {
         // adjust uri to use localhost
-        var env = sidecar.Env.FirstOrDefault(p => p.Value.Name.Value == "N8N_RUNNERS_TASK_BROKER_URI");
-        env.Value.Value = "http://localhost:5679";
+        var env = sidecar.Env.First(p => p.Value?.Name.Value == "N8N_RUNNERS_TASK_BROKER_URI");
+        env.Value!.Value = "http://localhost:5679";
     });
 }
 
@@ -175,7 +176,7 @@ if (builder.ExecutionContext.IsRunMode)
 
 builder.Pipeline.AddStep("print-password", async (ctx) =>
 {
-    var pwd = await n8n.Resource.InstanceOwnerPassword.GetValueAsync(ctx.CancellationToken);
+    var pwd = await n8n.Resource.InstanceOwnerPassword!.GetValueAsync(ctx.CancellationToken);
     ctx.Summary.Add("n8n", new MarkdownString($"Password: {pwd}"));
 }, new[] { "print-dashboard-url-env" }, new string[] { WellKnownPipelineSteps.Deploy });
 

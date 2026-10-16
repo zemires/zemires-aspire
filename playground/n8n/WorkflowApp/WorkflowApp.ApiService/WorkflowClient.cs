@@ -5,7 +5,7 @@ public class WorkflowClient(HttpClient httpClient, ILogger<WorkflowClient> logge
         try
         {
             var response = await httpClient.PostAsJsonAsync("/webhook/workflow1-trigger", "hi");
-            var info = await response.Content.ReadFromJsonAsync<WebhookInfo>();
+            var info = await response.Content.ReadFromJsonAsync<WebhookInfo>() ?? throw new InvalidOperationException("Empty webhook response.");
 
             Thread.Sleep(500);
 

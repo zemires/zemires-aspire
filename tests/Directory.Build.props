@@ -4,6 +4,8 @@
   <PropertyGroup>
     <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- Test projects using the AppHost SDK only need DCP metadata, not the Aspire CLI bundle. -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
   </PropertyGroup>
 
 </Project>

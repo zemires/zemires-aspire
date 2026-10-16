@@ -2,7 +2,7 @@
 
 // Starts the example AppHost via DistributedApplicationTestingBuilder, which needs a container runtime.
 [Trait("Category", "Integration")]
-public class N8nIntegrationTests(ITestOutputHelper testOutputHelper)
+public class N8nIntegrationTests
 {
     [Fact]
     public async Task N8n_Starts_And_HealthReady_Ok()
