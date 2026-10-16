@@ -2,17 +2,12 @@ namespace Zemires.Aspire.Hosting.Directus;
 
 internal static class DirectusContainerImageTags
 {
-    /// <summary>
-    /// The registry for the cockroachDb container image.
-    /// </summary>
+    /// <summary>docker.io</summary>
     public const string Registry = "docker.io";
-    /// <summary>
-    /// The image name for cockroachDb.
-    /// </summary>
+
+    /// <summary>directus/directus</summary>
     public const string Image = "directus/directus";
-    /// <summary>
-    /// The tag for the cockroachDb container image.
-    /// </summary>
+
+    /// <summary>12.3</summary>
     public const string Tag = "12.3";
 }
-

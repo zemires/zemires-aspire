@@ -9,9 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="Qute.Directus" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
-	  <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\HealthCheckExtensions.cs" Link="Shared\HealthCheckExtensions.cs" />
   </ItemGroup>
 
 </Project>

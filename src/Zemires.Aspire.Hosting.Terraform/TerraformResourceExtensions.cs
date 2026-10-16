@@ -5,99 +5,89 @@ using Zemires.Aspire.Hosting.Terraform.Models;
 namespace Aspire.Hosting;
 
 /// <summary>
-/// Provides extension methods for associating Terraform templates with Aspire resources.
-/// These extensions enable resources to specify custom Handlebars templates for generating
-/// their corresponding Terraform infrastructure configuration.
+/// Extension methods for attaching custom Terraform templates and parameters to resources.
 /// </summary>
 public static class TerraformResourceExtensions
 {
     /// <summary>
-    /// Associates a Handlebars template with a project resource for Terraform configuration generation.
+    /// Renders the project with a custom Handlebars template. The template receives a <c>ProjectTemplateResource</c>
+    /// (environment, arguments, bindings, replicas, image).
     /// </summary>
-    /// <param name="resource">The project resource builder to configure.</param>
-    /// <param name="templatePath">The path to the Handlebars template file, relative to the templates base directory.</param>
-    /// <param name="outputFileName">The name of the output Terraform file. Defaults to "{resource-name}.tf" if not specified.</param>
-    /// <param name="appendFile">Whether to append the template output to an existing file instead of creating a new file.</param>
-    /// <param name="parameters">Collection of parameters.</param>
-    /// <returns>The project resource builder for method chaining.</returns>
-    /// <remarks>
-    /// The template receives a ProjectTemplateResource model that includes project metadata,
-    /// environment variables, command-line arguments, network bindings, replica count,
-    /// and container image information.
-    /// </remarks>
+    /// <param name="resource">The project resource builder.</param>
+    /// <param name="templatePath">The template file, relative to the templates location.</param>
+    /// <param name="outputFileName">The output file name. <c>{resource}.tf</c> when <see langword="null"/>.</param>
+    /// <param name="appendFile">Whether to append to an existing output file.</param>
+    /// <param name="parameters">Additional template parameters.</param>
+    /// <returns>The resource builder.</returns>
     /// <example>
-    /// <code>
-    /// builder.AddProject&lt;Projects.WebApi&gt;("webapi")
-    ///     .WithTerraformTemplate("azure/container-app.tf.hbs", "webapi-infrastructure.tf");
+    /// <code lang="csharp">
+    /// builder.AddProject&lt;Projects.WebApi&gt;("webapi").WithTerraformTemplate("container-app.tf.hbs");
     /// </code>
     /// </example>
     [AspireExport("withProjectTerraformTemplate", MethodName = "withTerraformTemplate")]
     public static IResourceBuilder<ProjectResource> WithTerraformTemplate(this IResourceBuilder<ProjectResource> resource, string templatePath, string? outputFileName = null,
         bool appendFile = false, Dictionary<string, object?>? parameters = null)
     {
-        resource.WithAnnotation(new TerraformTemplateAnnotation<ProjectTemplateResource>
+        ArgumentNullException.ThrowIfNull(resource);
+        ArgumentException.ThrowIfNullOrEmpty(templatePath);
+
+        return resource.WithAnnotation(new TerraformTemplateAnnotation<ProjectTemplateResource>
         {
             TemplateFile = templatePath,
             OutputFile = outputFileName,
             AppendFile = appendFile,
             Parameters = parameters
         });
-        return resource;
     }
 
     /// <summary>
-    /// Associates a Handlebars template with a container resource for Terraform configuration generation.
+    /// Renders the container with a custom Handlebars template. The template receives a <c>ContainerTemplateResource</c>
+    /// (image, environment, arguments, bindings, volumes, entrypoint, replicas).
     /// </summary>
-    /// <param name="resource">The container resource builder to configure.</param>
-    /// <param name="templateFile">The path to the Handlebars template file, relative to the templates base directory.</param>
-    /// <param name="outputFileName">The name of the output Terraform file. Defaults to "{resource-name}.tf" if not specified.</param>
-    /// <param name="appendFile">Whether to append the template output to an existing file instead of creating a new file.</param>
-    /// <returns>The container resource builder for method chaining.</returns>
-    /// <remarks>
-    /// The template receives a ContainerTemplateResource model that includes container metadata,
-    /// image name, environment variables, command-line arguments, network bindings, volume mounts,
-    /// entrypoint configuration, and replica count.
-    /// </remarks>
+    /// <param name="resource">The container resource builder.</param>
+    /// <param name="templateFile">The template file, relative to the templates location.</param>
+    /// <param name="outputFileName">The output file name. <c>{resource}.tf</c> when <see langword="null"/>.</param>
+    /// <param name="appendFile">Whether to append to an existing output file.</param>
+    /// <returns>The resource builder.</returns>
     /// <example>
-    /// <code>
-    /// builder.AddContainer("redis", "redis:7-alpine")
-    ///     .WithTerraformTemplate("azure/redis-cache.tf.hbs", "redis-cache.tf");
+    /// <code lang="csharp">
+    /// builder.AddContainer("redis", "redis:7-alpine").WithTerraformTemplate("redis-cache.tf.hbs");
     /// </code>
     /// </example>
     [AspireExport("withContainerTerraformTemplate", MethodName = "withTerraformTemplate")]
     public static IResourceBuilder<ContainerResource> WithTerraformTemplate(this IResourceBuilder<ContainerResource> resource, string templateFile, string? outputFileName = null,
         bool appendFile = false)
     {
-        resource.WithAnnotation(new TerraformTemplateAnnotation<ContainerTemplateResource>
+        ArgumentNullException.ThrowIfNull(resource);
+        ArgumentException.ThrowIfNullOrEmpty(templateFile);
+
+        return resource.WithAnnotation(new TerraformTemplateAnnotation<ContainerTemplateResource>
         {
             TemplateFile = templateFile,
             OutputFile = outputFileName,
             AppendFile = appendFile
         });
-        return resource;
     }
 
     /// <summary>
-    /// Adds a custom parameter to a resource that will be available in its Terraform template context.
+    /// Adds a parameter to the template model of the resource (<c>Parameters.{parameterName}</c>).
     /// </summary>
-    /// <param name="resource">The resource builder to configure.</param>
-    /// <param name="parameterName">The name of the parameter that will be accessible in the template.</param>
-    /// <param name="value">The value of the parameter, which can be any serializable object.</param>
-    /// <returns>The resource builder for method chaining.</returns>
-    /// <remarks>
-    /// Template parameters are added to the Parameters dictionary of the template resource model
-    /// and can be accessed in Handlebars templates using dot notation or helper functions.
-    /// Parameters support complex objects that will be serialized appropriately for template usage.
-    /// </remarks>
+    /// <typeparam name="TDestination">The resource type.</typeparam>
+    /// <param name="resource">The resource builder.</param>
+    /// <param name="parameterName">The parameter name.</param>
+    /// <param name="value">The parameter value.</param>
+    /// <returns>The resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<TDestination> WithTerraformTemplateParameter<TDestination>(this IResourceBuilder<TDestination> resource, string parameterName, object? value)
         where TDestination : IResource
     {
-        resource.WithAnnotation(new TerraformTemplateParameterAnnotation
+        ArgumentNullException.ThrowIfNull(resource);
+        ArgumentException.ThrowIfNullOrEmpty(parameterName);
+
+        return resource.WithAnnotation(new TerraformTemplateParameterAnnotation
         {
             Name = parameterName,
             Value = value
         });
-        return resource;
     }
 }

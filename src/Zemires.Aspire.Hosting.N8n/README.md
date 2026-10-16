@@ -39,7 +39,7 @@ var n8n = builder.AddN8n("n8n", port: 5678)
     .WithLicenseKey(licenseKey)
     .WithOtlpExporter();
 
-var worker = n8n.AddWorker("worker", port: 5679)
+var worker = n8n.AddWorker("worker", port: 5679) // resource "n8n-worker"
     .WithPostgresDatabase(db)
     .WithQueueMode(redis);
 
@@ -48,7 +48,9 @@ worker.AddTaskRunner("runner");
 builder.Build().Run();
 ```
 
-Further options: `WithTimeZone`, `WithMetrics`, `WithCommunityPackages`, `WithWebhookUrl`, `WithDataVolume`.
+Further options: `WithTimeZone`, `WithMetrics`, `WithCommunityPackages`, `WithWebhookUrl` (public URL, `WEBHOOK_URL`), `WithDataVolume`.
+
+Workers and task runners are named `{n8n}-{name}`. All task runners of a resource share one auth token. `WithOtlpExporter()` must be called on each resource (main and workers) whose telemetry should be exported.
 
 Use the `Zemires.Aspire.N8n` client integration to call the n8n API from your services.
 

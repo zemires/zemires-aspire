@@ -1,5 +1,6 @@
 ﻿using Aspire.Hosting.ApplicationModel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Zemires.Aspire.Hosting.Terraform;
 
 #pragma warning disable ASPIREPIPELINES001
@@ -9,136 +10,124 @@ using Zemires.Aspire.Hosting.Terraform;
 namespace Aspire.Hosting;
 
 /// <summary>
-/// Provides extension methods for configuring Terraform template-based publishing in Aspire hosting applications.
+/// Extension methods for publishing the application model as Terraform configuration.
 /// </summary>
 public static class TerraformBuilderExtensions
 {
+    private const string DefaultEnvironmentName = "tf";
+
     /// <summary>
-    /// Adds Terraform template publishing capabilities to the distributed application builder.
-    /// This enables generating Terraform configuration files from Handlebars templates for infrastructure deployment.
+    /// Registers the Terraform template publisher. Options are bound from <c>Terraform:Templates</c>.
+    /// Called by <see cref="AddTerraformEnvironment"/>; call it directly only to configure the options.
     /// </summary>
-    /// <param name="builder">The distributed application builder instance.</param>
-    /// <param name="configureOptions">Optional action to configure publishing options such as templates path and base files.</param>
-    /// <returns>The distributed application builder for method chaining.</returns>
-    /// <remarks>
-    /// This method registers the TerraformTemplatePublisher as a keyed service and configures it to process
-    /// Handlebars templates that generate Terraform configuration files. The configuration section
-    /// "Terraform:Templates" is automatically bound to the options.
-    /// </remarks>
+    /// <param name="builder">The distributed application builder.</param>
+    /// <param name="configureOptions">Configures the publishing options.</param>
+    /// <returns>The builder.</returns>
     /// <example>
-    /// <code>
-    /// builder.AddTerraformTemplatePublishing("terraform", options =>
-    /// {
-    ///     options.TemplatesPath = "./templates/azure";
-    ///     options.BaseFiles = "main.tf;variables.tf;outputs.tf";
-    /// });
+    /// <code lang="csharp">
+    /// builder.AddTerraformTemplatePublishing(options => options.FilePrefix = "app-");
     /// </code>
     /// </example>
     [AspireExportIgnore(Reason = "Configured through a TerraformTemplatePublishingOptions callback, which is not ATS-compatible; AddTerraformEnvironment registers publishing with defaults.")]
     public static IDistributedApplicationBuilder AddTerraformTemplatePublishing(this IDistributedApplicationBuilder builder, Action<TerraformTemplatePublishingOptions>? configureOptions = null)
     {
-        var configuration = builder.Configuration.GetSection("Terraform:Templates");
-        var optionsBuilder = builder.Services.AddOptions<TerraformTemplatePublishingOptions>()
-            .Bind(configuration);
+        ArgumentNullException.ThrowIfNull(builder);
 
-        if (configureOptions != null)
-            optionsBuilder.Configure(configureOptions);
-
-        builder.Services.AddSingleton<ITerraformTemplatePublisher, TerraformTemplatePublisher>();
-        builder.Services.AddTransient<TerraformTemplateProcessor>();
-        builder.Services.AddTransient<TerraformExecutor>();
+        builder.AddTerraformServices(configureOptions);
+        builder.Services.TryAddSingleton<ITerraformTemplatePublisher, TerraformTemplatePublisher>();
 
         return builder;
     }
 
     /// <summary>
-    /// Adds a specific Terraform template resource to the distributed application builder.
+    /// Adds a Terraform template to the default Terraform environment (created as <c>tf</c> if none exists).
     /// </summary>
     /// <param name="builder">The distributed application builder.</param>
-    /// <param name="name">Resource name.</param>
-    /// <param name="terraformFile">Path to the template file.</param>
-    /// <param name="outputFile">Optional output file name.</param>
-    /// <param name="appendFile"></param>
-    /// <returns>The resource builder for chaining.</returns>
+    /// <param name="name">The resource name.</param>
+    /// <param name="terraformFile">The Handlebars template file.</param>
+    /// <param name="outputFile">The output file name. Derived from the template when <see langword="null"/>.</param>
+    /// <param name="appendFile">Whether to append to an existing output file.</param>
+    /// <returns>The template resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<TerraformTemplateResource> AddTerraformTemplate(this IDistributedApplicationBuilder builder, [ResourceName] string name, string terraformFile, string? outputFile = null, bool appendFile = false)
     {
-        var env = builder.GetDefaultEnvironment();
-        IResourceBuilder<TerraformEnvironmentResource> envBuilder;
-        if (env == null)
-        {
-            builder.AddTerraformTemplatePublishing();
-            envBuilder = builder.AddTerraformEnvironment("tf");
-        }
-        else
-        {
-            envBuilder = builder.CreateResourceBuilder(env);
-        }
-
-        return envBuilder.AddTerraformTemplate(name, terraformFile, outputFile, appendFile);
+        ArgumentNullException.ThrowIfNull(builder);
+        return builder.GetOrAddDefaultEnvironment().AddTerraformTemplate(name, terraformFile, outputFile, appendFile);
     }
 
     /// <summary>
-    /// Adds a specific Terraform template resource to the distributed application builder.
+    /// Adds a Terraform template given as string to the default Terraform environment (created as <c>tf</c> if none exists).
     /// </summary>
     /// <param name="builder">The distributed application builder.</param>
-    /// <param name="name">Resource name.</param>
-    /// <param name="terraformString">content to the template file.</param>
-    /// <param name="outputFile">Optional output file name.</param>
-    /// <param name="appendFile"></param>
-    /// <returns>The resource builder for chaining.</returns>
+    /// <param name="name">The resource name.</param>
+    /// <param name="terraformString">The Handlebars template content.</param>
+    /// <param name="outputFile">The output file name. Derived from the resource name when <see langword="null"/>.</param>
+    /// <param name="appendFile">Whether to append to an existing output file.</param>
+    /// <returns>The template resource builder.</returns>
     [AspireExport]
     public static IResourceBuilder<TerraformTemplateResource> AddTerraformTemplateString(this IDistributedApplicationBuilder builder, [ResourceName] string name, string terraformString, string? outputFile = null, bool appendFile = false)
     {
-        var env = builder.GetDefaultEnvironment();
-        IResourceBuilder<TerraformEnvironmentResource> envBuilder;
-        if (env == null)
-        {
-            builder.AddTerraformTemplatePublishing();
-            envBuilder = builder.AddTerraformEnvironment("tf");
-        }
-        else
-        {
-            envBuilder = builder.CreateResourceBuilder(env);
-        }
-
-        return envBuilder.AddTerraformTemplateString(name, terraformString, outputFile, appendFile);
+        ArgumentNullException.ThrowIfNull(builder);
+        return builder.GetOrAddDefaultEnvironment().AddTerraformTemplateString(name, terraformString, outputFile, appendFile);
     }
 
     /// <summary>
-    /// Adds a Terraform environment that publishes the resources deployed to it as Terraform configuration,
-    /// and registers Terraform template publishing with default options.
+    /// Adds a Terraform environment: publishing renders the templates, deploying applies them (pipeline steps
+    /// <c>prepare-</c>, <c>publish-</c>, <c>deploy-</c> and <c>destroy-terraform-{name}</c>).
     /// </summary>
     /// <param name="builder">The distributed application builder.</param>
-    /// <param name="name">The name of the environment resource.</param>
-    /// <param name="templatesLocation">The directory or URL containing the Handlebars templates.</param>
-    /// <returns>The resource builder for chaining.</returns>
+    /// <param name="name">The resource name.</param>
+    /// <param name="templatesLocation">The directory or URL of the Handlebars templates.</param>
+    /// <returns>The environment resource builder.</returns>
     [AspireExport]
-    public static IResourceBuilder<TerraformEnvironmentResource> AddTerraformEnvironment(this IDistributedApplicationBuilder builder, string name, string templatesLocation = "./templates")
+    public static IResourceBuilder<TerraformEnvironmentResource> AddTerraformEnvironment(this IDistributedApplicationBuilder builder, [ResourceName] string name, string templatesLocation = "./templates")
     {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentException.ThrowIfNullOrEmpty(templatesLocation);
+
         builder.AddTerraformTemplatePublishing();
 
-        var resource = new TerraformEnvironmentResource(name, templatesLocation);
+        return builder.AddEnvironmentResource(new TerraformEnvironmentResource(name, templatesLocation));
+    }
 
-        return builder.AddResource(resource)
+    /// <summary>
+    /// Registers the options and services shared by all Terraform publishers.
+    /// </summary>
+    internal static void AddTerraformServices(this IDistributedApplicationBuilder builder, Action<TerraformTemplatePublishingOptions>? configureOptions)
+    {
+        if (!builder.Services.Any(d => d.ServiceType == typeof(TerraformExecutor)))
+        {
+            builder.Services.AddOptions<TerraformTemplatePublishingOptions>()
+                .Bind(builder.Configuration.GetSection("Terraform:Templates"));
+            builder.Services.AddTransient<TerraformTemplateProcessor>();
+            builder.Services.AddTransient<TerraformExecutor>();
+        }
+
+        if (configureOptions is not null)
+        {
+            builder.Services.Configure(configureOptions);
+        }
+    }
+
+    /// <summary>
+    /// Adds an environment resource, hidden in the dashboard and excluded from the manifest.
+    /// </summary>
+    internal static IResourceBuilder<T> AddEnvironmentResource<T>(this IDistributedApplicationBuilder builder, T resource) where T : TerraformEnvironmentResource =>
+        builder.AddResource(resource)
             .ExcludeFromManifest()
             .WithInitialState(new()
             {
-                ResourceType = nameof(TerraformEnvironmentResource),
+                ResourceType = typeof(T).Name,
                 Properties = [],
-                IsHidden = true // hidden from the dashboard
+                IsHidden = true
             });
-    }
 
-    internal static TerraformEnvironmentResource? GetDefaultEnvironment(this IDistributedApplicationBuilder builder)
-    {
-        return builder.Resources.OfType<TerraformEnvironmentResource>().FirstOrDefault();
-    }
+    internal static TerraformEnvironmentResource? GetDefaultEnvironment(this IDistributedApplicationBuilder builder) =>
+        builder.Resources.OfType<TerraformEnvironmentResource>().FirstOrDefault();
 
-    internal static string CreateDefaultAzureEnvironmentName(this IDistributedApplicationBuilder builder)
-    {
-        // Use ProjectNameSha256 for stable naming across deployments
-        var applicationHash = builder.Configuration["AppHost:ProjectNameSha256"]?[..5].ToLowerInvariant();
-        return $"tf{applicationHash}";
-    }
+    private static IResourceBuilder<TerraformEnvironmentResource> GetOrAddDefaultEnvironment(this IDistributedApplicationBuilder builder) =>
+        builder.GetDefaultEnvironment() is { } environment
+            ? builder.CreateResourceBuilder(environment)
+            : builder.AddTerraformEnvironment(DefaultEnvironmentName);
 }

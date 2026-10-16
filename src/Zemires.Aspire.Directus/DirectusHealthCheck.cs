@@ -3,25 +3,18 @@ using Qute.Directus;
 
 namespace Zemires.Aspire.Directus;
 
-internal class DirectusHealthCheck : IHealthCheck
+internal sealed class DirectusHealthCheck(DirectusClient directusClient) : IHealthCheck
 {
-    private DirectusClient _directusClient;
-
-    public DirectusHealthCheck(DirectusClient directusClient)
-    {
-        _directusClient = directusClient;
-    }
-
     /// <inheritdoc />
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
-            var healthy = await _directusClient.Server.GetHealthAsync(cancellationToken);
+            var health = await directusClient.Server.GetHealthAsync(cancellationToken).ConfigureAwait(false);
 
-            return healthy.Status == "Ok"
+            return string.Equals(health.Status, "ok", StringComparison.OrdinalIgnoreCase)
                 ? HealthCheckResult.Healthy()
-                : new HealthCheckResult(context.Registration.FailureStatus);
+                : new HealthCheckResult(context.Registration.FailureStatus, $"Directus status is '{health.Status}'.");
         }
         catch (Exception ex)
         {

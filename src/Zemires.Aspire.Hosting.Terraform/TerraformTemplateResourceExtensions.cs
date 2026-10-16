@@ -5,47 +5,50 @@ namespace Aspire.Hosting;
 #pragma warning restore IDE0130
 
 /// <summary>
-/// Extension methods for working with <see cref="TerraformTemplateResource"/> builders.
+/// Extension methods for <see cref="TerraformTemplateResource"/> builders.
 /// </summary>
 public static class TerraformTemplateResourceExtensions
 {
     /// <summary>
-    /// Gets the reference to a terraform template output.
+    /// Gets a reference to an output of the template (<c>local.{template}.{name}</c>), resolved after deployment.
     /// </summary>
-    /// <param name="name">Output name.</param>
-    /// <param name="builder">The terraform template resource builder.</param>
-    /// <returns>The reference expression.</returns>
+    /// <param name="builder">The template resource builder.</param>
+    /// <param name="name">The output name.</param>
+    /// <returns>The output reference.</returns>
     [AspireExportIgnore(Reason = "Returns TerraformOutputReference, which is not ATS-compatible; use GetTerraformOutput instead.")]
     public static TerraformOutputReference GetOutput(this IResourceBuilder<TerraformTemplateResource> builder, string name)
     {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
         builder.Resource.AddOutput(name);
         return new TerraformOutputReference(name, builder.Resource);
     }
 
     /// <summary>
-    /// Gets the reference to a terraform template output.
+    /// Gets a reference to a secret output of the template (<c>local.{template}.{name}</c>), resolved after deployment.
     /// </summary>
-    /// <param name="name">Output name.</param>
-    /// <param name="builder">The terraform template resource builder.</param>
-    /// <returns>The reference expression.</returns>
+    /// <param name="builder">The template resource builder.</param>
+    /// <param name="name">The output name.</param>
+    /// <returns>The output reference.</returns>
     [AspireExportIgnore(Reason = "Returns TerraformSecretOutputReference, which is not ATS-compatible.")]
     public static TerraformSecretOutputReference GetSecretOutput(this IResourceBuilder<TerraformTemplateResource> builder, string name)
     {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
         builder.Resource.AddOutput(name);
         return new TerraformSecretOutputReference(name, builder.Resource);
     }
 
     /// <summary>
-    /// Adds a parameter to use inside the template.
+    /// Adds a template parameter (<c>Parameters.{parameterName}</c>).
     /// </summary>
-    /// <param name="parameterName">Parameter name.</param>
-    /// <param name="value">Parameter value.</param>
-    /// <param name="builder">The terraform template resource builder.</param>
-    /// <returns>The builder for chaining.</returns>
+    /// <param name="builder">The template resource builder.</param>
+    /// <param name="parameterName">The parameter name.</param>
+    /// <param name="value">The parameter value.</param>
+    /// <returns>The template resource builder.</returns>
     [AspireExport("withTerraformTemplateResourceParameter", MethodName = "withParameter")]
-    public static IResourceBuilder<TerraformTemplateResource> WithParameter(this IResourceBuilder<TerraformTemplateResource> builder, string parameterName, object? value)
-    {
+    public static IResourceBuilder<TerraformTemplateResource> WithParameter(this IResourceBuilder<TerraformTemplateResource> builder, string parameterName, object? value) =>
         builder.WithTerraformTemplateParameter(parameterName, value);
-        return builder;
-    }
 }

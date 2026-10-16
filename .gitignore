@@ -5,6 +5,8 @@
 
 
 .n8n_data/
+.data/
+.zitadel/
 
 aspire-output/
 

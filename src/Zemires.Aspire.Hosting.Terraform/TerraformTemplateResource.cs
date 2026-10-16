@@ -62,3 +62,11 @@ public interface ITerraformResourceWithOutputs : IResource
     /// </summary>
     Dictionary<string, string> Outputs { get; }
 }
+
+internal static class TerraformOutputs
+{
+    public static string GetOutputValue(ITerraformResourceWithOutputs resource, string name) =>
+        resource.Outputs.TryGetValue(name, out var value)
+            ? value
+            : throw new InvalidOperationException($"'{resource.Name}' has no output '{name}'.");
+}

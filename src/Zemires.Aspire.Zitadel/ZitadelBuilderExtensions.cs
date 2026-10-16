@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Zemires.Aspire;
 using Zemires.Aspire.Zitadel;
 using Zitadel.Admin.V1;
 using Zitadel.Api;
@@ -23,17 +24,16 @@ public static class ZitadelBuilderExtensions
     private const string DefaultConfigSectionName = "Aspire:Zitadel:Client";
 
     /// <summary>
-    /// Registers the Zitadel API clients (<see cref="Clients.Options"/>, <see cref="AdminService.AdminServiceClient"/>,
+    /// Registers <see cref="Clients.Options"/> and the Zitadel service clients (<see cref="AdminService.AdminServiceClient"/>,
     /// <see cref="AuthService.AuthServiceClient"/>, <see cref="ManagementService.ManagementServiceClient"/>,
     /// <see cref="UserService.UserServiceClient"/>, <see cref="OrganizationService.OrganizationServiceClient"/>,
-    /// <see cref="SessionService.SessionServiceClient"/>, <see cref="SettingsService.SettingsServiceClient"/> and
-    /// <see cref="OIDCService.OIDCServiceClient"/>) as singletons in the services provided by the <paramref name="builder"/>.
+    /// <see cref="SessionService.SessionServiceClient"/>, <see cref="SettingsService.SettingsServiceClient"/>,
+    /// <see cref="OIDCService.OIDCServiceClient"/>) as singletons and adds a Zitadel health check.
     /// </summary>
-    /// <param name="builder">The <see cref="IHostApplicationBuilder" /> to read config from and add services to.</param>
-    /// <param name="connectionName">The connection name to use to find a connection string.</param>
-    /// <param name="configureSettings">An optional method that can be used for customizing the <see cref="ZitadelApiSettings"/>. It's invoked after the settings are read from the configuration.</param>
-    /// <remarks>Reads the configuration from "Aspire:Zitadel:Client" section.</remarks>
-    /// <exception cref="InvalidOperationException">If required ConnectionString is not provided in configuration section</exception>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="connectionName">The name of the connection string <c>ConnectionStrings:{connectionName}</c>.</param>
+    /// <param name="configureSettings">Configures the settings after they are read from <c>Aspire:Zitadel:Client</c>.</param>
+    /// <exception cref="InvalidOperationException">No endpoint is configured (when a client is resolved).</exception>
     public static void AddZitadelApi(
         this IHostApplicationBuilder builder,
         string connectionName,
@@ -41,17 +41,17 @@ public static class ZitadelBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentException.ThrowIfNullOrEmpty(connectionName);
-        AddZitadelApi(builder, DefaultConfigSectionName, configureSettings, connectionName, serviceKey: null);
+        AddZitadelApi(builder, configureSettings, connectionName, serviceKey: null);
     }
 
     /// <summary>
-    /// Registers the Zitadel API clients as keyed singletons for the given <paramref name="name" /> in the services provided by the <paramref name="builder"/>.
+    /// Registers the Zitadel API clients as keyed singletons for <paramref name="name"/> and adds a Zitadel health check.
+    /// Settings are read from <c>Aspire:Zitadel:Client</c>, overridden by <c>Aspire:Zitadel:Client:{name}</c>.
     /// </summary>
-    /// <param name="builder">The <see cref="IHostApplicationBuilder" /> to read config from and add services to.</param>
-    /// <param name="name">The connection name to use to find a connection string.</param>
-    /// <param name="configureSettings">An optional method that can be used for customizing the <see cref="ZitadelApiSettings"/>. It's invoked after the settings are read from the configuration.</param>
-    /// <remarks>Reads the configuration from "Aspire:Zitadel:Client:{name}" section.</remarks>
-    /// <exception cref="InvalidOperationException">If required ConnectionString is not provided in configuration section</exception>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="name">The service key and connection string name.</param>
+    /// <param name="configureSettings">Configures the settings after they are read from configuration.</param>
+    /// <exception cref="InvalidOperationException">No endpoint is configured (when a client is resolved).</exception>
     public static void AddKeyedZitadelApi(
         this IHostApplicationBuilder builder,
         string name,
@@ -59,18 +59,22 @@ public static class ZitadelBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentException.ThrowIfNullOrEmpty(name);
-        AddZitadelApi(builder, $"{DefaultConfigSectionName}:{name}", configureSettings, connectionName: name, serviceKey: name);
+        AddZitadelApi(builder, configureSettings, connectionName: name, serviceKey: name);
     }
 
     private static void AddZitadelApi(
         IHostApplicationBuilder builder,
-        string configurationSectionName,
         Action<ZitadelApiSettings>? configureSettings,
         string connectionName,
         string? serviceKey)
     {
         var settings = new ZitadelApiSettings();
-        builder.Configuration.GetSection(configurationSectionName).Bind(settings);
+        var section = builder.Configuration.GetSection(DefaultConfigSectionName);
+        section.Bind(settings);
+        if (serviceKey is not null)
+        {
+            section.GetSection(serviceKey).Bind(settings);
+        }
 
         if (builder.Configuration.GetConnectionString(connectionName) is string connectionString)
         {
@@ -81,7 +85,7 @@ public static class ZitadelBuilderExtensions
 
         if (serviceKey is null)
         {
-            builder.Services.AddSingleton(_ => CreateOptions(settings, configurationSectionName, connectionName));
+            builder.Services.AddSingleton(_ => CreateOptions(settings, connectionName));
             AddServiceClient(Clients.AdminService);
             AddServiceClient(Clients.AuthService);
             AddServiceClient(Clients.ManagementService);
@@ -93,7 +97,7 @@ public static class ZitadelBuilderExtensions
         }
         else
         {
-            builder.Services.AddKeyedSingleton(serviceKey, (_, _) => CreateOptions(settings, configurationSectionName, connectionName));
+            builder.Services.AddKeyedSingleton(serviceKey, (_, _) => CreateOptions(settings, connectionName));
             AddKeyedServiceClient(Clients.AdminService);
             AddKeyedServiceClient(Clients.AuthService);
             AddKeyedServiceClient(Clients.ManagementService);
@@ -107,13 +111,15 @@ public static class ZitadelBuilderExtensions
         if (!settings.DisableHealthChecks && settings.Endpoint is not null)
         {
             var healthCheckName = serviceKey is null ? "zitadel" : $"zitadel_{connectionName}";
+            var endpoint = settings.Endpoint;
+            builder.Services.AddHttpClient(healthCheckName);
 
             builder.TryAddHealthCheck(new HealthCheckRegistration(
                 healthCheckName,
-                _ => new ZitadelHealthCheck(settings.Endpoint),
+                sp => new ZitadelHealthCheck(sp.GetRequiredService<IHttpClientFactory>().CreateClient(healthCheckName), endpoint),
                 failureStatus: null,
                 tags: null,
-                timeout: settings.HealthCheckTimeout > 0 ? TimeSpan.FromMilliseconds(settings.HealthCheckTimeout.Value) : null));
+                timeout: settings.HealthCheckTimeout.ToTimeout()));
         }
 
         void AddServiceClient<TClient>(Func<Clients.Options, TClient> factory) where TClient : class
@@ -123,13 +129,13 @@ public static class ZitadelBuilderExtensions
             => builder.Services.AddKeyedSingleton(serviceKey, (sp, key) => factory(sp.GetRequiredKeyedService<Clients.Options>(key)));
     }
 
-    private static Clients.Options CreateOptions(ZitadelApiSettings settings, string configurationSectionName, string connectionName)
+    private static Clients.Options CreateOptions(ZitadelApiSettings settings, string connectionName)
     {
         if (settings.Endpoint is null)
         {
             throw new InvalidOperationException(
                 $"The Zitadel API clients could not be configured. Ensure valid connection information was provided in 'ConnectionStrings:{connectionName}' or " +
-                $"{nameof(settings.Endpoint)} must be provided in the '{configurationSectionName}' configuration section.");
+                $"{nameof(settings.Endpoint)} must be provided in the '{DefaultConfigSectionName}' configuration section.");
         }
 
         var endpoint = settings.Endpoint.ToString().TrimEnd('/');
@@ -172,19 +178,6 @@ public static class ZitadelBuilderExtensions
         catch (FormatException ex)
         {
             throw new InvalidOperationException($"{nameof(ZitadelApiSettings.ServiceAccountKey)} must be a JSON key or a base64 encoded JSON key.", ex);
-        }
-    }
-
-    /// <summary>
-    /// Adds a HealthCheckRegistration if one hasn't already been added to the builder.
-    /// </summary>
-    private static void TryAddHealthCheck(this IHostApplicationBuilder builder, HealthCheckRegistration healthCheckRegistration)
-    {
-        var healthCheckKey = $"Aspire.HealthChecks.{healthCheckRegistration.Name}";
-        if (!builder.Properties.ContainsKey(healthCheckKey))
-        {
-            builder.Properties[healthCheckKey] = true;
-            builder.Services.AddHealthChecks().Add(healthCheckRegistration);
         }
     }
 }

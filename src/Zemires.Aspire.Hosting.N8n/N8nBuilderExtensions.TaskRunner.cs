@@ -3,9 +3,6 @@ using Zemires.Aspire.Hosting.N8n;
 
 namespace Aspire.Hosting;
 
-/// <summary>
-/// Provides extension methods for adding N8n resources to the application model.
-/// </summary>
 public static partial class N8nBuilderExtensions
 {
     private const int N8nRunnersPort = 5680;
@@ -13,15 +10,16 @@ public static partial class N8nBuilderExtensions
     private const string BrokerEndpointName = "broker";
 
     /// <summary>
-    /// Adds a task runner instance for the given N8n resource as sidecar. Aspire does currently not support native sidecar pattern.
+    /// Adds an external task runner (image <inheritdoc cref="N8nContainerImageTags.ImageRunners"/>) named <c>{n8n}-{name}</c>
+    /// and switches the n8n resource to external runner mode. All runners of a resource share one auth token.
     /// </summary>
-    /// <param name="n8nBuilder">The primary N8n resource builder to attach the worker to.</param>
-    /// <param name="name">The name to use for the worker resource.</param>
-    /// <param name="port">The port to use for the worker resource.</param>
-    /// <param name="sharedAuthToken">The authentication token to share with the broker resource.</param>
-    /// <returns>A new <see cref="IResourceBuilder{N8nTaskRunnerResource}"/> for the worker instance.</returns>
+    /// <param name="n8nBuilder">The n8n (or worker) resource builder the runner connects to.</param>
+    /// <param name="name">The runner name suffix.</param>
+    /// <param name="port">The host port of the runner health endpoint.</param>
+    /// <param name="sharedAuthToken">The auth token shared with the broker. Generated when <see langword="null"/>.</param>
+    /// <returns>The task runner resource builder.</returns>
     [AspireExport]
-    public static IResourceBuilder<N8nTaskRunnerResource> AddTaskRunner(this IResourceBuilder<N8nResource> n8nBuilder, 
+    public static IResourceBuilder<N8nTaskRunnerResource> AddTaskRunner(this IResourceBuilder<N8nResource> n8nBuilder,
         string name,
         int? port = null,
         IResourceBuilder<ParameterResource>? sharedAuthToken = null)
@@ -29,28 +27,30 @@ public static partial class N8nBuilderExtensions
         ArgumentNullException.ThrowIfNull(n8nBuilder);
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var sharedAuthTokenParameter = sharedAuthToken?.Resource ?? ParameterResourceBuilderExtensions.CreateDefaultPasswordParameter(n8nBuilder.ApplicationBuilder, $"{n8nBuilder.Resource.Name}-{name}-runners-auth-token");
+        var n8n = n8nBuilder.Resource;
 
-        n8nBuilder.WithEnvironment("N8N_RUNNERS_MODE", "external")
-            .WithEnvironment("N8N_RUNNERS_BROKER_LISTEN_ADDRESS", "0.0.0.0")
-            .WithEnvironment("N8N_RUNNERS_AUTH_TOKEN", sharedAuthTokenParameter)
-            .WithHttpEndpoint(targetPort: N8nBrokerPort, name: BrokerEndpointName);
+        if (n8n.RunnersAuthTokenParameter is null)
+        {
+            // first runner: configure the broker once, the token is resolved late so a later sharedAuthToken applies to all
+            n8nBuilder.WithEnvironment("N8N_RUNNERS_MODE", "external")
+                .WithEnvironment("N8N_RUNNERS_BROKER_LISTEN_ADDRESS", "0.0.0.0")
+                .WithEnvironment(ctx => ctx.EnvironmentVariables["N8N_RUNNERS_AUTH_TOKEN"] = n8n.RunnersAuthTokenParameter!)
+                .WithHttpEndpoint(targetPort: N8nBrokerPort, name: BrokerEndpointName);
+        }
 
-        var runner = new N8nTaskRunnerResource(n8nBuilder.Resource.Name + "-" + name, n8nBuilder.Resource);
+        n8n.RunnersAuthTokenParameter = sharedAuthToken?.Resource
+            ?? n8n.RunnersAuthTokenParameter
+            ?? ParameterResourceBuilderExtensions.CreateDefaultPasswordParameter(n8nBuilder.ApplicationBuilder, $"{n8n.Name}-runners-auth-token");
 
-        var brokerEndpoint = n8nBuilder.Resource.GetEndpoint(BrokerEndpointName);
+        var runner = new N8nTaskRunnerResource($"{n8n.Name}-{name}", n8n);
 
-        var runnerBuilder = n8nBuilder.ApplicationBuilder.AddResource(runner)
-            .WithImage(N8nContainerImageTags.ImageRunners)
-            .WithImageTag(N8nContainerImageTags.Tag)
-            .WithImageRegistry(N8nContainerImageTags.Registry)
+        return n8nBuilder.ApplicationBuilder.AddResource(runner)
+            .WithN8nImage(N8nContainerImageTags.ImageRunners)
             .WithIconName("SettingsCogMultiple", IconVariant.Filled)
             .WithHttpEndpoint(targetPort: N8nRunnersPort, port: port, name: N8nResource.PrimaryEndpointName, env: "N8N_PORT")
             .WithHttpHealthCheck("/healthz", 200, N8nResource.PrimaryEndpointName)
-            .WithEnvironment("N8N_RUNNERS_AUTH_TOKEN", sharedAuthTokenParameter)
-            .WithEnvironment("N8N_RUNNERS_TASK_BROKER_URI", brokerEndpoint)
+            .WithEnvironment(ctx => ctx.EnvironmentVariables["N8N_RUNNERS_AUTH_TOKEN"] = n8n.RunnersAuthTokenParameter!)
+            .WithEnvironment("N8N_RUNNERS_TASK_BROKER_URI", n8n.GetEndpoint(BrokerEndpointName))
             .WithParentRelationship(n8nBuilder);
-
-        return runnerBuilder;
     }
 }
