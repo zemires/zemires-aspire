@@ -1,5 +1,7 @@
 using Aspire.Hosting.Azure;
 using Aspire.Hosting.Pipelines;
+using Azure.Provisioning;
+using Azure.Provisioning.AppContainers;
 using Azure.Provisioning.RedisEnterprise;
 using Microsoft.Extensions.Logging;
 using Projects;
@@ -154,7 +156,34 @@ var worker = n8n.AddWorker("worker", port: 5568)
     .WithTimeZone("Europe/Zurich")
     .WithCommunityPackages()
     .WithEnvironment("CREDENTIALS_OVERWRITE_DATA", credentialsOverwrite) // needs to be set for worker as well, only endpoint is used for data persistence
-    .WithReference(api);
+    .WithReference(api)
+    .PublishAsAzureContainerApp((AzureResourceInfrastructure infra, Azure.Provisioning.AppContainers.ContainerApp app) =>
+    {
+        // scaling rules based on queue length
+        app.Template.Scale ??= new ContainerAppScale();
+        app.Template.Scale.MinReplicas = 1;
+        app.Template.Scale.MaxReplicas = 10;
+        app.Template.Scale.CooldownPeriod = 300;
+
+        app.Template.Scale.Rules.Clear();
+        app.Template.Scale.Rules.Add(new ContainerAppScaleRule
+        {
+            Name = "n8n-queue",
+            Custom = new ContainerAppCustomScaleRule
+            {
+                CustomScaleRuleType = "redis",
+                Metadata =
+                {
+                    { "enableTLS", "true" },
+                    { "hostFromEnv", "QUEUE_BULL_REDIS_HOST" },
+                    { "listLength", "5" },
+                    { "listName", "bull:jobs:wait" },
+                    { "passwordFromEnv", "QUEUE_BULL_REDIS_PASSWORD" },
+                    { "portFromEnv", "QUEUE_BULL_REDIS_PORT" }
+                }
+            }
+        });
+    });
 
 var taskRunner = worker.AddTaskRunner("runner");
 
