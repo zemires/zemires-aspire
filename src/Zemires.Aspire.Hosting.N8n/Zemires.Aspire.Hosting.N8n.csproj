@@ -10,4 +10,8 @@
     <PackageReference Include="BCrypt.Net-Next" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Zemires.Aspire.Hosting.N8n.Tests" />
+  </ItemGroup>
+
 </Project>

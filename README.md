@@ -6,8 +6,8 @@
 
 | Extension   | Package                                    | Description |
 |-------------|--------------------------------------------|-------------|
-| n8n         | `Zemires.Aspire.Hosting.N8n`               | Hosting integration for [n8n](https://n8n.io) workflow automation: main instance, queue-mode workers, task runners, Postgres, Redis, OpenTelemetry, metrics. |
-|             | `Zemires.Aspire.N8n`                       | Client integration registering an `N8nClient` with health check. |
+| n8n         | `Zemires.Aspire.Hosting.N8n`               | Hosting integration for [n8n](https://n8n.io) workflow automation: main instance, queue-mode workers, task runners, Postgres, Redis, OpenTelemetry, metrics, API key provisioning, custom nodes. |
+|             | `Zemires.Aspire.N8n`                       | Client integration registering an `N8nClient`, an `N8nWebhookClient` and a health check. |
 |             | `Zemires.N8n.Api`                          | Kiota-generated client for the n8n public API. |
 | Terraform   | `Zemires.Aspire.Hosting.Terraform`         | Publishes the Aspire application model as Terraform configuration from Handlebars templates and deploys it with OpenTofu (default) or Terraform. |
 |             | `Zemires.Aspire.Hosting.Terraform.Azure`   | Maps Azure resources and Azure Container Apps to Terraform (templates in [`templates/azure-container-apps`](templates/azure-container-apps)). |

@@ -173,6 +173,7 @@ public static partial class N8nBuilderExtensions
         var passwordParameter = password?.Resource
             ?? ParameterResourceBuilderExtensions.CreateDefaultPasswordParameter(builder.ApplicationBuilder, $"{builder.Resource.Name}-instance-owner-password");
 
+        builder.Resource.InstanceOwnerEmail = email;
         builder.Resource.InstanceOwnerPassword = passwordParameter;
 
         return builder
@@ -293,6 +294,56 @@ public static partial class N8nBuilderExtensions
         }
 
         return builder;
+    }
+
+    /// <summary>
+    /// Bind-mounts a built custom node package read-only to <c>/home/node/.n8n/custom/{name}</c>, where n8n loads it on startup.
+    /// </summary>
+    /// <param name="builder">The resource builder, the main instance or a worker.</param>
+    /// <param name="source">The host directory with the built package (e.g. its <c>dist</c> folder), relative to the AppHost directory.</param>
+    /// <param name="name">The folder name below <c>custom</c>. The directory name of <paramref name="source"/> (its parent for <c>dist</c>) when <see langword="null"/>.</param>
+    /// <param name="buildResource">A resource building the package (e.g. <c>AddJavaScriptApp(..., "build")</c>) that n8n waits to complete.</param>
+    /// <returns>The resource builder.</returns>
+    /// <remarks>n8n reads custom nodes only on startup; restart it after a rebuild.</remarks>
+    /// <example>
+    /// <code lang="csharp">
+    /// var nodes = builder.AddJavaScriptApp("n8n-nodes", "../n8n-nodes-acme", "build");
+    /// builder.AddN8n("n8n").WithCustomNodes("../n8n-nodes-acme/dist", buildResource: nodes);
+    /// </code>
+    /// </example>
+    [AspireExport]
+    public static IResourceBuilder<N8nResource> WithCustomNodes(
+        this IResourceBuilder<N8nResource> builder,
+        string source,
+        string? name = null,
+        IResourceBuilder<IResource>? buildResource = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentException.ThrowIfNullOrEmpty(source);
+
+        name ??= GetCustomNodesName(source);
+        if (string.IsNullOrWhiteSpace(name) || name.IndexOfAny(['/', '\\']) >= 0 || name is "." or "..")
+        {
+            throw new ArgumentException($"'{name}' is not a valid folder name for custom nodes.", nameof(name));
+        }
+
+        builder.WithBindMount(source, $"{DataPath}/custom/{name}", isReadOnly: true);
+
+        if (buildResource is not null)
+        {
+            builder.WaitForCompletion(buildResource);
+        }
+
+        return builder;
+    }
+
+    internal static string GetCustomNodesName(string source)
+    {
+        var segments = source.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        var name = segments.Length > 0 ? segments[^1] : "";
+        return string.Equals(name, "dist", StringComparison.OrdinalIgnoreCase) && segments.Length > 1
+            ? segments[^2]
+            : name;
     }
 
     /// <summary>
