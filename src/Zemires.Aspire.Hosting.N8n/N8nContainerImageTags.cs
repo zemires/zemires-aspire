@@ -11,6 +11,6 @@ internal static class N8nContainerImageTags
     /// <summary>n8nio/runners</summary>
     public const string ImageRunners = "n8nio/runners";
 
-    /// <summary>2.43.6</summary>
-    public const string Tag = "2.43.6";
+    /// <summary>2.44.6</summary>
+    public const string Tag = "2.44.6";
 }
