@@ -1,4 +1,5 @@
 using Aspire.Hosting.ApplicationModel;
+using Aspire.Hosting.Eventing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -69,6 +70,10 @@ public static partial class N8nBuilderExtensions
         }
     }
 
+    // The connection string was published before n8n started, without the key; publish it again with the key.
+    private static Task PublishConnectionStringAsync(N8nResource n8n, IServiceProvider services, CancellationToken ct) =>
+        services.GetRequiredService<IDistributedApplicationEventing>().PublishAsync(new ConnectionStringAvailableEvent(n8n, services), ct);
+
     private static async Task ProvisionApiKeyAsync(N8nResource n8n, N8nApiKeyReference apiKey, IServiceProvider services, CancellationToken ct)
     {
         var logger = services.GetRequiredService<ResourceLoggerService>().GetLogger(n8n);
@@ -77,11 +82,13 @@ public static partial class N8nBuilderExtensions
             using var handler = new SocketsHttpHandler { UseCookies = false };
             using var httpClient = new HttpClient(handler) { BaseAddress = new Uri(n8n.PrimaryEndpoint.Url) };
             var provisioner = new N8nApiKeyProvisioner(httpClient, logger);
+            await provisioner.WaitUntilReadyAsync(ct).ConfigureAwait(false);
 
             var persisted = services.GetService<IConfiguration>()?[apiKey.ConfigurationKey];
             if (!string.IsNullOrEmpty(persisted) && await provisioner.IsValidAsync(persisted, ct).ConfigureAwait(false))
             {
                 apiKey.Set(persisted);
+                await PublishConnectionStringAsync(n8n, services, ct).ConfigureAwait(false);
                 return;
             }
 
@@ -103,6 +110,8 @@ public static partial class N8nBuilderExtensions
             {
                 logger.LogWarning("Could not persist the API key of '{Resource}' in the user secrets.", n8n.Name);
             }
+
+            await PublishConnectionStringAsync(n8n, services, ct).ConfigureAwait(false);
         }
         catch (Exception ex) when (!ct.IsCancellationRequested)
         {

@@ -83,6 +83,40 @@ public sealed class N8nApiKeyReference : IValueProvider, IManifestExpressionProv
         return await task.WaitAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Gets the key for a resource. Waits until a generated key is created, except without a requesting resource
+    /// (<see cref="ValueProviderContext.Caller"/>): returns <see langword="null"/> while the key is not created yet.
+    /// </summary>
+    /// <param name="context">The context of the requesting resource.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The API key.</returns>
+    /// <remarks>
+    /// Aspire resolves the connection string of n8n without a caller before it creates the container (to show it in
+    /// the dashboard); waiting there for the key, which is created once n8n is ready, would block n8n from starting.
+    /// </remarks>
+    public async ValueTask<string?> GetValueAsync(ValueProviderContext context, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (Parameter is not null)
+        {
+            return await Parameter.GetValueAsync(context, cancellationToken).ConfigureAwait(false);
+        }
+
+        if (context.Caller is null)
+        {
+            lock (_lock)
+            {
+                if (!_value.Task.IsCompletedSuccessfully)
+                {
+                    return null;
+                }
+            }
+        }
+
+        return await GetValueAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     internal void Set(string value)
     {
         ArgumentException.ThrowIfNullOrEmpty(value);

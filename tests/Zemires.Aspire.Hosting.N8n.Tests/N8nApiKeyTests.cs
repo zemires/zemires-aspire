@@ -37,6 +37,29 @@ public class N8nApiKeyTests
     }
 
     [Fact]
+    public async Task WithApiKey_ResolvedWithoutCaller_DoesNotWait()
+    {
+        // Aspire resolves the connection string without a caller before starting n8n; waiting would deadlock the start.
+        var builder = DistributedApplication.CreateBuilder();
+        var n8n = builder.AddN8n("n8n").WithInstanceOwner("admin@dev.local", "Admin", "Local").WithApiKey();
+        var apiKey = n8n.Resource.ApiKey!;
+        var expression = ReferenceExpression.Create($"ApiKey={apiKey}");
+
+        Assert.Equal("ApiKey=", await expression.GetValueAsync(TestContext.Current.CancellationToken));
+        Assert.Null(await apiKey.GetValueAsync(new ValueProviderContext(), TestContext.Current.CancellationToken));
+
+        // a consuming resource waits for the key
+        var consumer = builder.AddContainer("consumer", "image").Resource;
+        var pending = expression.GetValueAsync(new ValueProviderContext { Caller = consumer }, TestContext.Current.CancellationToken).AsTask();
+        await Task.Delay(50, TestContext.Current.CancellationToken);
+        Assert.False(pending.IsCompleted);
+
+        apiKey.Set("key-1");
+        Assert.Equal("ApiKey=key-1", await pending);
+        Assert.Equal("ApiKey=key-1", await expression.GetValueAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
     public void WithoutApiKey_ConnectionStringIsUrl()
     {
         var builder = DistributedApplication.CreateBuilder();
@@ -114,6 +137,33 @@ public class N8nApiKeyTests
         Assert.Equal(HttpStatusCode.Unauthorized, ex.StatusCode);
     }
 
+    [Fact]
+    public async Task Provisioner_WaitUntilReady_RetriesUntilRestApiIsRegistered()
+    {
+        // n8n passes /healthz before its REST routes exist; they answer 404 until then.
+        var handler = new FakeN8nHandler { RestNotFoundCount = 2 };
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://n8n.test") };
+        var provisioner = new N8nApiKeyProvisioner(httpClient, NullLogger.Instance) { RetryDelay = TimeSpan.FromMilliseconds(1) };
+
+        await provisioner.WaitUntilReadyAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(3, handler.Requests.Count(r => r is { Method.Method: "GET", Path: "/rest/login" }));
+    }
+
+    [Fact]
+    public async Task Provisioner_WaitUntilReady_TimesOut()
+    {
+        var handler = new FakeN8nHandler { RestNotFoundCount = int.MaxValue };
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://n8n.test") };
+        var provisioner = new N8nApiKeyProvisioner(httpClient, NullLogger.Instance)
+        {
+            RetryDelay = TimeSpan.FromMilliseconds(1),
+            ReadyTimeout = TimeSpan.FromMilliseconds(50)
+        };
+
+        await Assert.ThrowsAsync<TimeoutException>(() => provisioner.WaitUntilReadyAsync(TestContext.Current.CancellationToken));
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.OK, true)]
     [InlineData(HttpStatusCode.Unauthorized, false)]
@@ -138,6 +188,8 @@ public class N8nApiKeyTests
 
         public HttpStatusCode PublicApiStatus { get; init; } = HttpStatusCode.OK;
 
+        public int RestNotFoundCount { get; set; }
+
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var path = request.RequestUri!.AbsolutePath;
@@ -147,6 +199,8 @@ public class N8nApiKeyTests
 
             switch (request.Method.Method, path)
             {
+                case ("GET", "/rest/login"):
+                    return new HttpResponseMessage(RestNotFoundCount-- > 0 ? HttpStatusCode.NotFound : HttpStatusCode.Unauthorized);
                 case ("POST", "/rest/login"):
                     var login = new HttpResponseMessage(LoginStatus) { Content = JsonContent.Create(new { data = new { } }) };
                     login.Headers.Add("Set-Cookie", "other=1; Path=/");
