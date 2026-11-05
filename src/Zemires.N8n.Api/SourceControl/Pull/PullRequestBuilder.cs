@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.SourceControl.Pull
 {
     /// <summary>
@@ -34,44 +33,44 @@ namespace Zemires.N8n.Api.SourceControl.Pull
         {
         }
         /// <summary>
-        /// Requires the Source Control feature to be licensed and connected to a repository.
+        /// Fetches changes from the connected Git branch into the instance.
         /// </summary>
-        /// <returns>A List&lt;global::Zemires.N8n.Api.Models.SourceControlledFile&gt;</returns>
+        /// <returns>A List&lt;global::Zemires.N8n.Api.SourceControl.Pull.Pull&gt;</returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
-        /// <exception cref="List<global::Zemires.N8n.Api.Models.SourceControlledFile>">When receiving a 409 status code</exception>
+        /// <exception cref="List<global::Zemires.N8n.Api.SourceControl.Pull.Pull>">When receiving a 409 status code</exception>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<List<global::Zemires.N8n.Api.Models.SourceControlledFile>?> PostAsync(global::Zemires.N8n.Api.Models.Pull body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<List<global::Zemires.N8n.Api.SourceControl.Pull.Pull>?> PostAsync(global::Zemires.N8n.Api.SourceControl.Pull.PullPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<List<global::Zemires.N8n.Api.Models.SourceControlledFile>> PostAsync(global::Zemires.N8n.Api.Models.Pull body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<List<global::Zemires.N8n.Api.SourceControl.Pull.Pull>> PostAsync(global::Zemires.N8n.Api.SourceControl.Pull.PullPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
             var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
             {
-                { "409", global::Zemires.N8n.Api.Models.SourceControlledFile.CreateFromDiscriminatorValue },
+                { "409", global::Zemires.N8n.Api.SourceControl.Pull.Pull.CreateFromDiscriminatorValue },
             };
-            var collectionResult = await RequestAdapter.SendCollectionAsync<global::Zemires.N8n.Api.Models.SourceControlledFile>(requestInfo, global::Zemires.N8n.Api.Models.SourceControlledFile.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
+            var collectionResult = await RequestAdapter.SendCollectionAsync<global::Zemires.N8n.Api.SourceControl.Pull.Pull>(requestInfo, global::Zemires.N8n.Api.SourceControl.Pull.Pull.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
             return collectionResult?.AsList();
         }
         /// <summary>
-        /// Requires the Source Control feature to be licensed and connected to a repository.
+        /// Fetches changes from the connected Git branch into the instance.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Pull body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.SourceControl.Pull.PullPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Pull body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.SourceControl.Pull.PullPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

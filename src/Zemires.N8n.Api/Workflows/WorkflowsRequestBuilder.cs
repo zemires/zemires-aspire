@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 using Zemires.N8n.Api.Workflows.Item;
 namespace Zemires.N8n.Api.Workflows
 {
@@ -20,14 +19,14 @@ namespace Zemires.N8n.Api.Workflows
     {
         /// <summary>Gets an item from the Zemires.N8n.Api.workflows.item collection</summary>
         /// <param name="position">The ID of the workflow.</param>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Workflows.Item.ItemRequestBuilder"/></returns>
-        public global::Zemires.N8n.Api.Workflows.Item.ItemRequestBuilder this[string position]
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Workflows.Item.WithWorkflowItemRequestBuilder"/></returns>
+        public global::Zemires.N8n.Api.Workflows.Item.WithWorkflowItemRequestBuilder this[string position]
         {
             get
             {
                 var urlTplParams = new Dictionary<string, object>(PathParameters);
-                urlTplParams.Add("%2Did", position);
-                return new global::Zemires.N8n.Api.Workflows.Item.ItemRequestBuilder(urlTplParams, RequestAdapter);
+                urlTplParams.Add("workflowId", position);
+                return new global::Zemires.N8n.Api.Workflows.Item.WithWorkflowItemRequestBuilder(urlTplParams, RequestAdapter);
             }
         }
         /// <summary>
@@ -35,7 +34,7 @@ namespace Zemires.N8n.Api.Workflows
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public WorkflowsRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows{?active*,cursor*,excludePinnedData*,limit*,name*,offset*,projectId*,tags*}", pathParameters)
+        public WorkflowsRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows{?active*,cursor*,excludePinnedData*,includeParentFolder*,limit*,name*,offset*,projectId*,tags*}", pathParameters)
         {
         }
         /// <summary>
@@ -43,7 +42,7 @@ namespace Zemires.N8n.Api.Workflows
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public WorkflowsRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows{?active*,cursor*,excludePinnedData*,limit*,name*,offset*,projectId*,tags*}", rawUrl)
+        public WorkflowsRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows{?active*,cursor*,excludePinnedData*,includeParentFolder*,limit*,name*,offset*,projectId*,tags*}", rawUrl)
         {
         }
         /// <summary>
@@ -67,22 +66,22 @@ namespace Zemires.N8n.Api.Workflows
         /// <summary>
         /// Create a workflow in your instance.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Workflow"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Workflows.WorkflowsPostResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Workflow?> PostAsync(global::Zemires.N8n.Api.Models.WorkflowCreate body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Workflows.WorkflowsPostResponse?> PostAsync(global::Zemires.N8n.Api.Workflows.WorkflowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Workflow> PostAsync(global::Zemires.N8n.Api.Models.WorkflowCreate body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Workflows.WorkflowsPostResponse> PostAsync(global::Zemires.N8n.Api.Workflows.WorkflowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Workflow>(requestInfo, global::Zemires.N8n.Api.Models.Workflow.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Workflows.WorkflowsPostResponse>(requestInfo, global::Zemires.N8n.Api.Workflows.WorkflowsPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve all workflows from your instance.
@@ -111,11 +110,11 @@ namespace Zemires.N8n.Api.Workflows
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.WorkflowCreate body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Workflows.WorkflowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.WorkflowCreate body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Workflows.WorkflowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -140,8 +139,10 @@ namespace Zemires.N8n.Api.Workflows
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class WorkflowsRequestBuilderGetQueryParameters 
         {
+            #pragma warning disable CS1591
             [QueryParameter("active")]
             public global::Zemires.N8n.Api.Workflows.GetActiveQueryParameterType? Active { get; set; }
+            #pragma warning restore CS1591
             /// <summary>Paginate by setting the cursor parameter to the nextCursor attribute returned by the previous request&apos;s response. Default value fetches the first &quot;page&quot; of the collection. See pagination for more detail.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
@@ -152,40 +153,58 @@ namespace Zemires.N8n.Api.Workflows
             [QueryParameter("cursor")]
             public string Cursor { get; set; }
 #endif
+            #pragma warning disable CS1591
             [QueryParameter("excludePinnedData")]
             public global::Zemires.N8n.Api.Workflows.GetExcludePinnedDataQueryParameterType? ExcludePinnedData { get; set; }
+            #pragma warning restore CS1591
+            #pragma warning disable CS1591
+            [QueryParameter("includeParentFolder")]
+            public global::Zemires.N8n.Api.Workflows.GetIncludeParentFolderQueryParameterType? IncludeParentFolder { get; set; }
+            #pragma warning restore CS1591
             /// <summary>The maximum number of items to return.</summary>
             [QueryParameter("limit")]
             public double? Limit { get; set; }
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("name")]
             public string? Name { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("name")]
             public string Name { get; set; }
+            #pragma warning restore CS1591
 #endif
             /// <summary>The number of items to skip before starting to collect the result set.</summary>
             [QueryParameter("offset")]
             public double? Offset { get; set; }
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string? ProjectId { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string ProjectId { get; set; }
+            #pragma warning restore CS1591
 #endif
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("tags")]
             public string? Tags { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("tags")]
             public string Tags { get; set; }
+            #pragma warning restore CS1591
 #endif
         }
     }

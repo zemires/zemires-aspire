@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Zemires.N8n.Api.DataTables.Item;
-using Zemires.N8n.Api.Models;
+using Zemires.N8n.Api.Models.DataTablePublicDto;
 namespace Zemires.N8n.Api.DataTables
 {
     /// <summary>
@@ -47,45 +47,45 @@ namespace Zemires.N8n.Api.DataTables
         {
         }
         /// <summary>
-        /// Retrieve a list of all data tables with optional filtering, sorting, and pagination.
+        /// Retrieve a list of all data tables with optional filtering, sorting, and pagination. Each table includes `sizeBytes`, the value the `size` sort option orders by.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTableList"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.DataTables.DataTablesGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.DataTableList?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.DataTablesRequestBuilder.DataTablesRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.DataTablesGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.DataTablesRequestBuilder.DataTablesRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.DataTableList> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.DataTablesRequestBuilder.DataTablesRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.DataTablesGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.DataTablesRequestBuilder.DataTablesRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTableList>(requestInfo, global::Zemires.N8n.Api.Models.DataTableList.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.DataTables.DataTablesGetResponse>(requestInfo, global::Zemires.N8n.Api.DataTables.DataTablesGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Create a new data table in your personal project or a team project you have access to.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTable"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTablePublicDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.DataTable?> PostAsync(global::Zemires.N8n.Api.Models.CreateDataTableRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.DataTablePublicDto.Generated?> PostAsync(global::Zemires.N8n.Api.DataTables.DataTablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.DataTable> PostAsync(global::Zemires.N8n.Api.Models.CreateDataTableRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.DataTablePublicDto.Generated> PostAsync(global::Zemires.N8n.Api.DataTables.DataTablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTable>(requestInfo, global::Zemires.N8n.Api.Models.DataTable.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTablePublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.DataTablePublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
-        /// Retrieve a list of all data tables with optional filtering, sorting, and pagination.
+        /// Retrieve a list of all data tables with optional filtering, sorting, and pagination. Each table includes `sizeBytes`, the value the `size` sort option orders by.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
@@ -111,11 +111,11 @@ namespace Zemires.N8n.Api.DataTables
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.CreateDataTableRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.DataTablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.CreateDataTableRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.DataTablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -135,7 +135,7 @@ namespace Zemires.N8n.Api.DataTables
             return new global::Zemires.N8n.Api.DataTables.DataTablesRequestBuilder(rawUrl, RequestAdapter);
         }
         /// <summary>
-        /// Retrieve a list of all data tables with optional filtering, sorting, and pagination.
+        /// Retrieve a list of all data tables with optional filtering, sorting, and pagination. Each table includes `sizeBytes`, the value the `size` sort option orders by.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class DataTablesRequestBuilderGetQueryParameters 
@@ -164,15 +164,8 @@ namespace Zemires.N8n.Api.DataTables
             [QueryParameter("limit")]
             public double? Limit { get; set; }
             /// <summary>Sort format: field:asc or field:desc</summary>
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-#nullable enable
             [QueryParameter("sortBy")]
-            public string? SortBy { get; set; }
-#nullable restore
-#else
-            [QueryParameter("sortBy")]
-            public string SortBy { get; set; }
-#endif
+            public global::Zemires.N8n.Api.DataTables.GetSortByQueryParameterType? SortBy { get; set; }
         }
     }
 }

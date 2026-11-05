@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models.OidcConfiguration;
+using Zemires.N8n.Api.Models.OidcConfigurationPublicDto;
 namespace Zemires.N8n.Api.Settings.Sso.Oidc
 {
     /// <summary>
@@ -36,40 +36,40 @@ namespace Zemires.N8n.Api.Settings.Sso.Oidc
         /// <summary>
         /// Retrieve the current OIDC SSO configuration, including every field exposed in the UI. The client secret is redacted on read and is never echoed back in plaintext. Requires the `oidc:manage` scope and the OIDC feature to be licensed.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration>(requestInfo, global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Set the OIDC SSO configuration. The update takes effect exactly as it would from the UI, using the same validation. `clientId`, `clientSecret` and `discoveryEndpoint` are required; submit the redacted client secret sentinel to keep the stored secret unchanged. Requires the `oidc:manage` scope and the OIDC feature to be licensed. The client secret is redacted in the response. When the configuration is managed declaratively (via environment variables), the write is rejected with 409 and no changes are made.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration"/></returns>
-        /// <param name="body">Full OIDC SSO configuration to set. This is a full replacement: every writable field must be provided. Partial updates are rejected. Submit the redacted secret sentinel  for `clientSecret` to keep the stored secret unchanged.</param>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated"/></returns>
+        /// <param name="body">Full OIDC SSO configuration to set. This is a full replacement: every writable field must be provided. Partial updates are rejected. Submit the redacted secret sentinel for `clientSecret` to keep the stored secret unchanged.</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration?> PutAsync(global::Zemires.N8n.Api.Models.OidcConfiguration.Update body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated?> PutAsync(global::Zemires.N8n.Api.Settings.Sso.Oidc.OidcPutRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration> PutAsync(global::Zemires.N8n.Api.Models.OidcConfiguration.Update body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated> PutAsync(global::Zemires.N8n.Api.Settings.Sso.Oidc.OidcPutRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPutRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration>(requestInfo, global::Zemires.N8n.Api.Models.OidcConfiguration.OidcConfiguration.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.OidcConfigurationPublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve the current OIDC SSO configuration, including every field exposed in the UI. The client secret is redacted on read and is never echoed back in plaintext. Requires the `oidc:manage` scope and the OIDC feature to be licensed.
@@ -94,15 +94,15 @@ namespace Zemires.N8n.Api.Settings.Sso.Oidc
         /// Set the OIDC SSO configuration. The update takes effect exactly as it would from the UI, using the same validation. `clientId`, `clientSecret` and `discoveryEndpoint` are required; submit the redacted client secret sentinel to keep the stored secret unchanged. Requires the `oidc:manage` scope and the OIDC feature to be licensed. The client secret is redacted in the response. When the configuration is managed declaratively (via environment variables), the write is rejected with 409 and no changes are made.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
-        /// <param name="body">Full OIDC SSO configuration to set. This is a full replacement: every writable field must be provided. Partial updates are rejected. Submit the redacted secret sentinel  for `clientSecret` to keep the stored secret unchanged.</param>
+        /// <param name="body">Full OIDC SSO configuration to set. This is a full replacement: every writable field must be provided. Partial updates are rejected. Submit the redacted secret sentinel for `clientSecret` to keep the stored secret unchanged.</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPutRequestInformation(global::Zemires.N8n.Api.Models.OidcConfiguration.Update body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPutRequestInformation(global::Zemires.N8n.Api.Settings.Sso.Oidc.OidcPutRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPutRequestInformation(global::Zemires.N8n.Api.Models.OidcConfiguration.Update body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPutRequestInformation(global::Zemires.N8n.Api.Settings.Sso.Oidc.OidcPutRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

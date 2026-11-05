@@ -15,14 +15,14 @@ namespace Zemires.N8n.Api.Tags
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
         /// <summary>The createdAt property</summary>
-        public DateTimeOffset? CreatedAt { get; set; }
+        public DateTimeOffset? CreatedAt { get; private set; }
         /// <summary>The id property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public string? Id { get; set; }
+        public string? Id { get; private set; }
 #nullable restore
 #else
-        public string Id { get; set; }
+        public string Id { get; private set; }
 #endif
         /// <summary>The name property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
@@ -33,7 +33,7 @@ namespace Zemires.N8n.Api.Tags
         public string Name { get; set; }
 #endif
         /// <summary>The updatedAt property</summary>
-        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; private set; }
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.Tags.TagsGetResponse_data"/> and sets the default values.
         /// </summary>
@@ -72,10 +72,7 @@ namespace Zemires.N8n.Api.Tags
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteDateTimeOffsetValue("createdAt", CreatedAt);
-            writer.WriteStringValue("id", Id);
             writer.WriteStringValue("name", Name);
-            writer.WriteDateTimeOffsetValue("updatedAt", UpdatedAt);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

@@ -19,15 +19,15 @@ namespace Zemires.N8n.Api.Roles
     public partial class RolesRequestBuilder : BaseRequestBuilder
     {
         /// <summary>Gets an item from the Zemires.N8n.Api.roles.item collection</summary>
-        /// <param name="position">Unique identifier of the item</param>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Roles.Item.WithSlugItemRequestBuilder"/></returns>
-        public global::Zemires.N8n.Api.Roles.Item.WithSlugItemRequestBuilder this[string position]
+        /// <param name="position">The slug of the role.</param>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Roles.Item.WithRoleSlugItemRequestBuilder"/></returns>
+        public global::Zemires.N8n.Api.Roles.Item.WithRoleSlugItemRequestBuilder this[string position]
         {
             get
             {
                 var urlTplParams = new Dictionary<string, object>(PathParameters);
-                urlTplParams.Add("slug", position);
-                return new global::Zemires.N8n.Api.Roles.Item.WithSlugItemRequestBuilder(urlTplParams, RequestAdapter);
+                urlTplParams.Add("roleSlug", position);
+                return new global::Zemires.N8n.Api.Roles.Item.WithRoleSlugItemRequestBuilder(urlTplParams, RequestAdapter);
             }
         }
         /// <summary>
@@ -140,8 +140,10 @@ namespace Zemires.N8n.Api.Roles
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class RolesRequestBuilderGetQueryParameters 
         {
+            #pragma warning disable CS1591
             [QueryParameter("withUsageCount")]
             public global::Zemires.N8n.Api.Roles.GetWithUsageCountQueryParameterType? WithUsageCount { get; set; }
+            #pragma warning restore CS1591
         }
     }
 }

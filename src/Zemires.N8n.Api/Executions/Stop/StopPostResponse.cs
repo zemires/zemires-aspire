@@ -15,7 +15,7 @@ namespace Zemires.N8n.Api.Executions.Stop
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
         /// <summary>The number of executions that were successfully stopped.</summary>
-        public double? Stopped { get; set; }
+        public int? Stopped { get; set; }
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.Executions.Stop.StopPostResponse"/> and sets the default values.
         /// </summary>
@@ -41,7 +41,7 @@ namespace Zemires.N8n.Api.Executions.Stop
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "stopped", n => { Stopped = n.GetDoubleValue(); } },
+                { "stopped", n => { Stopped = n.GetIntValue(); } },
             };
         }
         /// <summary>
@@ -51,7 +51,7 @@ namespace Zemires.N8n.Api.Executions.Stop
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteDoubleValue("stopped", Stopped);
+            writer.WriteIntValue("stopped", Stopped);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

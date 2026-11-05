@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models.Folder;
 using Zemires.N8n.Api.Projects.Item.Folders.Item;
 namespace Zemires.N8n.Api.Projects.Item.Folders
 {
@@ -67,22 +66,22 @@ namespace Zemires.N8n.Api.Projects.Item.Folders
         /// <summary>
         /// Create a folder within a project.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Folder.Folder"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Folder.Folder?> PostAsync(global::Zemires.N8n.Api.Models.Folder.Create body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostResponse?> PostAsync(global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Folder.Folder> PostAsync(global::Zemires.N8n.Api.Models.Folder.Create body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostResponse> PostAsync(global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Folder.Folder>(requestInfo, global::Zemires.N8n.Api.Models.Folder.Folder.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostResponse>(requestInfo, global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve folders within a project. Supports filtering, sorting, field selection, and pagination.
@@ -111,11 +110,11 @@ namespace Zemires.N8n.Api.Projects.Item.Folders
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Folder.Create body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Folder.Create body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Projects.Item.Folders.FoldersPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -140,48 +139,61 @@ namespace Zemires.N8n.Api.Projects.Item.Folders
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class FoldersRequestBuilderGetQueryParameters 
         {
-            /// <summary>JSON-encoded filter object. Supported fields — parentFolderId, name, tags (array of tag names), excludeFolderIdAndDescendants.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("filter")]
             public string? Filter { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("filter")]
             public string Filter { get; set; }
+            #pragma warning restore CS1591
 #endif
-            /// <summary>JSON-encoded array of fields to include. Valid fields — id, name, createdAt, updatedAt, project, tags, parentFolder, workflowCount, subFolderCount, path.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("select")]
             public string? Select { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("select")]
             public string Select { get; set; }
+            #pragma warning restore CS1591
 #endif
-            /// <summary>Number of items to skip for pagination. Defaults to 0.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("skip")]
             public string? Skip { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("skip")]
             public string Skip { get; set; }
+            #pragma warning restore CS1591
 #endif
-            /// <summary>Sort order for results.</summary>
+            #pragma warning disable CS1591
             [QueryParameter("sortBy")]
             public global::Zemires.N8n.Api.Projects.Item.Folders.GetSortByQueryParameterType? SortBy { get; set; }
-            /// <summary>Number of items to return. Defaults to 10.</summary>
+            #pragma warning restore CS1591
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("take")]
             public string? Take { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("take")]
             public string Take { get; set; }
+            #pragma warning restore CS1591
 #endif
         }
     }

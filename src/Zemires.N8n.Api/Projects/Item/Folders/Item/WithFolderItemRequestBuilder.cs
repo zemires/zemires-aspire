@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models.Folder;
 namespace Zemires.N8n.Api.Projects.Item.Folders.Item
 {
     /// <summary>
@@ -71,22 +70,22 @@ namespace Zemires.N8n.Api.Projects.Item.Folders.Item
         /// <summary>
         /// Update folder name or parent folder.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Folder.Folder"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Folder.Folder?> PatchAsync(global::Zemires.N8n.Api.Models.Folder.Update body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchResponse?> PatchAsync(global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Folder.Folder> PatchAsync(global::Zemires.N8n.Api.Models.Folder.Update body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchResponse> PatchAsync(global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPatchRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Folder.Folder>(requestInfo, global::Zemires.N8n.Api.Models.Folder.Folder.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchResponse>(requestInfo, global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Delete a folder within a project. When `transferToFolderId` is provided, workflows and sub-folders are moved to the target folder before deletion. When omitted, workflows are moved to the project root and archived, and child folders are deleted.
@@ -133,11 +132,11 @@ namespace Zemires.N8n.Api.Projects.Item.Folders.Item
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Models.Folder.Update body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Models.Folder.Update body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -162,15 +161,18 @@ namespace Zemires.N8n.Api.Projects.Item.Folders.Item
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class WithFolderItemRequestBuilderDeleteQueryParameters 
         {
-            /// <summary>Optional target folder ID to move workflows and sub-folders into before deleting.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("transferToFolderId")]
             public string? TransferToFolderId { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("transferToFolderId")]
             public string TransferToFolderId { get; set; }
+            #pragma warning restore CS1591
 #endif
         }
     }

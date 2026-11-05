@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
+using Zemires.N8n.Api.Models.DataTableColumnPublicDto;
 namespace Zemires.N8n.Api.DataTables.Item.Columns.Item
 {
     /// <summary>
@@ -53,22 +53,22 @@ namespace Zemires.N8n.Api.DataTables.Item.Columns.Item
         /// <summary>
         /// Rename and/or reorder a column in a data table.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTableColumn"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.DataTableColumn?> PatchAsync(global::Zemires.N8n.Api.Models.UpdateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated?> PatchAsync(global::Zemires.N8n.Api.DataTables.Item.Columns.Item.WithColumnPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.DataTableColumn> PatchAsync(global::Zemires.N8n.Api.Models.UpdateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated> PatchAsync(global::Zemires.N8n.Api.DataTables.Item.Columns.Item.WithColumnPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPatchRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTableColumn>(requestInfo, global::Zemires.N8n.Api.Models.DataTableColumn.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Remove a column from a data table. This will also delete all data in the column.
@@ -96,11 +96,11 @@ namespace Zemires.N8n.Api.DataTables.Item.Columns.Item
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Models.UpdateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Columns.Item.WithColumnPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Models.UpdateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Columns.Item.WithColumnPatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

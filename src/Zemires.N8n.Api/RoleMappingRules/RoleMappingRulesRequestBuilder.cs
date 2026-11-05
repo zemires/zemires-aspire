@@ -8,6 +8,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using Zemires.N8n.Api.Models.RoleMappingRulePublicDto;
+using Zemires.N8n.Api.RoleMappingRules.Item;
 namespace Zemires.N8n.Api.RoleMappingRules
 {
     /// <summary>
@@ -16,12 +18,24 @@ namespace Zemires.N8n.Api.RoleMappingRules
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class RoleMappingRulesRequestBuilder : BaseRequestBuilder
     {
+        /// <summary>Gets an item from the Zemires.N8n.Api.roleMappingRules.item collection</summary>
+        /// <param name="position">The ID of the role mapping rule.</param>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.RoleMappingRules.Item.WithRoleMappingRuleItemRequestBuilder"/></returns>
+        public global::Zemires.N8n.Api.RoleMappingRules.Item.WithRoleMappingRuleItemRequestBuilder this[string position]
+        {
+            get
+            {
+                var urlTplParams = new Dictionary<string, object>(PathParameters);
+                urlTplParams.Add("roleMappingRuleId", position);
+                return new global::Zemires.N8n.Api.RoleMappingRules.Item.WithRoleMappingRuleItemRequestBuilder(urlTplParams, RequestAdapter);
+            }
+        }
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder"/> and sets the default values.
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public RoleMappingRulesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/role-mapping-rules", pathParameters)
+        public RoleMappingRulesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/role-mapping-rules{?cursor*,limit*,type*}", pathParameters)
         {
         }
         /// <summary>
@@ -29,28 +43,65 @@ namespace Zemires.N8n.Api.RoleMappingRules
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public RoleMappingRulesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/role-mapping-rules", rawUrl)
+        public RoleMappingRulesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/role-mapping-rules{?cursor*,limit*,type*}", rawUrl)
         {
+        }
+        /// <summary>
+        /// Returns the configured role-mapping rules. `order` is the rule&apos;s evaluation position within its own `type`, so instance and project rules each have their own sequence starting at 0 — filter by `type` to retrieve a single evaluation order.
+        /// </summary>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesGetResponse"/></returns>
+        /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
+        /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public async Task<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder.RoleMappingRulesRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        {
+#nullable restore
+#else
+        public async Task<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder.RoleMappingRulesRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        {
+#endif
+            var requestInfo = ToGetRequestInformation(requestConfiguration);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesGetResponse>(requestInfo, global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Creates a rule that maps an identity-provider claim expression to a role. Set `type` to `instance` for a rule granting a global role, or `project` for a rule granting a project role on the projects named in `projectIds`. Omitting `order` appends the rule to the end of the evaluation order for its type.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostResponse"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.RoleMappingRulePublicDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostResponse?> PostAsync(global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.RoleMappingRulePublicDto.Generated?> PostAsync(global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostResponse> PostAsync(global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.RoleMappingRulePublicDto.Generated> PostAsync(global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostResponse>(requestInfo, global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.RoleMappingRulePublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.RoleMappingRulePublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+        }
+        /// <summary>
+        /// Returns the configured role-mapping rules. `order` is the rule&apos;s evaluation position within its own `type`, so instance and project rules each have their own sequence starting at 0 — filter by `type` to retrieve a single evaluation order.
+        /// </summary>
+        /// <returns>A <see cref="RequestInformation"/></returns>
+        /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public RequestInformation ToGetRequestInformation(Action<RequestConfiguration<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder.RoleMappingRulesRequestBuilderGetQueryParameters>>? requestConfiguration = default)
+        {
+#nullable restore
+#else
+        public RequestInformation ToGetRequestInformation(Action<RequestConfiguration<global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder.RoleMappingRulesRequestBuilderGetQueryParameters>> requestConfiguration = default)
+        {
+#endif
+            var requestInfo = new RequestInformation(Method.GET, UrlTemplate, PathParameters);
+            requestInfo.Configure(requestConfiguration);
+            requestInfo.Headers.TryAdd("Accept", "application/json");
+            return requestInfo;
         }
         /// <summary>
         /// Creates a rule that maps an identity-provider claim expression to a role. Set `type` to `instance` for a rule granting a global role, or `project` for a rule granting a project role on the projects named in `projectIds`. Omitting `order` appends the rule to the end of the evaluation order for its type.
@@ -82,6 +133,30 @@ namespace Zemires.N8n.Api.RoleMappingRules
         public global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder WithUrl(string rawUrl)
         {
             return new global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder(rawUrl, RequestAdapter);
+        }
+        /// <summary>
+        /// Returns the configured role-mapping rules. `order` is the rule&apos;s evaluation position within its own `type`, so instance and project rules each have their own sequence starting at 0 — filter by `type` to retrieve a single evaluation order.
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
+        public partial class RoleMappingRulesRequestBuilderGetQueryParameters 
+        {
+            /// <summary>Paginate by setting the cursor parameter to the nextCursor attribute returned by the previous request&apos;s response. Default value fetches the first &quot;page&quot; of the collection. See pagination for more detail.</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            [QueryParameter("cursor")]
+            public string? Cursor { get; set; }
+#nullable restore
+#else
+            [QueryParameter("cursor")]
+            public string Cursor { get; set; }
+#endif
+            /// <summary>The maximum number of items to return.</summary>
+            [QueryParameter("limit")]
+            public double? Limit { get; set; }
+            #pragma warning disable CS1591
+            [QueryParameter("type")]
+            public global::Zemires.N8n.Api.RoleMappingRules.GetTypeQueryParameterType? Type { get; set; }
+            #pragma warning restore CS1591
         }
     }
 }

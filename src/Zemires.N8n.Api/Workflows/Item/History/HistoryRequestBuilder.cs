@@ -11,7 +11,7 @@ using System;
 namespace Zemires.N8n.Api.Workflows.Item.History
 {
     /// <summary>
-    /// Builds and executes requests for operations under \workflows\{-id}\history
+    /// Builds and executes requests for operations under \workflows\{workflowId}\history
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class HistoryRequestBuilder : BaseRequestBuilder
@@ -21,7 +21,7 @@ namespace Zemires.N8n.Api.Workflows.Item.History
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public HistoryRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/history{?cursor*,limit*,offset*}", pathParameters)
+        public HistoryRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/history{?cursor*,limit*}", pathParameters)
         {
         }
         /// <summary>
@@ -29,7 +29,7 @@ namespace Zemires.N8n.Api.Workflows.Item.History
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public HistoryRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/history{?cursor*,limit*,offset*}", rawUrl)
+        public HistoryRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/history{?cursor*,limit*}", rawUrl)
         {
         }
         /// <summary>
@@ -97,9 +97,6 @@ namespace Zemires.N8n.Api.Workflows.Item.History
             /// <summary>The maximum number of items to return.</summary>
             [QueryParameter("limit")]
             public double? Limit { get; set; }
-            /// <summary>The number of items to skip before starting to collect the result set.</summary>
-            [QueryParameter("offset")]
-            public double? Offset { get; set; }
         }
     }
 }

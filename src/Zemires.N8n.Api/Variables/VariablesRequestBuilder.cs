@@ -8,8 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models.Variable;
-using Zemires.N8n.Api.Models;
 using Zemires.N8n.Api.Variables.Item;
 namespace Zemires.N8n.Api.Variables
 {
@@ -36,7 +34,7 @@ namespace Zemires.N8n.Api.Variables
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public VariablesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/variables{?cursor*,limit*,projectId,state*}", pathParameters)
+        public VariablesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/variables{?cursor*,limit*,projectId*,state*}", pathParameters)
         {
         }
         /// <summary>
@@ -44,26 +42,26 @@ namespace Zemires.N8n.Api.Variables
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public VariablesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/variables{?cursor*,limit*,projectId,state*}", rawUrl)
+        public VariablesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/variables{?cursor*,limit*,projectId*,state*}", rawUrl)
         {
         }
         /// <summary>
         /// Retrieve variables from your instance.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.VariableList"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Variables.VariablesGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.VariableList?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Variables.VariablesRequestBuilder.VariablesRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Variables.VariablesGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Variables.VariablesRequestBuilder.VariablesRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.VariableList> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Variables.VariablesRequestBuilder.VariablesRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Variables.VariablesGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Variables.VariablesRequestBuilder.VariablesRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.VariableList>(requestInfo, global::Zemires.N8n.Api.Models.VariableList.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Variables.VariablesGetResponse>(requestInfo, global::Zemires.N8n.Api.Variables.VariablesGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Create a variable in your instance.
@@ -73,11 +71,11 @@ namespace Zemires.N8n.Api.Variables
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task PostAsync(global::Zemires.N8n.Api.Models.Variable.Create body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task PostAsync(global::Zemires.N8n.Api.Variables.VariablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task PostAsync(global::Zemires.N8n.Api.Models.Variable.Create body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task PostAsync(global::Zemires.N8n.Api.Variables.VariablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -111,11 +109,11 @@ namespace Zemires.N8n.Api.Variables
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Variable.Create body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Variables.VariablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Variable.Create body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Variables.VariablesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -154,15 +152,21 @@ namespace Zemires.N8n.Api.Variables
             public double? Limit { get; set; }
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string? ProjectId { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string ProjectId { get; set; }
+            #pragma warning restore CS1591
 #endif
+            #pragma warning disable CS1591
             [QueryParameter("state")]
             public global::Zemires.N8n.Api.Variables.GetStateQueryParameterType? State { get; set; }
+            #pragma warning restore CS1591
         }
     }
 }

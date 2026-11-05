@@ -9,18 +9,37 @@ namespace Zemires.N8n.Api.Credentials.Schema.Item
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     #pragma warning disable CS1591
-    public partial class WithCredentialTypeNameGetResponse : IAdditionalDataHolder, IParsable
+    public partial class WithCredentialTypeNameGetResponse : IParsable
     #pragma warning restore CS1591
     {
-        /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
-        public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>
-        /// Instantiates a new <see cref="global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse"/> and sets the default values.
-        /// </summary>
-        public WithCredentialTypeNameGetResponse()
-        {
-            AdditionalData = new Dictionary<string, object>();
-        }
+        /// <summary>The additionalProperties property</summary>
+        public bool? AdditionalProperties { get; set; }
+        /// <summary>The allOf property</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public UntypedNode? AllOf { get; set; }
+#nullable restore
+#else
+        public UntypedNode AllOf { get; set; }
+#endif
+        /// <summary>JSON Schema fragment for each of the credential type&apos;s fields, keyed by field name.</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_properties? Properties { get; set; }
+#nullable restore
+#else
+        public global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_properties Properties { get; set; }
+#endif
+        /// <summary>Names of the fields that a request must include. A field with a default value is not listed.</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public List<string>? Required { get; set; }
+#nullable restore
+#else
+        public List<string> Required { get; set; }
+#endif
+        /// <summary>The type property</summary>
+        public global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_type? Type { get; set; }
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
         /// </summary>
@@ -39,6 +58,11 @@ namespace Zemires.N8n.Api.Credentials.Schema.Item
         {
             return new Dictionary<string, Action<IParseNode>>
             {
+                { "additionalProperties", n => { AdditionalProperties = n.GetBoolValue(); } },
+                { "allOf", n => { AllOf = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
+                { "properties", n => { Properties = n.GetObjectValue<global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_properties>(global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_properties.CreateFromDiscriminatorValue); } },
+                { "required", n => { Required = n.GetCollectionOfPrimitiveValues<string>()?.AsList(); } },
+                { "type", n => { Type = n.GetEnumValue<global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_type>(); } },
             };
         }
         /// <summary>
@@ -48,7 +72,11 @@ namespace Zemires.N8n.Api.Credentials.Schema.Item
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteAdditionalData(AdditionalData);
+            writer.WriteBoolValue("additionalProperties", AdditionalProperties);
+            writer.WriteObjectValue<UntypedNode>("allOf", AllOf);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_properties>("properties", Properties);
+            writer.WriteCollectionOfPrimitiveValues<string>("required", Required);
+            writer.WriteEnumValue<global::Zemires.N8n.Api.Credentials.Schema.Item.WithCredentialTypeNameGetResponse_type>("type", Type);
         }
     }
 }

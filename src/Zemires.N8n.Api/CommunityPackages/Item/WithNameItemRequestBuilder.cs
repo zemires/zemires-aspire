@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.CommunityPackages.Item
 {
     /// <summary>
@@ -53,22 +52,22 @@ namespace Zemires.N8n.Api.CommunityPackages.Item
         /// <summary>
         /// Update an installed community package to a new version.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.CommunityPackage"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.CommunityPackage?> PatchAsync(global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchResponse?> PatchAsync(global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.CommunityPackage> PatchAsync(global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchResponse> PatchAsync(global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPatchRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.CommunityPackage>(requestInfo, global::Zemires.N8n.Api.Models.CommunityPackage.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchResponse>(requestInfo, global::Zemires.N8n.Api.CommunityPackages.Item.WithNamePatchResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Uninstall a community package by name.

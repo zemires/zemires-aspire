@@ -3,6 +3,8 @@
 	<PropertyGroup>
 		<AdditionalPackageTags>hosting cockroachdb cockroach database sql</AdditionalPackageTags>
 		<Description>A .NET Aspire hosting integration for CockroachDB servers and databases.</Description>
+		<!-- Released as prerelease package only (see IsPreview in src/Directory.Build.props). -->
+		<IsPreview>true</IsPreview>
 	</PropertyGroup>
 
 	<ItemGroup>

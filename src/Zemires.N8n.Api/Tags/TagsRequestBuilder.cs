@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
+using Zemires.N8n.Api.Models.TagPublicDto;
 using Zemires.N8n.Api.Tags.Item;
 namespace Zemires.N8n.Api.Tags
 {
@@ -20,14 +20,14 @@ namespace Zemires.N8n.Api.Tags
     {
         /// <summary>Gets an item from the Zemires.N8n.Api.tags.item collection</summary>
         /// <param name="position">The ID of the tag.</param>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Tags.Item.TagsItemRequestBuilder"/></returns>
-        public global::Zemires.N8n.Api.Tags.Item.TagsItemRequestBuilder this[string position]
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Tags.Item.WithTagItemRequestBuilder"/></returns>
+        public global::Zemires.N8n.Api.Tags.Item.WithTagItemRequestBuilder this[string position]
         {
             get
             {
                 var urlTplParams = new Dictionary<string, object>(PathParameters);
-                urlTplParams.Add("id", position);
-                return new global::Zemires.N8n.Api.Tags.Item.TagsItemRequestBuilder(urlTplParams, RequestAdapter);
+                urlTplParams.Add("tagId", position);
+                return new global::Zemires.N8n.Api.Tags.Item.WithTagItemRequestBuilder(urlTplParams, RequestAdapter);
             }
         }
         /// <summary>
@@ -67,22 +67,22 @@ namespace Zemires.N8n.Api.Tags
         /// <summary>
         /// Create a tag in your instance.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Tag"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.TagPublicDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Tag?> PostAsync(global::Zemires.N8n.Api.Models.Tag body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.TagPublicDto.Generated?> PostAsync(global::Zemires.N8n.Api.Tags.TagsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Tag> PostAsync(global::Zemires.N8n.Api.Models.Tag body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.TagPublicDto.Generated> PostAsync(global::Zemires.N8n.Api.Tags.TagsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Tag>(requestInfo, global::Zemires.N8n.Api.Models.Tag.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.TagPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.TagPublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve all tags from your instance.
@@ -111,11 +111,11 @@ namespace Zemires.N8n.Api.Tags
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Tag body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Tags.TagsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Tag body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Tags.TagsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

@@ -14,21 +14,21 @@ namespace Zemires.N8n.Api.Users
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>The email property</summary>
+        /// <summary>The reason the invite failed for this user. Empty when the invite succeeded.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public string? Email { get; set; }
+        public string? Error { get; private set; }
 #nullable restore
 #else
-        public string Email { get; set; }
+        public string Error { get; private set; }
 #endif
-        /// <summary>The role property</summary>
+        /// <summary>The user property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public string? Role { get; set; }
+        public global::Zemires.N8n.Api.Users.Users_user? User { get; set; }
 #nullable restore
 #else
-        public string Role { get; set; }
+        public global::Zemires.N8n.Api.Users.Users_user User { get; set; }
 #endif
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.Users.Users"/> and sets the default values.
@@ -55,8 +55,8 @@ namespace Zemires.N8n.Api.Users
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "email", n => { Email = n.GetStringValue(); } },
-                { "role", n => { Role = n.GetStringValue(); } },
+                { "error", n => { Error = n.GetStringValue(); } },
+                { "user", n => { User = n.GetObjectValue<global::Zemires.N8n.Api.Users.Users_user>(global::Zemires.N8n.Api.Users.Users_user.CreateFromDiscriminatorValue); } },
             };
         }
         /// <summary>
@@ -66,8 +66,7 @@ namespace Zemires.N8n.Api.Users
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteStringValue("email", Email);
-            writer.WriteStringValue("role", Role);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Users.Users_user>("user", User);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

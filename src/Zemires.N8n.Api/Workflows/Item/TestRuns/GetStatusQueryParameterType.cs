@@ -3,10 +3,9 @@ using System.Runtime.Serialization;
 using System;
 namespace Zemires.N8n.Api.Workflows.Item.TestRuns
 {
+    /// <summary>Status to filter the test runs by.</summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
-    #pragma warning disable CS1591
     public enum GetStatusQueryParameterType
-    #pragma warning restore CS1591
     {
         [EnumMember(Value = "new")]
         #pragma warning disable CS1591

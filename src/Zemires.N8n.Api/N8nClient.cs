@@ -12,13 +12,16 @@ using System.Threading.Tasks;
 using System;
 using Zemires.N8n.Api.Audit;
 using Zemires.N8n.Api.CommunityPackages;
+using Zemires.N8n.Api.CredentialTypePolicies;
 using Zemires.N8n.Api.Credentials;
 using Zemires.N8n.Api.DataTables;
 using Zemires.N8n.Api.Discover;
 using Zemires.N8n.Api.Executions;
 using Zemires.N8n.Api.Insights;
 using Zemires.N8n.Api.N8nPackages;
+using Zemires.N8n.Api.NodeTypePolicies;
 using Zemires.N8n.Api.Projects;
+using Zemires.N8n.Api.Promotions;
 using Zemires.N8n.Api.RoleMappingRules;
 using Zemires.N8n.Api.Roles;
 using Zemires.N8n.Api.Settings;
@@ -50,6 +53,11 @@ namespace Zemires.N8n.Api
         {
             get => new global::Zemires.N8n.Api.Credentials.CredentialsRequestBuilder(PathParameters, RequestAdapter);
         }
+        /// <summary>The credentialTypePolicies property</summary>
+        public global::Zemires.N8n.Api.CredentialTypePolicies.CredentialTypePoliciesRequestBuilder CredentialTypePolicies
+        {
+            get => new global::Zemires.N8n.Api.CredentialTypePolicies.CredentialTypePoliciesRequestBuilder(PathParameters, RequestAdapter);
+        }
         /// <summary>The dataTables property</summary>
         public global::Zemires.N8n.Api.DataTables.DataTablesRequestBuilder DataTables
         {
@@ -75,10 +83,20 @@ namespace Zemires.N8n.Api
         {
             get => new global::Zemires.N8n.Api.N8nPackages.N8nPackagesRequestBuilder(PathParameters, RequestAdapter);
         }
+        /// <summary>The nodeTypePolicies property</summary>
+        public global::Zemires.N8n.Api.NodeTypePolicies.NodeTypePoliciesRequestBuilder NodeTypePolicies
+        {
+            get => new global::Zemires.N8n.Api.NodeTypePolicies.NodeTypePoliciesRequestBuilder(PathParameters, RequestAdapter);
+        }
         /// <summary>The projects property</summary>
         public global::Zemires.N8n.Api.Projects.ProjectsRequestBuilder Projects
         {
             get => new global::Zemires.N8n.Api.Projects.ProjectsRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The promotions property</summary>
+        public global::Zemires.N8n.Api.Promotions.PromotionsRequestBuilder Promotions
+        {
+            get => new global::Zemires.N8n.Api.Promotions.PromotionsRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The roleMappingRules property</summary>
         public global::Zemires.N8n.Api.RoleMappingRules.RoleMappingRulesRequestBuilder RoleMappingRules

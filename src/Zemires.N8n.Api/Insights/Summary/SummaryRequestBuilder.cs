@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.Insights.Summary
 {
     /// <summary>
@@ -36,20 +35,20 @@ namespace Zemires.N8n.Api.Insights.Summary
         /// <summary>
         /// Retrieve the insights summary for the selected date range.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Insights"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Insights.Summary.SummaryGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Insights?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Insights.Summary.SummaryRequestBuilder.SummaryRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Insights.Summary.SummaryGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Insights.Summary.SummaryRequestBuilder.SummaryRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Insights> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Insights.Summary.SummaryRequestBuilder.SummaryRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Insights.Summary.SummaryGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Insights.Summary.SummaryRequestBuilder.SummaryRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Insights>(requestInfo, global::Zemires.N8n.Api.Models.Insights.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Insights.Summary.SummaryGetResponse>(requestInfo, global::Zemires.N8n.Api.Insights.Summary.SummaryGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve the insights summary for the selected date range.
@@ -85,22 +84,27 @@ namespace Zemires.N8n.Api.Insights.Summary
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class SummaryRequestBuilderGetQueryParameters 
         {
-            /// <summary>ISO 8601 end date. Defaults to now.</summary>
+            #pragma warning disable CS1591
             [QueryParameter("endDate")]
             public DateTimeOffset? EndDate { get; set; }
-            /// <summary>Project identifier to filter insights by project.</summary>
+            #pragma warning restore CS1591
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string? ProjectId { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string ProjectId { get; set; }
+            #pragma warning restore CS1591
 #endif
-            /// <summary>ISO 8601 start date. Defaults to 7 days ago.</summary>
+            #pragma warning disable CS1591
             [QueryParameter("startDate")]
             public DateTimeOffset? StartDate { get; set; }
+            #pragma warning restore CS1591
         }
     }
 }

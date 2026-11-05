@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using Zemires.N8n.Api.Models.ImportResultDto;
 namespace Zemires.N8n.Api.N8nPackages.Import
 {
     /// <summary>
@@ -33,34 +34,34 @@ namespace Zemires.N8n.Api.N8nPackages.Import
         {
         }
         /// <summary>
-        /// **Beta** — breaking changes may still occur without major version bump.Imports a gzip-compressed tar package (`.n8np`) into the target project. Send thearchive as the multipart field `package`. Optional routing uses form fields`projectId` and `folderId` (omit or send empty for defaults). Every optionalmode/policy field (credential, workflow, project, folder, data table, variable,and tag) takes its default when omitted. The required`workflowConflictPolicy` field controls what happens when a package workflowmatches an existing workflow by source id in the target project. Maximum uploadsize is `N8N_ENDPOINTS_PAYLOAD_SIZE_MAX` MB (default 16).The package must declare its manifest at `manifest.json` and include every filereferenced by the manifest. The caller is authorised through the `workflow:import`scope. With the default `workflowIdPolicy=new`, newly created workflows receive afresh local id; imported workflows arrive inactive unless `workflowPublishingPolicy`publishes them after import.Credential references are resolved before any workflow is written. Credentials owned by,shared with, or global to the target project (with `credential:read`) match.
+        /// **Beta** — breaking changes may still occur without major version bump.Imports a gzip-compressed tar package (`.n8np`) into the target project. Send the archive as the multipart field `package`. Optional routing uses form fields `projectId` and `folderId` (omit or send empty for defaults). Every optional mode/policy field (credential, workflow, project, folder, data table, variable, and tag) takes its default when omitted; the one non-fixed default is `folderConflictPolicy`, which follows `projectConflictPolicy` on a project package. The required `workflowConflictPolicy` field controls what happens when a package workflow matches an existing workflow by source id in the target project. Maximum upload size is `N8N_ENDPOINTS_PAYLOAD_SIZE_MAX` MB (default 16).The package must declare its manifest at `manifest.json` and include every file the manifest references.Credential references are resolved before any workflow is written.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.N8nPackages.Import.ImportPostResponse"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.ImportResultDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
-        /// <exception cref="global::Zemires.N8n.Api.N8nPackages.Import.Import409Error">When receiving a 409 status code</exception>
-        /// <exception cref="global::Zemires.N8n.Api.N8nPackages.Import.Import422Error">When receiving a 422 status code</exception>
+        /// <exception cref="global::Zemires.N8n.Api.N8nPackages.Import.Generated409Error">When receiving a 409 status code</exception>
+        /// <exception cref="global::Zemires.N8n.Api.N8nPackages.Import.Generated422Error">When receiving a 422 status code</exception>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.N8nPackages.Import.ImportPostResponse?> PostAsync(MultipartBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.ImportResultDto.Generated?> PostAsync(MultipartBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.N8nPackages.Import.ImportPostResponse> PostAsync(MultipartBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.ImportResultDto.Generated> PostAsync(MultipartBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
             var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
             {
-                { "409", global::Zemires.N8n.Api.N8nPackages.Import.Import409Error.CreateFromDiscriminatorValue },
-                { "422", global::Zemires.N8n.Api.N8nPackages.Import.Import422Error.CreateFromDiscriminatorValue },
+                { "409", global::Zemires.N8n.Api.N8nPackages.Import.Generated409Error.CreateFromDiscriminatorValue },
+                { "422", global::Zemires.N8n.Api.N8nPackages.Import.Generated422Error.CreateFromDiscriminatorValue },
             };
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.N8nPackages.Import.ImportPostResponse>(requestInfo, global::Zemires.N8n.Api.N8nPackages.Import.ImportPostResponse.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.ImportResultDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.ImportResultDto.Generated.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
-        /// **Beta** — breaking changes may still occur without major version bump.Imports a gzip-compressed tar package (`.n8np`) into the target project. Send thearchive as the multipart field `package`. Optional routing uses form fields`projectId` and `folderId` (omit or send empty for defaults). Every optionalmode/policy field (credential, workflow, project, folder, data table, variable,and tag) takes its default when omitted. The required`workflowConflictPolicy` field controls what happens when a package workflowmatches an existing workflow by source id in the target project. Maximum uploadsize is `N8N_ENDPOINTS_PAYLOAD_SIZE_MAX` MB (default 16).The package must declare its manifest at `manifest.json` and include every filereferenced by the manifest. The caller is authorised through the `workflow:import`scope. With the default `workflowIdPolicy=new`, newly created workflows receive afresh local id; imported workflows arrive inactive unless `workflowPublishingPolicy`publishes them after import.Credential references are resolved before any workflow is written. Credentials owned by,shared with, or global to the target project (with `credential:read`) match.
+        /// **Beta** — breaking changes may still occur without major version bump.Imports a gzip-compressed tar package (`.n8np`) into the target project. Send the archive as the multipart field `package`. Optional routing uses form fields `projectId` and `folderId` (omit or send empty for defaults). Every optional mode/policy field (credential, workflow, project, folder, data table, variable, and tag) takes its default when omitted; the one non-fixed default is `folderConflictPolicy`, which follows `projectConflictPolicy` on a project package. The required `workflowConflictPolicy` field controls what happens when a package workflow matches an existing workflow by source id in the target project. Maximum upload size is `N8N_ENDPOINTS_PAYLOAD_SIZE_MAX` MB (default 16).The package must declare its manifest at `manifest.json` and include every file the manifest references.Credential references are resolved before any workflow is written.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="body">The request body</param>

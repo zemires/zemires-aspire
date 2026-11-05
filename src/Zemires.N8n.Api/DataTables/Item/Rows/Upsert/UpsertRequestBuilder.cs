@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.DataTables.Item.Rows.Upsert
 {
     /// <summary>
@@ -34,38 +33,38 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Upsert
         {
         }
         /// <summary>
-        /// Update an existing row or insert a new one if no row matches the filter conditions.
+        /// Update an existing row, or insert a new one if no row matches the filter conditions.
         /// </summary>
-        /// <returns>A <see cref="bool"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<bool?> PostAsync(global::Zemires.N8n.Api.Models.UpsertRowRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse?> PostAsync(global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<bool?> PostAsync(global::Zemires.N8n.Api.Models.UpsertRowRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse> PostAsync(global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendPrimitiveAsync<bool?>(requestInfo, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse>(requestInfo, global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
-        /// Update an existing row or insert a new one if no row matches the filter conditions.
+        /// Update an existing row, or insert a new one if no row matches the filter conditions.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.UpsertRowRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.UpsertRowRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -83,6 +82,82 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Upsert
         public global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder WithUrl(string rawUrl)
         {
             return new global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder(rawUrl, RequestAdapter);
+        }
+        /// <summary>
+        /// Composed type wrapper for classes <see cref="bool"/>, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1&gt;, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2&gt;
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
+        public partial class UpsertPostResponse : IComposedTypeWrapper, IParsable
+        {
+            /// <summary>Composed type representation for type <see cref="bool"/></summary>
+            public bool? Boolean { get; set; }
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1&gt;</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1>? UpsertPostResponseMember1 { get; set; }
+#nullable restore
+#else
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1> UpsertPostResponseMember1 { get; set; }
+#endif
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2&gt;</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2>? UpsertPostResponseMember2 { get; set; }
+#nullable restore
+#else
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2> UpsertPostResponseMember2 { get; set; }
+#endif
+            /// <summary>
+            /// Creates a new instance of the appropriate class based on discriminator value
+            /// </summary>
+            /// <returns>A <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse"/></returns>
+            /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
+            public static global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse CreateFromDiscriminatorValue(IParseNode parseNode)
+            {
+                if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
+                var result = new global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertRequestBuilder.UpsertPostResponse();
+                if(parseNode.GetBoolValue() is bool booleanValue)
+                {
+                    result.Boolean = booleanValue;
+                }
+                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1>(global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1> upsertPostResponseMember1Value)
+                {
+                    result.UpsertPostResponseMember1 = upsertPostResponseMember1Value;
+                }
+                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2>(global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2> upsertPostResponseMember2Value)
+                {
+                    result.UpsertPostResponseMember2 = upsertPostResponseMember2Value;
+                }
+                return result;
+            }
+            /// <summary>
+            /// The deserialization information for the current model
+            /// </summary>
+            /// <returns>A IDictionary&lt;string, Action&lt;IParseNode&gt;&gt;</returns>
+            public virtual IDictionary<string, Action<IParseNode>> GetFieldDeserializers()
+            {
+                return new Dictionary<string, Action<IParseNode>>();
+            }
+            /// <summary>
+            /// Serializes information the current object
+            /// </summary>
+            /// <param name="writer">Serialization writer to use to serialize this model</param>
+            public virtual void Serialize(ISerializationWriter writer)
+            {
+                if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
+                if(Boolean != null)
+                {
+                    writer.WriteBoolValue(null, Boolean);
+                }
+                else if(UpsertPostResponseMember1 != null)
+                {
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember1>(null, UpsertPostResponseMember1);
+                }
+                else if(UpsertPostResponseMember2 != null)
+                {
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Upsert.UpsertPostResponseMember2>(null, UpsertPostResponseMember2);
+                }
+            }
         }
     }
 }

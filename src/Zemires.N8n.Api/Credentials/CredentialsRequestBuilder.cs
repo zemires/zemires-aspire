@@ -10,7 +10,7 @@ using System.Threading;
 using System;
 using Zemires.N8n.Api.Credentials.Item;
 using Zemires.N8n.Api.Credentials.Schema;
-using Zemires.N8n.Api.Models;
+using Zemires.N8n.Api.Models.CredentialPublicDto;
 namespace Zemires.N8n.Api.Credentials
 {
     /// <summary>
@@ -25,15 +25,15 @@ namespace Zemires.N8n.Api.Credentials
             get => new global::Zemires.N8n.Api.Credentials.Schema.SchemaRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>Gets an item from the Zemires.N8n.Api.credentials.item collection</summary>
-        /// <param name="position">The credential ID</param>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Credentials.Item.CredentialsItemRequestBuilder"/></returns>
-        public global::Zemires.N8n.Api.Credentials.Item.CredentialsItemRequestBuilder this[string position]
+        /// <param name="position">The ID of the credential.</param>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Credentials.Item.WithCredentialItemRequestBuilder"/></returns>
+        public global::Zemires.N8n.Api.Credentials.Item.WithCredentialItemRequestBuilder this[string position]
         {
             get
             {
                 var urlTplParams = new Dictionary<string, object>(PathParameters);
-                urlTplParams.Add("id", position);
-                return new global::Zemires.N8n.Api.Credentials.Item.CredentialsItemRequestBuilder(urlTplParams, RequestAdapter);
+                urlTplParams.Add("credentialId", position);
+                return new global::Zemires.N8n.Api.Credentials.Item.WithCredentialItemRequestBuilder(urlTplParams, RequestAdapter);
             }
         }
         /// <summary>
@@ -55,40 +55,40 @@ namespace Zemires.N8n.Api.Credentials
         /// <summary>
         /// Retrieve all credentials from your instance. Only available for the instance owner and admin. Credential data (secrets) is not included.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.CredentialList"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Credentials.CredentialsGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.CredentialList?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Credentials.CredentialsRequestBuilder.CredentialsRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Credentials.CredentialsGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Credentials.CredentialsRequestBuilder.CredentialsRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.CredentialList> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Credentials.CredentialsRequestBuilder.CredentialsRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Credentials.CredentialsGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Credentials.CredentialsRequestBuilder.CredentialsRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.CredentialList>(requestInfo, global::Zemires.N8n.Api.Models.CredentialList.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Credentials.CredentialsGetResponse>(requestInfo, global::Zemires.N8n.Api.Credentials.CredentialsGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Creates a credential that can be used by nodes of the specified type.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.CreateCredentialResponse"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.CredentialPublicDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.CreateCredentialResponse?> PostAsync(global::Zemires.N8n.Api.Models.CredentialCreate body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.CredentialPublicDto.Generated?> PostAsync(global::Zemires.N8n.Api.Credentials.CredentialsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.CreateCredentialResponse> PostAsync(global::Zemires.N8n.Api.Models.CredentialCreate body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.CredentialPublicDto.Generated> PostAsync(global::Zemires.N8n.Api.Credentials.CredentialsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.CreateCredentialResponse>(requestInfo, global::Zemires.N8n.Api.Models.CreateCredentialResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.CredentialPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.CredentialPublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve all credentials from your instance. Only available for the instance owner and admin. Credential data (secrets) is not included.
@@ -117,11 +117,11 @@ namespace Zemires.N8n.Api.Credentials
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.CredentialCreate body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Credentials.CredentialsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.CredentialCreate body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Credentials.CredentialsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
