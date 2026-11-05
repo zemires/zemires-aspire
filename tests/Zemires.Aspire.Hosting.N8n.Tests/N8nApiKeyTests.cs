@@ -37,6 +37,41 @@ public class N8nApiKeyTests
     }
 
     [Fact]
+    public async Task WithApiKey_WithoutCaller_DoesNotWaitForKey()
+    {
+        // Aspire resolves the connection string without caller before it creates the n8n container; waiting would deadlock.
+        var builder = DistributedApplication.CreateBuilder();
+        var n8n = AddN8nWithAllocatedEndpoint(builder);
+        var apiKey = n8n.Resource.ApiKey!;
+        var ct = TestContext.Current.CancellationToken;
+
+        Assert.Null(await apiKey.GetValueAsync(new ValueProviderContext(), ct).AsTask().WaitAsync(TimeSpan.FromSeconds(5), ct));
+        Assert.Null(await apiKey.GetValueAsync(new ValueProviderContext { Caller = n8n.Resource }, ct).AsTask().WaitAsync(TimeSpan.FromSeconds(5), ct));
+        Assert.EndsWith(";ApiKey=", await ((IValueProvider)n8n.Resource.ConnectionStringExpression).GetValueAsync(ct).AsTask().WaitAsync(TimeSpan.FromSeconds(5), ct));
+
+        apiKey.Set("key-1");
+        Assert.Equal("key-1", await apiKey.GetValueAsync(new ValueProviderContext(), ct));
+    }
+
+    [Fact]
+    public async Task WithApiKey_ConsumerCaller_WaitsForKey()
+    {
+        var builder = DistributedApplication.CreateBuilder();
+        var n8n = AddN8nWithAllocatedEndpoint(builder);
+        var consumer = builder.AddExecutable("consumer", "consumer", "."); // localhost network, like the allocated endpoint
+        var ct = TestContext.Current.CancellationToken;
+
+        var pending = ((IValueProvider)n8n.Resource.ConnectionStringExpression)
+            .GetValueAsync(new ValueProviderContext { Caller = consumer.Resource }, ct).AsTask();
+        await Task.Delay(50, ct);
+        Assert.False(pending.IsCompleted);
+
+        n8n.Resource.ApiKey!.Set("key-1");
+
+        Assert.EndsWith(";ApiKey=key-1", await pending.WaitAsync(TimeSpan.FromSeconds(5), ct));
+    }
+
+    [Fact]
     public void WithoutApiKey_ConnectionStringIsUrl()
     {
         var builder = DistributedApplication.CreateBuilder();
@@ -127,6 +162,12 @@ public class N8nApiKeyTests
         Assert.Equal(expected, await provisioner.IsValidAsync("key", TestContext.Current.CancellationToken));
         Assert.Equal("key", handler.Requests.Single().ApiKey);
     }
+
+    private static IResourceBuilder<N8nResource> AddN8nWithAllocatedEndpoint(IDistributedApplicationBuilder builder) =>
+        builder.AddN8n("n8n")
+            .WithEndpoint("http", e => e.AllocatedEndpoint = new AllocatedEndpoint(e, "localhost", 5678))
+            .WithInstanceOwner("admin@dev.local", "Admin", "Local")
+            .WithApiKey();
 
     private sealed record RecordedRequest(HttpMethod Method, string Path, string? Cookie, string? BrowserId, string? ApiKey, string? Body);
 
