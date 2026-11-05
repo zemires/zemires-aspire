@@ -34,4 +34,23 @@ public class N8nIntegrationTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
+    [Fact]
+    public async Task N8n_WithApiKey_CreatesKeyForPublicApi()
+    {
+        var appHost = await DistributedApplicationTestingBuilder.CreateAsync<Projects.Zemires_Aspire_Hosting_N8n_AppHost>(TestContext.Current.CancellationToken);
+        await using var app = await appHost.BuildAsync(TestContext.Current.CancellationToken);
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        var n8n = app.Services.GetRequiredService<DistributedApplicationModel>().Resources.OfType<N8nResource>().Single(r => r.Name == "n8n");
+        var apiKey = await n8n.ApiKey!.GetValueAsync(TestContext.Current.CancellationToken).AsTask()
+            .WaitAsync(TimeSpan.FromMinutes(3), TestContext.Current.CancellationToken);
+
+        using var httpClient = app.CreateHttpClient("n8n");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/workflows?limit=1");
+        request.Headers.Add("X-N8N-API-KEY", apiKey);
+        using var response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
 }

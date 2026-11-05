@@ -6,12 +6,13 @@ namespace Microsoft.Extensions.Hosting;
 public class N8nClientSettings
 {
     /// <summary>
-    /// Gets or sets the base URI of the n8n instance. Overridden by <c>ConnectionStrings:{name}</c> when present.
+    /// Gets or sets the base URI of the n8n instance. Overridden by the URL or <c>Endpoint</c> of <c>ConnectionStrings:{name}</c> when present.
     /// </summary>
     public Uri? Endpoint { get; set; }
 
     /// <summary>
-    /// Gets or sets the n8n API key sent as the <c>X-N8N-API-KEY</c> header. When empty, no key is sent.
+    /// Gets or sets the n8n API key sent as the <c>X-N8N-API-KEY</c> header. Overridden by the <c>ApiKey</c> of
+    /// <c>ConnectionStrings:{name}</c> when present. When empty, no key is sent.
     /// </summary>
     public string? ApiKey { get; set; }
 

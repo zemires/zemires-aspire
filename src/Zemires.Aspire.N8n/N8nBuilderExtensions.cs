@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Data.Common;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Zemires.Aspire;
@@ -15,10 +16,10 @@ public static class N8nBuilderExtensions
     private const string DefaultConfigSectionName = "Aspire:N8n:Client";
 
     /// <summary>
-    /// Registers <see cref="N8nClient"/> as singleton and adds an n8n health check.
+    /// Registers <see cref="N8nClient"/> and <see cref="N8nWebhookClient"/> as singletons and adds an n8n health check.
     /// </summary>
     /// <param name="builder">The host application builder.</param>
-    /// <param name="connectionName">The name of the connection string <c>ConnectionStrings:{connectionName}</c> (the n8n URL).</param>
+    /// <param name="connectionName">The name of the connection string <c>ConnectionStrings:{connectionName}</c>: the n8n URL or <c>Endpoint={url};ApiKey={key}</c>.</param>
     /// <param name="configureSettings">Configures the settings after they are read from <c>Aspire:N8n:Client</c>.</param>
     /// <exception cref="InvalidOperationException">No endpoint is configured.</exception>
     public static void AddN8nClient(
@@ -33,7 +34,7 @@ public static class N8nBuilderExtensions
     }
 
     /// <summary>
-    /// Registers <see cref="N8nClient"/> as keyed singleton for <paramref name="name"/> and adds an n8n health check.
+    /// Registers <see cref="N8nClient"/> and <see cref="N8nWebhookClient"/> as keyed singletons for <paramref name="name"/> and adds an n8n health check.
     /// Settings are read from <c>Aspire:N8n:Client</c>, overridden by <c>Aspire:N8n:Client:{name}</c>.
     /// </summary>
     /// <param name="builder">The host application builder.</param>
@@ -67,7 +68,7 @@ public static class N8nBuilderExtensions
 
         if (builder.Configuration.GetConnectionString(connectionName) is { Length: > 0 } connectionString)
         {
-            settings.Endpoint = new Uri(connectionString);
+            ParseConnectionString(settings, connectionString);
         }
 
         configureSettings?.Invoke(settings);
@@ -78,10 +79,12 @@ public static class N8nBuilderExtensions
         if (serviceKey is null)
         {
             builder.Services.AddSingleton(CreateClient);
+            builder.Services.AddSingleton(CreateWebhookClient);
         }
         else
         {
             builder.Services.AddKeyedSingleton(serviceKey, (sp, _) => CreateClient(sp));
+            builder.Services.AddKeyedSingleton(serviceKey, (sp, _) => CreateWebhookClient(sp));
         }
 
         if (!settings.DisableHealthChecks)
@@ -96,14 +99,44 @@ public static class N8nBuilderExtensions
 
         N8nClient CreateClient(IServiceProvider serviceProvider)
         {
-            if (settings.Endpoint is null)
-            {
-                throw new InvalidOperationException(
-                    $"N8nClient could not be configured. Provide 'ConnectionStrings:{connectionName}' or '{nameof(settings.Endpoint)}' in the '{DefaultConfigSectionName}' configuration section.");
-            }
-
+            var endpoint = GetEndpoint();
             var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(httpClientName);
-            return new N8nClient(settings.Endpoint.ToString(), settings.ApiKey, httpClient);
+            return new N8nClient(endpoint.ToString(), settings.ApiKey, httpClient);
+        }
+
+        N8nWebhookClient CreateWebhookClient(IServiceProvider serviceProvider)
+        {
+            var endpoint = GetEndpoint();
+            var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(httpClientName);
+            // trailing slash, so relative webhook paths keep a path of the endpoint
+            httpClient.BaseAddress = new Uri($"{endpoint.ToString().TrimEnd('/')}/");
+            return new N8nWebhookClient(httpClient);
+        }
+
+        Uri GetEndpoint() => settings.Endpoint ?? throw new InvalidOperationException(
+            $"N8nClient could not be configured. Provide 'ConnectionStrings:{connectionName}' or '{nameof(settings.Endpoint)}' in the '{DefaultConfigSectionName}' configuration section.");
+    }
+
+    /// <summary>
+    /// Reads the endpoint and API key from a connection string: an absolute URL, or <c>Endpoint={url};ApiKey={key}</c>.
+    /// </summary>
+    internal static void ParseConnectionString(N8nClientSettings settings, string connectionString)
+    {
+        if (Uri.TryCreate(connectionString, UriKind.Absolute, out var uri) && !connectionString.Contains(';', StringComparison.Ordinal))
+        {
+            settings.Endpoint = uri;
+            return;
+        }
+
+        var connectionBuilder = new DbConnectionStringBuilder { ConnectionString = connectionString };
+        if (connectionBuilder.TryGetValue("Endpoint", out var endpoint) && endpoint is string { Length: > 0 } endpointValue)
+        {
+            settings.Endpoint = new Uri(endpointValue);
+        }
+
+        if (connectionBuilder.TryGetValue("ApiKey", out var apiKey) && apiKey is string { Length: > 0 } apiKeyValue)
+        {
+            settings.ApiKey = apiKeyValue;
         }
     }
 }

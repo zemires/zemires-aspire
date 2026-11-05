@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Zemires.Aspire.N8n.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\Shared\HealthCheckExtensions.cs" Link="Shared\HealthCheckExtensions.cs" />
   </ItemGroup>
 
