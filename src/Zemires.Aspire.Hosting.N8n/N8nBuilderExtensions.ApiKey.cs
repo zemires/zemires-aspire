@@ -77,6 +77,7 @@ public static partial class N8nBuilderExtensions
             using var handler = new SocketsHttpHandler { UseCookies = false };
             using var httpClient = new HttpClient(handler) { BaseAddress = new Uri(n8n.PrimaryEndpoint.Url) };
             var provisioner = new N8nApiKeyProvisioner(httpClient, logger);
+            await provisioner.WaitUntilStartedAsync(TimeSpan.FromMinutes(5), ct).ConfigureAwait(false);
 
             var persisted = services.GetService<IConfiguration>()?[apiKey.ConfigurationKey];
             if (!string.IsNullOrEmpty(persisted) && await provisioner.IsValidAsync(persisted, ct).ConfigureAwait(false))

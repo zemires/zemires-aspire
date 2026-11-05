@@ -19,6 +19,38 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
     // n8n binds the session cookie to the browser-id header sent at login; later calls must send the same value.
     private const string BrowserId = "zemires-aspire-hosting-n8n";
 
+    /// <summary>Gets or sets the delay between checks of <see cref="WaitUntilStartedAsync"/>.</summary>
+    internal TimeSpan StartupPollDelay { get; init; } = TimeSpan.FromSeconds(1);
+
+    /// <summary>
+    /// Waits until n8n serves its REST API. n8n reports healthy (<c>/healthz</c>) before that and answers every route
+    /// with <c>200 n8n is starting up. Please wait</c> (no JSON) meanwhile.
+    /// </summary>
+    public async Task WaitUntilStartedAsync(TimeSpan timeout, CancellationToken cancellationToken)
+    {
+        using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutSource.CancelAfter(timeout);
+        try
+        {
+            while (true)
+            {
+                using (var response = await httpClient.GetAsync("/rest/settings", timeoutSource.Token).ConfigureAwait(false))
+                {
+                    if (response.IsSuccessStatusCode && IsJson(response))
+                    {
+                        return;
+                    }
+                }
+
+                await Task.Delay(StartupPollDelay, timeoutSource.Token).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new TimeoutException($"n8n did not serve its REST API within {timeout}.");
+        }
+    }
+
     /// <summary>Checks whether n8n accepts <paramref name="apiKey"/> for its public API.</summary>
     public async Task<bool> IsValidAsync(string apiKey, CancellationToken cancellationToken)
     {
@@ -112,6 +144,9 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
         var body = await response.Content.ReadFromJsonAsync<JsonObject>(cancellationToken).ConfigureAwait(false);
         return body?["data"]?.AsArray().Select(scope => scope!.GetValue<string>()).ToArray() ?? [];
     }
+
+    private static bool IsJson(HttpResponseMessage response) =>
+        response.Content.Headers.ContentType?.MediaType == "application/json";
 
     private static HttpRequestMessage CreateSessionRequest(HttpMethod method, string path, string sessionCookie)
     {

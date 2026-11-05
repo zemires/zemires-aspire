@@ -149,6 +149,30 @@ public class N8nApiKeyTests
         Assert.Equal(HttpStatusCode.Unauthorized, ex.StatusCode);
     }
 
+    [Fact]
+    public async Task Provisioner_WaitUntilStarted_WaitsForRestApi()
+    {
+        var handler = new FakeN8nHandler { StartingUpResponses = 3 };
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://n8n.test") };
+        var provisioner = new N8nApiKeyProvisioner(httpClient, NullLogger.Instance) { StartupPollDelay = TimeSpan.FromMilliseconds(1) };
+
+        await provisioner.WaitUntilStartedAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
+
+        Assert.Equal(4, handler.Requests.Count);
+        Assert.All(handler.Requests, r => Assert.Equal("/rest/settings", r.Path));
+    }
+
+    [Fact]
+    public async Task Provisioner_WaitUntilStarted_TimesOut()
+    {
+        var handler = new FakeN8nHandler { StartingUpResponses = int.MaxValue };
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://n8n.test") };
+        var provisioner = new N8nApiKeyProvisioner(httpClient, NullLogger.Instance) { StartupPollDelay = TimeSpan.FromMilliseconds(10) };
+
+        await Assert.ThrowsAsync<TimeoutException>(() =>
+            provisioner.WaitUntilStartedAsync(TimeSpan.FromMilliseconds(200), TestContext.Current.CancellationToken));
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.OK, true)]
     [InlineData(HttpStatusCode.Unauthorized, false)]
@@ -179,6 +203,9 @@ public class N8nApiKeyTests
 
         public HttpStatusCode PublicApiStatus { get; init; } = HttpStatusCode.OK;
 
+        /// <summary>Number of requests answered with n8n's startup page, as n8n does before its REST API is up.</summary>
+        public int StartingUpResponses { get; set; }
+
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var path = request.RequestUri!.AbsolutePath;
@@ -186,8 +213,16 @@ public class N8nApiKeyTests
                 Header(request, "Cookie"), Header(request, "browser-id"), Header(request, "X-N8N-API-KEY"),
                 request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken)));
 
+            if (StartingUpResponses > 0)
+            {
+                StartingUpResponses--;
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("n8n is starting up. Please wait") };
+            }
+
             switch (request.Method.Method, path)
             {
+                case ("GET", "/rest/settings"):
+                    return Json(new { data = new { } });
                 case ("POST", "/rest/login"):
                     var login = new HttpResponseMessage(LoginStatus) { Content = JsonContent.Create(new { data = new { } }) };
                     login.Headers.Add("Set-Cookie", "other=1; Path=/");
