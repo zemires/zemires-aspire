@@ -8,6 +8,11 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <DebugType>embedded</DebugType>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <!--
+      Stable packages use IsPreview=false (default). Projects not ready for a stable release set
+      IsPreview=true in their project file; a stable release (ReleaseBuild=true) then packs them as
+      $(VersionPrefix)-$(ToolkitPreviewVersion) (see src/Directory.Build.targets).
+    -->
     <IsPreview>false</IsPreview>
   </PropertyGroup>
 

@@ -24,13 +24,13 @@ namespace Zemires.N8n.Api.Workflows
 #endif
         /// <summary>The autosaved property</summary>
         public bool? Autosaved { get; set; }
-        /// <summary>The connections property</summary>
+        /// <summary>Connections between nodes, keyed by source node name</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? Connections { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_connections? Connections { get; set; }
 #nullable restore
 #else
-        public UntypedNode Connections { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_connections Connections { get; set; }
 #endif
         /// <summary>The createdAt property</summary>
         public DateTimeOffset? CreatedAt { get; set; }
@@ -50,21 +50,21 @@ namespace Zemires.N8n.Api.Workflows
 #else
         public string Name { get; set; }
 #endif
-        /// <summary>The nodeGroups property</summary>
+        /// <summary>Visual groupings of nodes shown as frames on the canvas</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? NodeGroups { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodeGroups>? NodeGroups { get; set; }
 #nullable restore
 #else
-        public UntypedNode NodeGroups { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodeGroups> NodeGroups { get; set; }
 #endif
-        /// <summary>The nodes property</summary>
+        /// <summary>Nodes that make up the workflow</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? Nodes { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodes>? Nodes { get; set; }
 #nullable restore
 #else
-        public UntypedNode Nodes { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodes> Nodes { get; set; }
 #endif
         /// <summary>The updatedAt property</summary>
         public DateTimeOffset? UpdatedAt { get; set; }
@@ -111,12 +111,12 @@ namespace Zemires.N8n.Api.Workflows
             {
                 { "authors", n => { Authors = n.GetStringValue(); } },
                 { "autosaved", n => { Autosaved = n.GetBoolValue(); } },
-                { "connections", n => { Connections = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
+                { "connections", n => { Connections = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_connections>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_connections.CreateFromDiscriminatorValue); } },
                 { "createdAt", n => { CreatedAt = n.GetDateTimeOffsetValue(); } },
                 { "description", n => { Description = n.GetStringValue(); } },
                 { "name", n => { Name = n.GetStringValue(); } },
-                { "nodeGroups", n => { NodeGroups = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
-                { "nodes", n => { Nodes = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
+                { "nodeGroups", n => { NodeGroups = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodeGroups>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodeGroups.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "nodes", n => { Nodes = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodes>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodes.CreateFromDiscriminatorValue)?.AsList(); } },
                 { "updatedAt", n => { UpdatedAt = n.GetDateTimeOffsetValue(); } },
                 { "versionId", n => { VersionId = n.GetStringValue(); } },
                 { "workflowId", n => { WorkflowId = n.GetStringValue(); } },
@@ -131,12 +131,12 @@ namespace Zemires.N8n.Api.Workflows
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
             writer.WriteStringValue("authors", Authors);
             writer.WriteBoolValue("autosaved", Autosaved);
-            writer.WriteObjectValue<UntypedNode>("connections", Connections);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_connections>("connections", Connections);
             writer.WriteDateTimeOffsetValue("createdAt", CreatedAt);
             writer.WriteStringValue("description", Description);
             writer.WriteStringValue("name", Name);
-            writer.WriteObjectValue<UntypedNode>("nodeGroups", NodeGroups);
-            writer.WriteObjectValue<UntypedNode>("nodes", Nodes);
+            writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodeGroups>("nodeGroups", NodeGroups);
+            writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion_nodes>("nodes", Nodes);
             writer.WriteDateTimeOffsetValue("updatedAt", UpdatedAt);
             writer.WriteStringValue("versionId", VersionId);
             writer.WriteStringValue("workflowId", WorkflowId);

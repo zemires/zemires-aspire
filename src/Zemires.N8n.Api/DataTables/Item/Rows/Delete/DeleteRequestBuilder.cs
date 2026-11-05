@@ -79,20 +79,28 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Delete
             return new global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteRequestBuilder(rawUrl, RequestAdapter);
         }
         /// <summary>
-        /// Composed type wrapper for classes <see cref="bool"/>, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow&gt;
+        /// Composed type wrapper for classes <see cref="bool"/>, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1&gt;, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2&gt;
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class DeleteDeleteResponse : IComposedTypeWrapper, IParsable
         {
             /// <summary>Composed type representation for type <see cref="bool"/></summary>
             public bool? Boolean { get; set; }
-            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow&gt;</summary>
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1&gt;</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow>? DataTableRow { get; set; }
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1>? DeleteDeleteResponseMember1 { get; set; }
 #nullable restore
 #else
-            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow> DataTableRow { get; set; }
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1> DeleteDeleteResponseMember1 { get; set; }
+#endif
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2&gt;</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2>? DeleteDeleteResponseMember2 { get; set; }
+#nullable restore
+#else
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2> DeleteDeleteResponseMember2 { get; set; }
 #endif
             /// <summary>
             /// Creates a new instance of the appropriate class based on discriminator value
@@ -102,15 +110,18 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Delete
             public static global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteRequestBuilder.DeleteDeleteResponse CreateFromDiscriminatorValue(IParseNode parseNode)
             {
                 if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
-                var mappingValue = parseNode.GetChildNode("")?.GetStringValue();
                 var result = new global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteRequestBuilder.DeleteDeleteResponse();
                 if(parseNode.GetBoolValue() is bool booleanValue)
                 {
                     result.Boolean = booleanValue;
                 }
-                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow>(global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow> dataTableRowValue)
+                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1>(global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1> deleteDeleteResponseMember1Value)
                 {
-                    result.DataTableRow = dataTableRowValue;
+                    result.DeleteDeleteResponseMember1 = deleteDeleteResponseMember1Value;
+                }
+                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2>(global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2> deleteDeleteResponseMember2Value)
+                {
+                    result.DeleteDeleteResponseMember2 = deleteDeleteResponseMember2Value;
                 }
                 return result;
             }
@@ -133,9 +144,13 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Delete
                 {
                     writer.WriteBoolValue(null, Boolean);
                 }
-                else if(DataTableRow != null)
+                else if(DeleteDeleteResponseMember1 != null)
                 {
-                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DataTableRow>(null, DataTableRow);
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember1>(null, DeleteDeleteResponseMember1);
+                }
+                else if(DeleteDeleteResponseMember2 != null)
+                {
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDeleteResponseMember2>(null, DeleteDeleteResponseMember2);
                 }
             }
         }
@@ -145,9 +160,9 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Delete
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class DeleteRequestBuilderDeleteQueryParameters 
         {
-            /// <summary>If true, preview which rows would be deleted without actually deleting them</summary>
+            /// <summary>If true, preview which rows would be deleted without actually deleting them.</summary>
             [QueryParameter("dryRun")]
-            public bool? DryRun { get; set; }
+            public global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteDryRunQueryParameterType? DryRun { get; set; }
             /// <summary>JSON string of filter conditions. Required to prevent accidental deletion of all data.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
@@ -158,9 +173,9 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Delete
             [QueryParameter("filter")]
             public string Filter { get; set; }
 #endif
-            /// <summary>If true, return the deleted rows; if false, return true on success</summary>
+            /// <summary>If true, return the deleted rows. If false, return true on success.</summary>
             [QueryParameter("returnData")]
-            public bool? ReturnData { get; set; }
+            public global::Zemires.N8n.Api.DataTables.Item.Rows.Delete.DeleteReturnDataQueryParameterType? ReturnData { get; set; }
         }
     }
 }

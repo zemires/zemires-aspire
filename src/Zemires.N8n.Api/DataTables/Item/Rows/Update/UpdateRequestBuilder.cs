@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.DataTables.Item.Rows.Update
 {
     /// <summary>
@@ -42,11 +41,11 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Update
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdateRequestBuilder.UpdatePatchResponse?> PatchAsync(global::Zemires.N8n.Api.Models.UpdateRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdateRequestBuilder.UpdatePatchResponse?> PatchAsync(global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdateRequestBuilder.UpdatePatchResponse> PatchAsync(global::Zemires.N8n.Api.Models.UpdateRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdateRequestBuilder.UpdatePatchResponse> PatchAsync(global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -61,11 +60,11 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Update
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Models.UpdateRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.Models.UpdateRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPatchRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -85,20 +84,28 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Update
             return new global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdateRequestBuilder(rawUrl, RequestAdapter);
         }
         /// <summary>
-        /// Composed type wrapper for classes <see cref="bool"/>, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow&gt;
+        /// Composed type wrapper for classes <see cref="bool"/>, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1&gt;, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2&gt;
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class UpdatePatchResponse : IComposedTypeWrapper, IParsable
         {
             /// <summary>Composed type representation for type <see cref="bool"/></summary>
             public bool? Boolean { get; set; }
-            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow&gt;</summary>
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1&gt;</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow>? DataTableRow { get; set; }
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1>? UpdatePatchResponseMember1 { get; set; }
 #nullable restore
 #else
-            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow> DataTableRow { get; set; }
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1> UpdatePatchResponseMember1 { get; set; }
+#endif
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2&gt;</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2>? UpdatePatchResponseMember2 { get; set; }
+#nullable restore
+#else
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2> UpdatePatchResponseMember2 { get; set; }
 #endif
             /// <summary>
             /// Creates a new instance of the appropriate class based on discriminator value
@@ -108,15 +115,18 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Update
             public static global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdateRequestBuilder.UpdatePatchResponse CreateFromDiscriminatorValue(IParseNode parseNode)
             {
                 if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
-                var mappingValue = parseNode.GetChildNode("")?.GetStringValue();
                 var result = new global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdateRequestBuilder.UpdatePatchResponse();
                 if(parseNode.GetBoolValue() is bool booleanValue)
                 {
                     result.Boolean = booleanValue;
                 }
-                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow>(global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow> dataTableRowValue)
+                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1>(global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1> updatePatchResponseMember1Value)
                 {
-                    result.DataTableRow = dataTableRowValue;
+                    result.UpdatePatchResponseMember1 = updatePatchResponseMember1Value;
+                }
+                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2>(global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2> updatePatchResponseMember2Value)
+                {
+                    result.UpdatePatchResponseMember2 = updatePatchResponseMember2Value;
                 }
                 return result;
             }
@@ -139,9 +149,13 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Update
                 {
                     writer.WriteBoolValue(null, Boolean);
                 }
-                else if(DataTableRow != null)
+                else if(UpdatePatchResponseMember1 != null)
                 {
-                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.DataTableRow>(null, DataTableRow);
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember1>(null, UpdatePatchResponseMember1);
+                }
+                else if(UpdatePatchResponseMember2 != null)
+                {
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.Update.UpdatePatchResponseMember2>(null, UpdatePatchResponseMember2);
                 }
             }
         }

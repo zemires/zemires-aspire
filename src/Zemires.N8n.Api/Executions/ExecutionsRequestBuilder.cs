@@ -10,7 +10,6 @@ using System.Threading;
 using System;
 using Zemires.N8n.Api.Executions.Item;
 using Zemires.N8n.Api.Executions.Stop;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.Executions
 {
     /// <summary>
@@ -26,14 +25,14 @@ namespace Zemires.N8n.Api.Executions
         }
         /// <summary>Gets an item from the Zemires.N8n.Api.executions.item collection</summary>
         /// <param name="position">The ID of the execution.</param>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Executions.Item.ExecutionsItemRequestBuilder"/></returns>
-        public global::Zemires.N8n.Api.Executions.Item.ExecutionsItemRequestBuilder this[double position]
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Executions.Item.WithExecutionItemRequestBuilder"/></returns>
+        public global::Zemires.N8n.Api.Executions.Item.WithExecutionItemRequestBuilder this[int position]
         {
             get
             {
                 var urlTplParams = new Dictionary<string, object>(PathParameters);
-                urlTplParams.Add("id", position);
-                return new global::Zemires.N8n.Api.Executions.Item.ExecutionsItemRequestBuilder(urlTplParams, RequestAdapter);
+                urlTplParams.Add("executionId", position);
+                return new global::Zemires.N8n.Api.Executions.Item.WithExecutionItemRequestBuilder(urlTplParams, RequestAdapter);
             }
         }
         /// <summary>
@@ -41,7 +40,7 @@ namespace Zemires.N8n.Api.Executions
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public ExecutionsRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/executions{?cursor*,ignoreDataSizeLimit*,includeData*,limit*,projectId,redactExecutionData*,status*,workflowId*}", pathParameters)
+        public ExecutionsRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/executions{?cursor*,ignoreDataSizeLimit*,includeData*,limit*,projectId*,redactExecutionData*,startedAfter*,startedBefore*,status*,workflowId*}", pathParameters)
         {
         }
         /// <summary>
@@ -49,26 +48,26 @@ namespace Zemires.N8n.Api.Executions
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public ExecutionsRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/executions{?cursor*,ignoreDataSizeLimit*,includeData*,limit*,projectId,redactExecutionData*,status*,workflowId*}", rawUrl)
+        public ExecutionsRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/executions{?cursor*,ignoreDataSizeLimit*,includeData*,limit*,projectId*,redactExecutionData*,startedAfter*,startedBefore*,status*,workflowId*}", rawUrl)
         {
         }
         /// <summary>
         /// Retrieve all executions from your instance.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.ExecutionList"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Executions.ExecutionsGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.ExecutionList?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Executions.ExecutionsRequestBuilder.ExecutionsRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Executions.ExecutionsGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Executions.ExecutionsRequestBuilder.ExecutionsRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.ExecutionList> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Executions.ExecutionsRequestBuilder.ExecutionsRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Executions.ExecutionsGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Executions.ExecutionsRequestBuilder.ExecutionsRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.ExecutionList>(requestInfo, global::Zemires.N8n.Api.Models.ExecutionList.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Executions.ExecutionsGetResponse>(requestInfo, global::Zemires.N8n.Api.Executions.ExecutionsGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve all executions from your instance.
@@ -114,39 +113,58 @@ namespace Zemires.N8n.Api.Executions
             [QueryParameter("cursor")]
             public string Cursor { get; set; }
 #endif
-            /// <summary>Whether to return the full execution data even if it exceeds the configured size limit (EXECUTIONS_DATA_MAX_DISPLAY_SIZE). Oversized executions are otherwise returned without their data.</summary>
+            #pragma warning disable CS1591
             [QueryParameter("ignoreDataSizeLimit")]
-            public bool? IgnoreDataSizeLimit { get; set; }
-            /// <summary>Whether or not to include the execution&apos;s detailed data.</summary>
+            public global::Zemires.N8n.Api.Executions.GetIgnoreDataSizeLimitQueryParameterType? IgnoreDataSizeLimit { get; set; }
+            #pragma warning restore CS1591
+            #pragma warning disable CS1591
             [QueryParameter("includeData")]
-            public bool? IncludeData { get; set; }
+            public global::Zemires.N8n.Api.Executions.GetIncludeDataQueryParameterType? IncludeData { get; set; }
+            #pragma warning restore CS1591
             /// <summary>The maximum number of items to return.</summary>
             [QueryParameter("limit")]
             public double? Limit { get; set; }
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string? ProjectId { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("projectId")]
             public string ProjectId { get; set; }
+            #pragma warning restore CS1591
 #endif
-            /// <summary>Controls execution data redaction. When `true`, execution output data is always redacted. When `false`, requests unredacted (revealed) data — requires the `execution:reveal` scope. When omitted, follows the workflow redaction policy.</summary>
+            #pragma warning disable CS1591
             [QueryParameter("redactExecutionData")]
-            public bool? RedactExecutionData { get; set; }
-            /// <summary>Status to filter the executions by.</summary>
+            public global::Zemires.N8n.Api.Executions.GetRedactExecutionDataQueryParameterType? RedactExecutionData { get; set; }
+            #pragma warning restore CS1591
+            #pragma warning disable CS1591
+            [QueryParameter("startedAfter")]
+            public DateTimeOffset? StartedAfter { get; set; }
+            #pragma warning restore CS1591
+            #pragma warning disable CS1591
+            [QueryParameter("startedBefore")]
+            public DateTimeOffset? StartedBefore { get; set; }
+            #pragma warning restore CS1591
+            #pragma warning disable CS1591
             [QueryParameter("status")]
             public global::Zemires.N8n.Api.Executions.GetStatusQueryParameterType? Status { get; set; }
-            /// <summary>Workflow to filter the executions by.</summary>
+            #pragma warning restore CS1591
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("workflowId")]
             public string? WorkflowId { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("workflowId")]
             public string WorkflowId { get; set; }
+            #pragma warning restore CS1591
 #endif
         }
     }

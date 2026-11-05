@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.Audit
 {
     /// <summary>
@@ -36,22 +35,22 @@ namespace Zemires.N8n.Api.Audit
         /// <summary>
         /// Generate a security audit for your n8n instance.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Audit"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Audit?> PostAsync(global::Zemires.N8n.Api.Audit.AuditPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse?> PostAsync(global::Zemires.N8n.Api.Audit.AuditPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Audit> PostAsync(global::Zemires.N8n.Api.Audit.AuditPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse> PostAsync(global::Zemires.N8n.Api.Audit.AuditPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Audit>(requestInfo, global::Zemires.N8n.Api.Models.Audit.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse>(requestInfo, global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Generate a security audit for your n8n instance.
@@ -83,6 +82,63 @@ namespace Zemires.N8n.Api.Audit
         public global::Zemires.N8n.Api.Audit.AuditRequestBuilder WithUrl(string rawUrl)
         {
             return new global::Zemires.N8n.Api.Audit.AuditRequestBuilder(rawUrl, RequestAdapter);
+        }
+        /// <summary>
+        /// Composed type wrapper for classes <see cref="global::Zemires.N8n.Api.Audit.AuditPostResponseMember1"/>, <see cref="global::Zemires.N8n.Api.Audit.AuditPostResponseMember2"/>
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
+        public partial class AuditPostResponse : IComposedTypeWrapper, IParsable
+        {
+            /// <summary>Composed type representation for type <see cref="global::Zemires.N8n.Api.Audit.AuditPostResponseMember1"/></summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public global::Zemires.N8n.Api.Audit.AuditPostResponseMember1? AuditPostResponseMember1 { get; set; }
+#nullable restore
+#else
+            public global::Zemires.N8n.Api.Audit.AuditPostResponseMember1 AuditPostResponseMember1 { get; set; }
+#endif
+            /// <summary>Composed type representation for type <see cref="global::Zemires.N8n.Api.Audit.AuditPostResponseMember2"/></summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public global::Zemires.N8n.Api.Audit.AuditPostResponseMember2? AuditPostResponseMember2 { get; set; }
+#nullable restore
+#else
+            public global::Zemires.N8n.Api.Audit.AuditPostResponseMember2 AuditPostResponseMember2 { get; set; }
+#endif
+            /// <summary>
+            /// Creates a new instance of the appropriate class based on discriminator value
+            /// </summary>
+            /// <returns>A <see cref="global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse"/></returns>
+            /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
+            public static global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse CreateFromDiscriminatorValue(IParseNode parseNode)
+            {
+                if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
+                var result = new global::Zemires.N8n.Api.Audit.AuditRequestBuilder.AuditPostResponse();
+                result.AuditPostResponseMember1 = new global::Zemires.N8n.Api.Audit.AuditPostResponseMember1();
+                result.AuditPostResponseMember2 = new global::Zemires.N8n.Api.Audit.AuditPostResponseMember2();
+                return result;
+            }
+            /// <summary>
+            /// The deserialization information for the current model
+            /// </summary>
+            /// <returns>A IDictionary&lt;string, Action&lt;IParseNode&gt;&gt;</returns>
+            public virtual IDictionary<string, Action<IParseNode>> GetFieldDeserializers()
+            {
+                if(AuditPostResponseMember1 != null || AuditPostResponseMember2 != null)
+                {
+                    return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(AuditPostResponseMember1, AuditPostResponseMember2);
+                }
+                return new Dictionary<string, Action<IParseNode>>();
+            }
+            /// <summary>
+            /// Serializes information the current object
+            /// </summary>
+            /// <param name="writer">Serialization writer to use to serialize this model</param>
+            public virtual void Serialize(ISerializationWriter writer)
+            {
+                if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
+                writer.WriteObjectValue<global::Zemires.N8n.Api.Audit.AuditPostResponseMember1>(null, AuditPostResponseMember1, AuditPostResponseMember2);
+            }
         }
     }
 }

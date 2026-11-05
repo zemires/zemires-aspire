@@ -7,6 +7,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System;
 using Zemires.N8n.Api.SourceControl.Pull;
+using Zemires.N8n.Api.SourceControl.Push;
+using Zemires.N8n.Api.SourceControl.Status;
 namespace Zemires.N8n.Api.SourceControl
 {
     /// <summary>
@@ -19,6 +21,16 @@ namespace Zemires.N8n.Api.SourceControl
         public global::Zemires.N8n.Api.SourceControl.Pull.PullRequestBuilder Pull
         {
             get => new global::Zemires.N8n.Api.SourceControl.Pull.PullRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The push property</summary>
+        public global::Zemires.N8n.Api.SourceControl.Push.PushRequestBuilder Push
+        {
+            get => new global::Zemires.N8n.Api.SourceControl.Push.PushRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The status property</summary>
+        public global::Zemires.N8n.Api.SourceControl.Status.StatusRequestBuilder Status
+        {
+            get => new global::Zemires.N8n.Api.SourceControl.Status.StatusRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.SourceControl.SourceControlRequestBuilder"/> and sets the default values.

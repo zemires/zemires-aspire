@@ -12,7 +12,8 @@ namespace Zemires.N8n.Api.Workflows
     public partial class WorkflowsGetResponse_data : IAdditionalDataHolder, IParsable
     #pragma warning restore CS1591
     {
-        /// <summary>The active property</summary>
+        /// <summary>Deprecated. Check whether `activeVersionId` is not null instead.</summary>
+        [Obsolete("")]
         public bool? Active { get; set; }
         /// <summary>The activeVersion property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
@@ -32,13 +33,13 @@ namespace Zemires.N8n.Api.Workflows
 #endif
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>The connections property</summary>
+        /// <summary>Connections between nodes, keyed by source node name</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? Connections { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_connections? Connections { get; set; }
 #nullable restore
 #else
-        public UntypedNode Connections { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_connections Connections { get; set; }
 #endif
         /// <summary>The createdAt property</summary>
         public DateTimeOffset? CreatedAt { get; set; }
@@ -52,13 +53,13 @@ namespace Zemires.N8n.Api.Workflows
 #endif
         /// <summary>The isArchived property</summary>
         public bool? IsArchived { get; set; }
-        /// <summary>The meta property</summary>
+        /// <summary>Workflow metadata such as template information</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? Meta { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_meta? Meta { get; set; }
 #nullable restore
 #else
-        public UntypedNode Meta { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_meta Meta { get; set; }
 #endif
         /// <summary>The name property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
@@ -68,37 +69,45 @@ namespace Zemires.N8n.Api.Workflows
 #else
         public string Name { get; set; }
 #endif
-        /// <summary>The nodeGroups property</summary>
+        /// <summary>Visual groupings of nodes shown as frames on the canvas</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? NodeGroups { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodeGroups>? NodeGroups { get; set; }
 #nullable restore
 #else
-        public UntypedNode NodeGroups { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodeGroups> NodeGroups { get; set; }
 #endif
-        /// <summary>The nodes property</summary>
+        /// <summary>Nodes that make up the workflow</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? Nodes { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodes>? Nodes { get; set; }
 #nullable restore
 #else
-        public UntypedNode Nodes { get; set; }
+        public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodes> Nodes { get; set; }
 #endif
-        /// <summary>The pinData property</summary>
+        /// <summary>Folder that contains the workflow, or null at the project root. The field is present only when `includeParentFolder` is `true`.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? PinData { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_parentFolder? ParentFolder { get; set; }
 #nullable restore
 #else
-        public UntypedNode PinData { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_parentFolder ParentFolder { get; set; }
 #endif
-        /// <summary>The settings property</summary>
+        /// <summary>Pinned sample data for nodes, keyed by node name</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? Settings { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_pinData? PinData { get; set; }
 #nullable restore
 #else
-        public UntypedNode Settings { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_pinData PinData { get; set; }
+#endif
+        /// <summary>Execution and behaviour settings for the workflow</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_settings? Settings { get; set; }
+#nullable restore
+#else
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_settings Settings { get; set; }
 #endif
         /// <summary>The shared property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
@@ -108,13 +117,13 @@ namespace Zemires.N8n.Api.Workflows
 #else
         public List<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_shared> Shared { get; set; }
 #endif
-        /// <summary>The staticData property</summary>
+        /// <summary>Data the workflow keeps between executions</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public UntypedNode? StaticData { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_staticData? StaticData { get; set; }
 #nullable restore
 #else
-        public UntypedNode StaticData { get; set; }
+        public global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_staticData StaticData { get; set; }
 #endif
         /// <summary>The tags property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
@@ -164,18 +173,19 @@ namespace Zemires.N8n.Api.Workflows
                 { "active", n => { Active = n.GetBoolValue(); } },
                 { "activeVersion", n => { ActiveVersion = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion.CreateFromDiscriminatorValue); } },
                 { "activeVersionId", n => { ActiveVersionId = n.GetStringValue(); } },
-                { "connections", n => { Connections = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
+                { "connections", n => { Connections = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_connections>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_connections.CreateFromDiscriminatorValue); } },
                 { "createdAt", n => { CreatedAt = n.GetDateTimeOffsetValue(); } },
                 { "id", n => { Id = n.GetStringValue(); } },
                 { "isArchived", n => { IsArchived = n.GetBoolValue(); } },
-                { "meta", n => { Meta = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
+                { "meta", n => { Meta = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_meta>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_meta.CreateFromDiscriminatorValue); } },
                 { "name", n => { Name = n.GetStringValue(); } },
-                { "nodeGroups", n => { NodeGroups = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
-                { "nodes", n => { Nodes = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
-                { "pinData", n => { PinData = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
-                { "settings", n => { Settings = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
+                { "nodeGroups", n => { NodeGroups = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodeGroups>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodeGroups.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "nodes", n => { Nodes = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodes>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodes.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "parentFolder", n => { ParentFolder = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_parentFolder>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_parentFolder.CreateFromDiscriminatorValue); } },
+                { "pinData", n => { PinData = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_pinData>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_pinData.CreateFromDiscriminatorValue); } },
+                { "settings", n => { Settings = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_settings>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_settings.CreateFromDiscriminatorValue); } },
                 { "shared", n => { Shared = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_shared>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_shared.CreateFromDiscriminatorValue)?.AsList(); } },
-                { "staticData", n => { StaticData = n.GetObjectValue<UntypedNode>(UntypedNode.CreateFromDiscriminatorValue); } },
+                { "staticData", n => { StaticData = n.GetObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_staticData>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_staticData.CreateFromDiscriminatorValue); } },
                 { "tags", n => { Tags = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_tags>(global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_tags.CreateFromDiscriminatorValue)?.AsList(); } },
                 { "triggerCount", n => { TriggerCount = n.GetDoubleValue(); } },
                 { "updatedAt", n => { UpdatedAt = n.GetDateTimeOffsetValue(); } },
@@ -192,18 +202,19 @@ namespace Zemires.N8n.Api.Workflows
             writer.WriteBoolValue("active", Active);
             writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_activeVersion>("activeVersion", ActiveVersion);
             writer.WriteStringValue("activeVersionId", ActiveVersionId);
-            writer.WriteObjectValue<UntypedNode>("connections", Connections);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_connections>("connections", Connections);
             writer.WriteDateTimeOffsetValue("createdAt", CreatedAt);
             writer.WriteStringValue("id", Id);
             writer.WriteBoolValue("isArchived", IsArchived);
-            writer.WriteObjectValue<UntypedNode>("meta", Meta);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_meta>("meta", Meta);
             writer.WriteStringValue("name", Name);
-            writer.WriteObjectValue<UntypedNode>("nodeGroups", NodeGroups);
-            writer.WriteObjectValue<UntypedNode>("nodes", Nodes);
-            writer.WriteObjectValue<UntypedNode>("pinData", PinData);
-            writer.WriteObjectValue<UntypedNode>("settings", Settings);
+            writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodeGroups>("nodeGroups", NodeGroups);
+            writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_nodes>("nodes", Nodes);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_parentFolder>("parentFolder", ParentFolder);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_pinData>("pinData", PinData);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_settings>("settings", Settings);
             writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_shared>("shared", Shared);
-            writer.WriteObjectValue<UntypedNode>("staticData", StaticData);
+            writer.WriteObjectValue<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_staticData>("staticData", StaticData);
             writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Workflows.WorkflowsGetResponse_data_tags>("tags", Tags);
             writer.WriteDoubleValue("triggerCount", TriggerCount);
             writer.WriteDateTimeOffsetValue("updatedAt", UpdatedAt);

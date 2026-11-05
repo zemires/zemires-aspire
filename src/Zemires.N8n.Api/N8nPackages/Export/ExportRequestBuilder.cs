@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.N8nPackages.Export
 {
     /// <summary>
@@ -34,19 +33,19 @@ namespace Zemires.N8n.Api.N8nPackages.Export
         {
         }
         /// <summary>
-        /// **Beta** — breaking changes may still occur without major version bump.Export workflows and/or folders, or projects, as a gzipped tar archive(.n8np). Provide `workflowIds`/`folderIds`, or `projectIds`, but not bothgroups. Each exported folder includes its nested folders. Empty projectsexport project metadata only. Statically referenced sub-workflows must alsobe included in the resulting package, otherwise the export is rejected. Theresponse is streamed as `application/gzip` with a `Content-Disposition`attachment header. Requires the n8n Packages feature to be licensed.API key scopes: `workflow:export` is required when exporting workflows or folders, and `project:export` is required when exporting projects. When `includeVariableValues` is true (the default) and the exported workflows reference variables, `variable:list` is also required; exports that reference no variables never need it.
+        /// **Beta** — breaking changes may still occur without major version bump.Export agents, workflows, and folders, or whole projects, as a gzipped tararchive (.n8np). Provide `agentIds`/`workflowIds`/`folderIds`, or `projectIds`.Do not combine these two groups. Each exported folder includes its nestedfolders. Whole projects include their agents when the agents module is enabled.Explicit agent selections require the agents module. Empty projects exportproject metadata only. `versionPolicy` selects the version for both agents andworkflows and defaults to `latest`. `dependencyPolicy` applies to both entitytypes and defaults to `fail` when a required definition is absent from thepackage. The response is streamed as `application/gzip` with a `Content-Disposition`attachment header. Requires the n8n Packages feature to be licensed.API key scopes: `agent:export` is required for explicitly selected agents.`workflow:export` is required for explicitly selected workflows or folders.`project:export` is sufficient for whole-project exports, including theiragents and workflows. Included dependencies need no additional API key scope.The caller&apos;s project permissions apply to all included entities. When`includeVariableValues` is true (the default) and exported entities referencevariables, `variable:list` is also required. Exports that reference no variablesdo not need it.Agent definitions include referenced skills, custom tools, and schedules.Knowledge base files and runtime data are excluded. Agent package importsremain unavailable.
         /// </summary>
         /// <returns>A <see cref="Stream"/></returns>
-        /// <param name="body">Selects what to export. Provide `workflowIds` and/or `folderIds` to export loose workflows and folders, or `projectIds` to export whole projects, but not both groups in the same request. At least one id must be supplied.</param>
+        /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<Stream?> PostAsync(global::Zemires.N8n.Api.Models.ExportPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<Stream?> PostAsync(global::Zemires.N8n.Api.N8nPackages.Export.ExportPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<Stream> PostAsync(global::Zemires.N8n.Api.Models.ExportPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<Stream> PostAsync(global::Zemires.N8n.Api.N8nPackages.Export.ExportPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -54,18 +53,18 @@ namespace Zemires.N8n.Api.N8nPackages.Export
             return await RequestAdapter.SendPrimitiveAsync<Stream>(requestInfo, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
-        /// **Beta** — breaking changes may still occur without major version bump.Export workflows and/or folders, or projects, as a gzipped tar archive(.n8np). Provide `workflowIds`/`folderIds`, or `projectIds`, but not bothgroups. Each exported folder includes its nested folders. Empty projectsexport project metadata only. Statically referenced sub-workflows must alsobe included in the resulting package, otherwise the export is rejected. Theresponse is streamed as `application/gzip` with a `Content-Disposition`attachment header. Requires the n8n Packages feature to be licensed.API key scopes: `workflow:export` is required when exporting workflows or folders, and `project:export` is required when exporting projects. When `includeVariableValues` is true (the default) and the exported workflows reference variables, `variable:list` is also required; exports that reference no variables never need it.
+        /// **Beta** — breaking changes may still occur without major version bump.Export agents, workflows, and folders, or whole projects, as a gzipped tararchive (.n8np). Provide `agentIds`/`workflowIds`/`folderIds`, or `projectIds`.Do not combine these two groups. Each exported folder includes its nestedfolders. Whole projects include their agents when the agents module is enabled.Explicit agent selections require the agents module. Empty projects exportproject metadata only. `versionPolicy` selects the version for both agents andworkflows and defaults to `latest`. `dependencyPolicy` applies to both entitytypes and defaults to `fail` when a required definition is absent from thepackage. The response is streamed as `application/gzip` with a `Content-Disposition`attachment header. Requires the n8n Packages feature to be licensed.API key scopes: `agent:export` is required for explicitly selected agents.`workflow:export` is required for explicitly selected workflows or folders.`project:export` is sufficient for whole-project exports, including theiragents and workflows. Included dependencies need no additional API key scope.The caller&apos;s project permissions apply to all included entities. When`includeVariableValues` is true (the default) and exported entities referencevariables, `variable:list` is also required. Exports that reference no variablesdo not need it.Agent definitions include referenced skills, custom tools, and schedules.Knowledge base files and runtime data are excluded. Agent package importsremain unavailable.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
-        /// <param name="body">Selects what to export. Provide `workflowIds` and/or `folderIds` to export loose workflows and folders, or `projectIds` to export whole projects, but not both groups in the same request. At least one id must be supplied.</param>
+        /// <param name="body">The request body</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.ExportPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.N8nPackages.Export.ExportPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.ExportPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.N8nPackages.Export.ExportPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

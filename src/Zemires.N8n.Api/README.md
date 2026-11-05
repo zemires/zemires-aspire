@@ -15,7 +15,7 @@ dotnet add package Zemires.N8n.Api
 Generated code must not be edited by hand. From this folder run:
 
 ```shell
-kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
+kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o . --ebc
 ```
 
 Hand-written files: `N8nAuthenticationProvider.cs`, `N8nClient.Extensions.cs`.

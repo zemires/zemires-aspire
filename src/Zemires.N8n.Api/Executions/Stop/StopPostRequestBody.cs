@@ -26,7 +26,7 @@ namespace Zemires.N8n.Api.Executions.Stop
 #else
         public List<global::Zemires.N8n.Api.Executions.Stop.StopPostRequestBody_status?> Status { get; set; }
 #endif
-        /// <summary>Optional workflow ID to filter executions. If not provided, will stop executions across all accessible workflows.</summary>
+        /// <summary>Optional workflow ID to filter executions. If not provided, will stop executions across all accessible workflows. The literal value `all` has the same effect as omitting it.</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
         public string? WorkflowId { get; set; }

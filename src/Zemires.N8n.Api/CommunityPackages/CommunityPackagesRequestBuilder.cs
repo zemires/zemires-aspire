@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Zemires.N8n.Api.CommunityPackages.Item;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.CommunityPackages
 {
     /// <summary>
@@ -49,41 +48,41 @@ namespace Zemires.N8n.Api.CommunityPackages
         /// <summary>
         /// Retrieve all installed community packages with pending update info.
         /// </summary>
-        /// <returns>A List&lt;global::Zemires.N8n.Api.Models.CommunityPackage&gt;</returns>
+        /// <returns>A List&lt;global::Zemires.N8n.Api.CommunityPackages.CommunityPackages&gt;</returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<List<global::Zemires.N8n.Api.Models.CommunityPackage>?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<List<global::Zemires.N8n.Api.CommunityPackages.CommunityPackages>?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<List<global::Zemires.N8n.Api.Models.CommunityPackage>> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<List<global::Zemires.N8n.Api.CommunityPackages.CommunityPackages>> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            var collectionResult = await RequestAdapter.SendCollectionAsync<global::Zemires.N8n.Api.Models.CommunityPackage>(requestInfo, global::Zemires.N8n.Api.Models.CommunityPackage.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            var collectionResult = await RequestAdapter.SendCollectionAsync<global::Zemires.N8n.Api.CommunityPackages.CommunityPackages>(requestInfo, global::Zemires.N8n.Api.CommunityPackages.CommunityPackages.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
             return collectionResult?.AsList();
         }
         /// <summary>
         /// Install a community package by npm name and optional version.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.CommunityPackage"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostResponse"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.CommunityPackage?> PostAsync(global::Zemires.N8n.Api.Models.InstallCommunityPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostResponse?> PostAsync(global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.CommunityPackage> PostAsync(global::Zemires.N8n.Api.Models.InstallCommunityPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostResponse> PostAsync(global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.CommunityPackage>(requestInfo, global::Zemires.N8n.Api.Models.CommunityPackage.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostResponse>(requestInfo, global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve all installed community packages with pending update info.
@@ -112,11 +111,11 @@ namespace Zemires.N8n.Api.CommunityPackages
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.InstallCommunityPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.InstallCommunityPackageRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.CommunityPackages.CommunityPackagesPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

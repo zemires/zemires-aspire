@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 using Zemires.N8n.Api.Projects.Item.Users.Item;
 namespace Zemires.N8n.Api.Projects.Item.Users
 {
@@ -49,20 +48,20 @@ namespace Zemires.N8n.Api.Projects.Item.Users
         /// <summary>
         /// Returns a list of all members of a project including their role. Requires user:list scope.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.ProjectMemberList"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Projects.Item.Users.UsersGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.ProjectMemberList?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Projects.Item.Users.UsersRequestBuilder.UsersRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Projects.Item.Users.UsersGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Projects.Item.Users.UsersRequestBuilder.UsersRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.ProjectMemberList> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Projects.Item.Users.UsersRequestBuilder.UsersRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Projects.Item.Users.UsersGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Projects.Item.Users.UsersRequestBuilder.UsersRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.ProjectMemberList>(requestInfo, global::Zemires.N8n.Api.Models.ProjectMemberList.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Projects.Item.Users.UsersGetResponse>(requestInfo, global::Zemires.N8n.Api.Projects.Item.Users.UsersGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Add one or more users to a project on your instance.

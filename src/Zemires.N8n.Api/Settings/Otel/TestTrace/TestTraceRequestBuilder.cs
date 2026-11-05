@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.Settings.Otel.TestTrace
 {
     /// <summary>
@@ -36,22 +35,22 @@ namespace Zemires.N8n.Api.Settings.Otel.TestTrace
         /// <summary>
         /// Send a single test span to the given OTLP collector and report whether it was accepted. This tests the supplied connection details without changing the stored configuration. Fields managed declaratively via environment variables are overridden with their effective value before the test is sent. Requires the `otel:manage` scope.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.OtelTestTraceResult"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostResponse"/></returns>
         /// <param name="body">The connection details to test against an OTLP collector. Fields managed declaratively via environment variables are overridden with their effective value before the test is sent.</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.OtelTestTraceResult?> PostAsync(global::Zemires.N8n.Api.Models.OtelTestTrace body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostResponse?> PostAsync(global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.OtelTestTraceResult> PostAsync(global::Zemires.N8n.Api.Models.OtelTestTrace body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostResponse> PostAsync(global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.OtelTestTraceResult>(requestInfo, global::Zemires.N8n.Api.Models.OtelTestTraceResult.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostResponse>(requestInfo, global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Send a single test span to the given OTLP collector and report whether it was accepted. This tests the supplied connection details without changing the stored configuration. Fields managed declaratively via environment variables are overridden with their effective value before the test is sent. Requires the `otel:manage` scope.
@@ -61,11 +60,11 @@ namespace Zemires.N8n.Api.Settings.Otel.TestTrace
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.OtelTestTrace body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.OtelTestTrace body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Settings.Otel.TestTrace.TestTracePostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

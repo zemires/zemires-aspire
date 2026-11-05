@@ -8,8 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models.LdapSync;
-using Zemires.N8n.Api.Models.LdapSyncHistory;
 namespace Zemires.N8n.Api.Settings.Ldap.Sync
 {
     /// <summary>
@@ -37,40 +35,40 @@ namespace Zemires.N8n.Api.Settings.Ldap.Sync
         /// <summary>
         /// Retrieve the history of LDAP synchronizations, most recent first. Requires the `ldap:sync` scope and the LDAP feature to be licensed.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.LdapSyncHistory.List"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.LdapSyncHistory.List?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncRequestBuilder.SyncRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncRequestBuilder.SyncRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.LdapSyncHistory.List> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncRequestBuilder.SyncRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncRequestBuilder.SyncRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.LdapSyncHistory.List>(requestInfo, global::Zemires.N8n.Api.Models.LdapSyncHistory.List.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncGetResponse>(requestInfo, global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Manually trigger an LDAP synchronization. The response returns the new sync history record. Requires the `ldap:sync` scope and the LDAP feature to be licensed.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.LdapSyncHistory.LdapSyncHistory"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostResponse"/></returns>
         /// <param name="body">Request body for triggering an LDAP synchronization.</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.LdapSyncHistory.LdapSyncHistory?> PostAsync(global::Zemires.N8n.Api.Models.LdapSync.Update body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostResponse?> PostAsync(global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.LdapSyncHistory.LdapSyncHistory> PostAsync(global::Zemires.N8n.Api.Models.LdapSync.Update body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostResponse> PostAsync(global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.LdapSyncHistory.LdapSyncHistory>(requestInfo, global::Zemires.N8n.Api.Models.LdapSyncHistory.LdapSyncHistory.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostResponse>(requestInfo, global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve the history of LDAP synchronizations, most recent first. Requires the `ldap:sync` scope and the LDAP feature to be licensed.
@@ -99,11 +97,11 @@ namespace Zemires.N8n.Api.Settings.Ldap.Sync
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.LdapSync.Update body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.LdapSync.Update body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Settings.Ldap.Sync.SyncPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

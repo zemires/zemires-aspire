@@ -12,7 +12,6 @@ using Zemires.N8n.Api.DataTables.Item.Rows.Clear;
 using Zemires.N8n.Api.DataTables.Item.Rows.Delete;
 using Zemires.N8n.Api.DataTables.Item.Rows.Update;
 using Zemires.N8n.Api.DataTables.Item.Rows.Upsert;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.DataTables.Item.Rows
 {
     /// <summary>
@@ -58,22 +57,22 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
         {
         }
         /// <summary>
-        /// Query and retrieve rows from a data table with optional filtering, sorting, and pagination.
+        /// Retrieve rows from a data table with optional filtering, sorting, and pagination.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTableRowList"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.RowsGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.DataTableRowList?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.DataTableRowList> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTableRowList>(requestInfo, global::Zemires.N8n.Api.Models.DataTableRowList.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsGetResponse>(requestInfo, global::Zemires.N8n.Api.DataTables.Item.Rows.RowsGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Insert one or more rows into a data table.
@@ -84,11 +83,11 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse?> PostAsync(global::Zemires.N8n.Api.Models.InsertRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse?> PostAsync(global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse> PostAsync(global::Zemires.N8n.Api.Models.InsertRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse> PostAsync(global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -96,7 +95,7 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
             return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse>(requestInfo, global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
-        /// Query and retrieve rows from a data table with optional filtering, sorting, and pagination.
+        /// Retrieve rows from a data table with optional filtering, sorting, and pagination.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
@@ -122,11 +121,11 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.InsertRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.InsertRowsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -146,27 +145,11 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
             return new global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder(rawUrl, RequestAdapter);
         }
         /// <summary>
-        /// Composed type wrapper for classes <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember1"/>, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow&gt;, List&lt;int&gt;
+        /// Composed type wrapper for classes <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember1"/>, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2&gt;, List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3&gt;
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class RowsPostResponse : IComposedTypeWrapper, IParsable
         {
-            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow&gt;</summary>
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-#nullable enable
-            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow>? DataTableRow { get; set; }
-#nullable restore
-#else
-            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow> DataTableRow { get; set; }
-#endif
-            /// <summary>Composed type representation for type List&lt;int&gt;</summary>
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-#nullable enable
-            public List<int?>? Integer { get; set; }
-#nullable restore
-#else
-            public List<int?> Integer { get; set; }
-#endif
             /// <summary>Composed type representation for type <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember1"/></summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
@@ -174,6 +157,22 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
 #nullable restore
 #else
             public global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember1 RowsPostResponseMember1 { get; set; }
+#endif
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2&gt;</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2>? RowsPostResponseMember2 { get; set; }
+#nullable restore
+#else
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2> RowsPostResponseMember2 { get; set; }
+#endif
+            /// <summary>Composed type representation for type List&lt;global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3&gt;</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3>? RowsPostResponseMember3 { get; set; }
+#nullable restore
+#else
+            public List<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3> RowsPostResponseMember3 { get; set; }
 #endif
             /// <summary>
             /// Creates a new instance of the appropriate class based on discriminator value
@@ -183,15 +182,17 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
             public static global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse CreateFromDiscriminatorValue(IParseNode parseNode)
             {
                 if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
-                var mappingValue = parseNode.GetChildNode("")?.GetStringValue();
                 var result = new global::Zemires.N8n.Api.DataTables.Item.Rows.RowsRequestBuilder.RowsPostResponse();
-                if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow>(global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow> dataTableRowValue)
+                if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2>(global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2> rowsPostResponseMember2Value)
                 {
-                    result.DataTableRow = dataTableRowValue;
+                    result.RowsPostResponseMember2 = rowsPostResponseMember2Value;
                 }
-                else if(parseNode.GetCollectionOfPrimitiveValues<int?>()?.AsList() is List<int?> integerValue)
+                else if(parseNode.GetCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3>(global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3.CreateFromDiscriminatorValue)?.AsList() is List<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3> rowsPostResponseMember3Value)
                 {
-                    result.Integer = integerValue;
+                    result.RowsPostResponseMember3 = rowsPostResponseMember3Value;
+                }
+                else {
+                    result.RowsPostResponseMember1 = new global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember1();
                 }
                 return result;
             }
@@ -203,7 +204,7 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
             {
                 if(RowsPostResponseMember1 != null)
                 {
-                    return RowsPostResponseMember1.GetFieldDeserializers();
+                    return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(RowsPostResponseMember1);
                 }
                 return new Dictionary<string, Action<IParseNode>>();
             }
@@ -214,22 +215,21 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
             public virtual void Serialize(ISerializationWriter writer)
             {
                 if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-                if(RowsPostResponseMember1 != null)
+                if(RowsPostResponseMember2 != null)
                 {
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember2>(null, RowsPostResponseMember2);
+                }
+                else if(RowsPostResponseMember3 != null)
+                {
+                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember3>(null, RowsPostResponseMember3);
+                }
+                else {
                     writer.WriteObjectValue<global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember1>(null, RowsPostResponseMember1);
-                }
-                else if(DataTableRow != null)
-                {
-                    writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.DataTables.Item.Rows.DataTableRow>(null, DataTableRow);
-                }
-                else if(Integer != null)
-                {
-                    writer.WriteCollectionOfPrimitiveValues<int?>(null, Integer);
                 }
             }
         }
         /// <summary>
-        /// Query and retrieve rows from a data table with optional filtering, sorting, and pagination.
+        /// Retrieve rows from a data table with optional filtering, sorting, and pagination.
         /// </summary>
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class RowsRequestBuilderGetQueryParameters 

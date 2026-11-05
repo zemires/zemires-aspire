@@ -8,8 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models.Destination;
-using Zemires.N8n.Api.Models;
+using Zemires.N8n.Api.Models.LogStreamingDestinationPublicDto;
 using Zemires.N8n.Api.Settings.LogStreaming.Destinations.Item;
 namespace Zemires.N8n.Api.Settings.LogStreaming.Destinations
 {
@@ -21,14 +20,14 @@ namespace Zemires.N8n.Api.Settings.LogStreaming.Destinations
     {
         /// <summary>Gets an item from the Zemires.N8n.Api.settings.logStreaming.destinations.item collection</summary>
         /// <param name="position">The id of the log streaming destination.</param>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.Item.DestinationsItemRequestBuilder"/></returns>
-        public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.Item.DestinationsItemRequestBuilder this[string position]
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.Item.WithDestinationItemRequestBuilder"/></returns>
+        public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.Item.WithDestinationItemRequestBuilder this[string position]
         {
             get
             {
                 var urlTplParams = new Dictionary<string, object>(PathParameters);
-                urlTplParams.Add("id", position);
-                return new global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.Item.DestinationsItemRequestBuilder(urlTplParams, RequestAdapter);
+                urlTplParams.Add("destinationId", position);
+                return new global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.Item.WithDestinationItemRequestBuilder(urlTplParams, RequestAdapter);
             }
         }
         /// <summary>
@@ -50,40 +49,40 @@ namespace Zemires.N8n.Api.Settings.LogStreaming.Destinations
         /// <summary>
         /// List the configured log streaming destinations. Requires the `eventBusDestination:list` scope and the Log Streaming feature to be licensed.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Destination.List"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Destination.List?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsGetResponse?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Destination.List> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsGetResponse> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Destination.List>(requestInfo, global::Zemires.N8n.Api.Models.Destination.List.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsGetResponse>(requestInfo, global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Create a log streaming destination. The destination takes effect exactly as it would from the UI, using the same validation. Requires the `eventBusDestination:create` scope and the Log Streaming feature to be licensed. When destinations are managed via environment variables, the write is rejected with 409 and nothing is created; reads still return the current values.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Destination"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.LogStreamingDestinationPublicDto.Generated"/></returns>
         /// <param name="body">A log streaming destination. The `type` field selects the variant and its type-specific fields: `webhook`, `syslog`, or `sentry`.</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.DestinationModel?> PostAsync(global::Zemires.N8n.Api.Models.DestinationModel body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.LogStreamingDestinationPublicDto.Generated?> PostAsync(global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder.DestinationsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Destination> PostAsync(global::Zemires.N8n.Api.Models.Destination body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.LogStreamingDestinationPublicDto.Generated> PostAsync(global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder.DestinationsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DestinationModel>(requestInfo, global::Zemires.N8n.Api.Models.DestinationModel.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.LogStreamingDestinationPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.LogStreamingDestinationPublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// List the configured log streaming destinations. Requires the `eventBusDestination:list` scope and the Log Streaming feature to be licensed.
@@ -112,11 +111,11 @@ namespace Zemires.N8n.Api.Settings.LogStreaming.Destinations
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.DestinationModel body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder.DestinationsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.Destination body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder.DestinationsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
@@ -134,6 +133,89 @@ namespace Zemires.N8n.Api.Settings.LogStreaming.Destinations
         public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder WithUrl(string rawUrl)
         {
             return new global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder(rawUrl, RequestAdapter);
+        }
+        /// <summary>
+        /// Composed type wrapper for classes <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember1"/>, <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember2"/>, <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember3"/>
+        /// </summary>
+        [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
+        public partial class DestinationsPostRequestBody : IComposedTypeWrapper, IParsable
+        {
+            /// <summary>Composed type representation for type <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember1"/></summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember1? DestinationsPostRequestBodyMember1 { get; set; }
+#nullable restore
+#else
+            public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember1 DestinationsPostRequestBodyMember1 { get; set; }
+#endif
+            /// <summary>Composed type representation for type <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember2"/></summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember2? DestinationsPostRequestBodyMember2 { get; set; }
+#nullable restore
+#else
+            public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember2 DestinationsPostRequestBodyMember2 { get; set; }
+#endif
+            /// <summary>Composed type representation for type <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember3"/></summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+            public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember3? DestinationsPostRequestBodyMember3 { get; set; }
+#nullable restore
+#else
+            public global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember3 DestinationsPostRequestBodyMember3 { get; set; }
+#endif
+            /// <summary>
+            /// Creates a new instance of the appropriate class based on discriminator value
+            /// </summary>
+            /// <returns>A <see cref="global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder.DestinationsPostRequestBody"/></returns>
+            /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
+            public static global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder.DestinationsPostRequestBody CreateFromDiscriminatorValue(IParseNode parseNode)
+            {
+                if(ReferenceEquals(parseNode, null)) throw new ArgumentNullException(nameof(parseNode));
+                var mappingValue = parseNode.GetChildNode("")?.GetStringValue();
+                var result = new global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsRequestBuilder.DestinationsPostRequestBody();
+                return result;
+            }
+            /// <summary>
+            /// The deserialization information for the current model
+            /// </summary>
+            /// <returns>A IDictionary&lt;string, Action&lt;IParseNode&gt;&gt;</returns>
+            public virtual IDictionary<string, Action<IParseNode>> GetFieldDeserializers()
+            {
+                if(DestinationsPostRequestBodyMember1 != null)
+                {
+                    return DestinationsPostRequestBodyMember1.GetFieldDeserializers();
+                }
+                else if(DestinationsPostRequestBodyMember2 != null)
+                {
+                    return DestinationsPostRequestBodyMember2.GetFieldDeserializers();
+                }
+                else if(DestinationsPostRequestBodyMember3 != null)
+                {
+                    return DestinationsPostRequestBodyMember3.GetFieldDeserializers();
+                }
+                return new Dictionary<string, Action<IParseNode>>();
+            }
+            /// <summary>
+            /// Serializes information the current object
+            /// </summary>
+            /// <param name="writer">Serialization writer to use to serialize this model</param>
+            public virtual void Serialize(ISerializationWriter writer)
+            {
+                if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
+                if(DestinationsPostRequestBodyMember1 != null)
+                {
+                    writer.WriteObjectValue<global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember1>(null, DestinationsPostRequestBodyMember1);
+                }
+                else if(DestinationsPostRequestBodyMember2 != null)
+                {
+                    writer.WriteObjectValue<global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember2>(null, DestinationsPostRequestBodyMember2);
+                }
+                else if(DestinationsPostRequestBodyMember3 != null)
+                {
+                    writer.WriteObjectValue<global::Zemires.N8n.Api.Settings.LogStreaming.Destinations.DestinationsPostRequestBodyMember3>(null, DestinationsPostRequestBodyMember3);
+                }
+            }
         }
     }
 }

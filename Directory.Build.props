@@ -12,10 +12,10 @@
     <Nullable>enable</Nullable>
 
     <AspireMajorVersion>13</AspireMajorVersion>
-    <AspireVersion>$(AspireMajorVersion).6.1</AspireVersion>
-    <AspirePreviewSuffix>-preview.1.26506.6</AspirePreviewSuffix> <!-- Used for Aspire packages that still only ship as prerelease packages on nuget.org. -->
-    <AspNetCoreVersion>10.0.13</AspNetCoreVersion>
-    <DotNetExtensionsVersion>10.0.13</DotNetExtensionsVersion>
+    <AspireVersion>$(AspireMajorVersion).6.4</AspireVersion>
+    <AspirePreviewSuffix>-preview.1.26523.11</AspirePreviewSuffix> <!-- Used for Aspire packages that still only ship as prerelease packages on nuget.org. -->
+    <AspNetCoreVersion>10.0.14</AspNetCoreVersion>
+    <DotNetExtensionsVersion>10.0.14</DotNetExtensionsVersion>
     <ServiceDiscoveryVersion>10.11.0</ServiceDiscoveryVersion>
     <IsPackable>false</IsPackable>
 
@@ -42,7 +42,8 @@
   <PropertyGroup>
     <ToolkitMinorVersion>6</ToolkitMinorVersion>
     <ToolkitPatchVersion>0</ToolkitPatchVersion>
-    <ToolkitPreviewVersion>preview.1</ToolkitPreviewVersion>
+    <!-- Prerelease label of IsPreview packages in a stable release; bump it when 13.x.y-preview.N was already published. -->
+    <ToolkitPreviewVersion>preview.3</ToolkitPreviewVersion>
 
     <VersionPrefix>$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)</VersionPrefix>
   </PropertyGroup>

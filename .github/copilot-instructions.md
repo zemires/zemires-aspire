@@ -16,7 +16,7 @@ Shared guidance for AI coding agents (GitHub Copilot, Claude Code via `CLAUDE.md
 
 The repository was created by importing and merging several previously separate projects (some originally targeting the CommunityToolkit.Aspire repo). If you find leftovers from that origin (CommunityToolkit names, namespaces or links), align them with the conventions below.
 
-`src` packages target `net8.0`, `net9.0` and `net10.0` (`AllTargetFrameworks`; `Zemires.Aspire.Directus` is `net10.0` only because `Qute.Directus` is); examples, playground and tests target `net10.0`. Aspire `13.x` (`AspireVersion` in `Directory.Build.props`, AppHost SDK in `global.json`).
+`src` packages target `net8.0`, `net9.0` and `net10.0` (`AllTargetFrameworks`; `Zemires.Aspire.Directus` is `net10.0` only because `Qute.Directus` is); examples, playground and tests target `net10.0`. Aspire `13.6.4` (`AspireVersion` in `Directory.Build.props`, AppHost SDK in `global.json`).
 
 ## Repository layout (core principles)
 
@@ -55,7 +55,7 @@ dotnet pack src\<Project>\<Project>.csproj   # output goes to ./nuget
 To regenerate the n8n API client (from `src\Zemires.N8n.Api`, spec file `openapi.yml`, see `kiota-lock.json`):
 
 ```shell
-kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
+kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o . --ebc
 ```
 
 ## Build & versioning
@@ -116,4 +116,4 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o .
 - Client integrations bind settings from `Aspire:<Name>:Client` (keyed: overridden by `Aspire:<Name>:Client:{name}`), take the connection from `ConnectionStrings:{name}`, support keyed registration and register a health check unless disabled.
 - Do not commit local runtime data: `.n8n_data/`, `.data/`, `aspire-output/`, `.terragrunt-cache/`, `node_modules/`, `*.user` are git-ignored.
 - CI: `.github/workflows/ci.yml` runs restore, Release build, all tests except `Category=Integration` and `dotnet pack` of every `src` project on pull requests and pushes to `main`. Keep it green; run the same commands locally before pushing.
-- Release: pushing a tag `v*` (e.g. `v13.6.0`, `v13.6.0-preview.1`) runs `.github/workflows/release.yml` — build, tests (without `Category=Integration`), pack with the tag version, upload the packages as artifact and push them to nuget.org via trusted publishing (`NuGet/login`, OIDC; nuget.org policy for workflow `release.yml`, secret `NUGET_USER` = nuget.org profile name). The tag version must match `$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)` from `Directory.Build.props` (prerelease tags: same prefix), so bump those first.
+- Release: pushing a tag `v*` (e.g. `v13.6.0`, `v13.6.0-preview.1`) runs `.github/workflows/release.yml` — build, tests (without `Category=Integration`), pack with the tag version, upload the packages as artifact and push them to nuget.org via trusted publishing (`NuGet/login`, OIDC; nuget.org policy for workflow `release.yml`, secret `NUGET_USER` = nuget.org profile name). The tag version must match `$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)` from `Directory.Build.props` (prerelease tags: same prefix), so bump those first. Stable packages: n8n (`Zemires.Aspire.Hosting.N8n`, `Zemires.Aspire.N8n`, `Zemires.N8n.Api` as its dependency), Terraform (`Zemires.Aspire.Hosting.Terraform`, `.Terraform.Azure`) and Zitadel (`Zemires.Aspire.Hosting.Zitadel`, `Zemires.Aspire.Zitadel`). Projects with `<IsPreview>true</IsPreview>` (Directus, CockroachDB) stay prerelease: a stable tag packs them as `<VersionPrefix>-$(ToolkitPreviewVersion)` (e.g. `13.6.0-preview.3`; bump `ToolkitPreviewVersion` in `Directory.Build.props` if that version was already published), a prerelease tag packs all packages with the tag version. A stable package must not reference an `IsPreview` project (NU5104).

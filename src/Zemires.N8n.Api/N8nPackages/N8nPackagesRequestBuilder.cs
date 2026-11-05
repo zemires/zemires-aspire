@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System;
 using Zemires.N8n.Api.N8nPackages.Export;
 using Zemires.N8n.Api.N8nPackages.Import;
+using Zemires.N8n.Api.N8nPackages.ImportSelection;
 namespace Zemires.N8n.Api.N8nPackages
 {
     /// <summary>
@@ -25,6 +26,11 @@ namespace Zemires.N8n.Api.N8nPackages
         public global::Zemires.N8n.Api.N8nPackages.Import.ImportRequestBuilder Import
         {
             get => new global::Zemires.N8n.Api.N8nPackages.Import.ImportRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The importSelection property</summary>
+        public global::Zemires.N8n.Api.N8nPackages.ImportSelection.ImportSelectionRequestBuilder ImportSelection
+        {
+            get => new global::Zemires.N8n.Api.N8nPackages.ImportSelection.ImportSelectionRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.N8nPackages.N8nPackagesRequestBuilder"/> and sets the default values.

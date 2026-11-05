@@ -9,9 +9,11 @@ namespace Zemires.N8n.Api.Projects.Item.Folders.Item
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     #pragma warning disable CS1591
-    public partial class WithFolderGetResponse : IParsable
+    public partial class WithFolderGetResponse : IAdditionalDataHolder, IParsable
     #pragma warning restore CS1591
     {
+        /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
+        public IDictionary<string, object> AdditionalData { get; set; }
         /// <summary>The createdAt property</summary>
         public DateTimeOffset? CreatedAt { get; private set; }
         /// <summary>The id property</summary>
@@ -44,6 +46,13 @@ namespace Zemires.N8n.Api.Projects.Item.Folders.Item
         public int? TotalWorkflows { get; set; }
         /// <summary>The updatedAt property</summary>
         public DateTimeOffset? UpdatedAt { get; private set; }
+        /// <summary>
+        /// Instantiates a new <see cref="global::Zemires.N8n.Api.Projects.Item.Folders.Item.WithFolderGetResponse"/> and sets the default values.
+        /// </summary>
+        public WithFolderGetResponse()
+        {
+            AdditionalData = new Dictionary<string, object>();
+        }
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
         /// </summary>
@@ -82,6 +91,7 @@ namespace Zemires.N8n.Api.Projects.Item.Folders.Item
             writer.WriteStringValue("parentFolderId", ParentFolderId);
             writer.WriteIntValue("totalSubFolders", TotalSubFolders);
             writer.WriteIntValue("totalWorkflows", TotalWorkflows);
+            writer.WriteAdditionalData(AdditionalData);
         }
     }
 }

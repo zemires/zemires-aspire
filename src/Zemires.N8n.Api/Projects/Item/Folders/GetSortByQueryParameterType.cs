@@ -3,10 +3,9 @@ using System.Runtime.Serialization;
 using System;
 namespace Zemires.N8n.Api.Projects.Item.Folders
 {
+    /// <summary>Sort order for results.</summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
-    #pragma warning disable CS1591
     public enum GetSortByQueryParameterType
-    #pragma warning restore CS1591
     {
         [EnumMember(Value = "name:asc")]
         #pragma warning disable CS1591

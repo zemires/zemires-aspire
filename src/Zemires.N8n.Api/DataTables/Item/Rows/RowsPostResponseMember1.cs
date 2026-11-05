@@ -8,15 +8,17 @@ using System;
 namespace Zemires.N8n.Api.DataTables.Item.Rows
 {
     /// <summary>
-    /// Number of rows inserted (when returnType is &apos;count&apos;)
+    /// Returned when returnType is &apos;count&apos;
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class RowsPostResponseMember1 : IAdditionalDataHolder, IParsable
     {
         /// <summary>Stores additional data not described in the OpenAPI description found when deserializing. Can be used for serialization as well.</summary>
         public IDictionary<string, object> AdditionalData { get; set; }
-        /// <summary>The count property</summary>
-        public int? Count { get; set; }
+        /// <summary>The insertedRows property</summary>
+        public int? InsertedRows { get; set; }
+        /// <summary>The success property</summary>
+        public bool? Success { get; set; }
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.RowsPostResponseMember1"/> and sets the default values.
         /// </summary>
@@ -42,7 +44,8 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "count", n => { Count = n.GetIntValue(); } },
+                { "insertedRows", n => { InsertedRows = n.GetIntValue(); } },
+                { "success", n => { Success = n.GetBoolValue(); } },
             };
         }
         /// <summary>
@@ -52,7 +55,8 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows
         public virtual void Serialize(ISerializationWriter writer)
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
-            writer.WriteIntValue("count", Count);
+            writer.WriteIntValue("insertedRows", InsertedRows);
+            writer.WriteBoolValue("success", Success);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

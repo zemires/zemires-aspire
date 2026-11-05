@@ -8,11 +8,11 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
+using Zemires.N8n.Api.Models.WorkflowPublishPublicDto;
 namespace Zemires.N8n.Api.Workflows.Item.Publish
 {
     /// <summary>
-    /// Builds and executes requests for operations under \workflows\{-id}\publish
+    /// Builds and executes requests for operations under \workflows\{workflowId}\publish
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class PublishRequestBuilder : BaseRequestBuilder
@@ -22,7 +22,7 @@ namespace Zemires.N8n.Api.Workflows.Item.Publish
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public PublishRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/publish", pathParameters)
+        public PublishRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/publish", pathParameters)
         {
         }
         /// <summary>
@@ -30,33 +30,33 @@ namespace Zemires.N8n.Api.Workflows.Item.Publish
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public PublishRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/publish", rawUrl)
+        public PublishRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/publish", rawUrl)
         {
         }
         /// <summary>
         /// Publish a workflow. In n8n v1, this action was termed activating a workflow.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.Workflow"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.WorkflowPublishPublicDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
-        /// <exception cref="global::Zemires.N8n.Api.Models.WorkflowPublishBlockedError">When receiving a 409 status code</exception>
+        /// <exception cref="global::Zemires.N8n.Api.Workflows.Item.Publish.Generated409Error">When receiving a 409 status code</exception>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.Workflow?> PostAsync(global::Zemires.N8n.Api.Workflows.Item.Publish.PublishPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.WorkflowPublishPublicDto.Generated?> PostAsync(global::Zemires.N8n.Api.Workflows.Item.Publish.PublishPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.Workflow> PostAsync(global::Zemires.N8n.Api.Workflows.Item.Publish.PublishPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.WorkflowPublishPublicDto.Generated> PostAsync(global::Zemires.N8n.Api.Workflows.Item.Publish.PublishPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
             var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
             {
-                { "409", global::Zemires.N8n.Api.Models.WorkflowPublishBlockedError.CreateFromDiscriminatorValue },
+                { "409", global::Zemires.N8n.Api.Workflows.Item.Publish.Generated409Error.CreateFromDiscriminatorValue },
             };
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.Workflow>(requestInfo, global::Zemires.N8n.Api.Models.Workflow.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.WorkflowPublishPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.WorkflowPublishPublicDto.Generated.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Publish a workflow. In n8n v1, this action was termed activating a workflow.

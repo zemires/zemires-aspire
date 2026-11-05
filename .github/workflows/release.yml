@@ -40,6 +40,8 @@ jobs:
       # Stable versions must match AspireMajorVersion.ToolkitMinorVersion.ToolkitPatchVersion from
       # Directory.Build.props (enforced by ReleaseBuild=true in Directory.Build.targets); prerelease
       # versions must at least share that VersionPrefix.
+      # Projects with IsPreview=true (Directus, CockroachDB) stay prerelease in a stable release and are
+      # packed as <VersionPrefix>-<ToolkitPreviewVersion> (e.g. 13.6.0-preview.3), see src/Directory.Build.targets.
       - name: Determine version
         id: version
         run: |

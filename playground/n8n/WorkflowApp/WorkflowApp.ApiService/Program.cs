@@ -2,7 +2,6 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using Zemires.N8n.Api;
 using Zemires.N8n.Api.Models;
 using Zemires.N8n.Api.Executions;
-using Zemires.N8n.Api.Workflows.Item.Activate;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,14 +53,14 @@ app.MapGet("/testapi", async (N8nClient client, ILogger<Program> logger, Cancell
 
         logger.LogInformation("Workflow running: {id} - {execs}", wf.Id, exeIds);
     }
-    return wfs.Data.Select(p => new { p.Id, p.Name, p.Active });
+    return wfs.Data.Select(p => new { p.Id, p.Name, Active = p.ActiveVersionId is not null });
 });
 
 app.MapGet("/loadwf", async (N8nClient client, CancellationToken ct) =>
 {
     using var fs = File.OpenRead("Workflow1.json");
 
-    var wf = (await KiotaJsonSerializer.DeserializeAsync<Workflow>(fs))!;
+    var wf = (await KiotaJsonSerializer.DeserializeAsync<Zemires.N8n.Api.Workflows.Item.WithWorkflowPutRequestBody>(fs))!;
     var existingWf = await client.Workflows.GetAsync(p =>
     {
         p.QueryParameters.Name = wf.Name;
@@ -76,9 +75,9 @@ app.MapGet("/loadwf", async (N8nClient client, CancellationToken ct) =>
     }
 
     fs.Position = 0;
-    var wfCreate = await KiotaJsonSerializer.DeserializeAsync<WorkflowCreate>(fs);
+    var wfCreate = await KiotaJsonSerializer.DeserializeAsync<Zemires.N8n.Api.Workflows.WorkflowsPostRequestBody>(fs);
     var result = await client.Workflows.PostAsync(wfCreate!, cancellationToken: ct);
-    await client.Workflows[result!.Id].Activate.PostAsync(new ActivatePostRequestBody());
+    await client.Workflows[result!.Id].Publish.PostAsync(new Zemires.N8n.Api.Workflows.Item.Publish.PublishPostRequestBody());
     return result.Id ?? "";
 });
 

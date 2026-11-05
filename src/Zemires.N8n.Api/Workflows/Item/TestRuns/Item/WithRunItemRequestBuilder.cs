@@ -8,13 +8,12 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 using Zemires.N8n.Api.Workflows.Item.TestRuns.Item.Cancel;
 using Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases;
 namespace Zemires.N8n.Api.Workflows.Item.TestRuns.Item
 {
     /// <summary>
-    /// Builds and executes requests for operations under \workflows\{-id}\test-runs\{runId}
+    /// Builds and executes requests for operations under \workflows\{workflowId}\test-runs\{runId}
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class WithRunItemRequestBuilder : BaseRequestBuilder
@@ -34,7 +33,7 @@ namespace Zemires.N8n.Api.Workflows.Item.TestRuns.Item
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public WithRunItemRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/test-runs/{runId}", pathParameters)
+        public WithRunItemRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/test-runs/{runId}", pathParameters)
         {
         }
         /// <summary>
@@ -42,26 +41,26 @@ namespace Zemires.N8n.Api.Workflows.Item.TestRuns.Item
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public WithRunItemRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/test-runs/{runId}", rawUrl)
+        public WithRunItemRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/test-runs/{runId}", rawUrl)
         {
         }
         /// <summary>
         /// Retrieve a single evaluation test run of a workflow, including its aggregated metrics and final result.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.TestRunSummary"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.WithRunGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.TestRunSummary?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.WithRunGetResponse?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.TestRunSummary> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.WithRunGetResponse> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.TestRunSummary>(requestInfo, global::Zemires.N8n.Api.Models.TestRunSummary.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.WithRunGetResponse>(requestInfo, global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.WithRunGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve a single evaluation test run of a workflow, including its aggregated metrics and final result.

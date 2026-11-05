@@ -5,7 +5,6 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using Zemires.N8n.Api.Models.Folder;
 namespace Zemires.N8n.Api.Projects.Item.Folders
 {
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
@@ -20,10 +19,10 @@ namespace Zemires.N8n.Api.Projects.Item.Folders
         /// <summary>The data property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public List<global::Zemires.N8n.Api.Models.Folder.Folder>? Data { get; set; }
+        public List<global::Zemires.N8n.Api.Projects.Item.Folders.FoldersGetResponse_data>? Data { get; set; }
 #nullable restore
 #else
-        public List<global::Zemires.N8n.Api.Models.Folder.Folder> Data { get; set; }
+        public List<global::Zemires.N8n.Api.Projects.Item.Folders.FoldersGetResponse_data> Data { get; set; }
 #endif
         /// <summary>
         /// Instantiates a new <see cref="global::Zemires.N8n.Api.Projects.Item.Folders.FoldersGetResponse"/> and sets the default values.
@@ -51,7 +50,7 @@ namespace Zemires.N8n.Api.Projects.Item.Folders
             return new Dictionary<string, Action<IParseNode>>
             {
                 { "count", n => { Count = n.GetIntValue(); } },
-                { "data", n => { Data = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Models.Folder.Folder>(global::Zemires.N8n.Api.Models.Folder.Folder.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "data", n => { Data = n.GetCollectionOfObjectValues<global::Zemires.N8n.Api.Projects.Item.Folders.FoldersGetResponse_data>(global::Zemires.N8n.Api.Projects.Item.Folders.FoldersGetResponse_data.CreateFromDiscriminatorValue)?.AsList(); } },
             };
         }
         /// <summary>
@@ -62,7 +61,7 @@ namespace Zemires.N8n.Api.Projects.Item.Folders
         {
             if(ReferenceEquals(writer, null)) throw new ArgumentNullException(nameof(writer));
             writer.WriteIntValue("count", Count);
-            writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Models.Folder.Folder>("data", Data);
+            writer.WriteCollectionOfObjectValues<global::Zemires.N8n.Api.Projects.Item.Folders.FoldersGetResponse_data>("data", Data);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

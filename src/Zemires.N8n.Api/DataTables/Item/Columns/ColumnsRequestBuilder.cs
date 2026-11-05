@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Zemires.N8n.Api.DataTables.Item.Columns.Item;
-using Zemires.N8n.Api.Models;
+using Zemires.N8n.Api.Models.DataTableColumnPublicDto;
 namespace Zemires.N8n.Api.DataTables.Item.Columns
 {
     /// <summary>
@@ -49,41 +49,41 @@ namespace Zemires.N8n.Api.DataTables.Item.Columns
         /// <summary>
         /// Retrieve all columns for a specific data table.
         /// </summary>
-        /// <returns>A List&lt;global::Zemires.N8n.Api.Models.DataTableColumn&gt;</returns>
+        /// <returns>A List&lt;global::Zemires.N8n.Api.DataTables.Item.Columns.Columns&gt;</returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<List<global::Zemires.N8n.Api.Models.DataTableColumn>?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<List<global::Zemires.N8n.Api.DataTables.Item.Columns.Columns>?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<List<global::Zemires.N8n.Api.Models.DataTableColumn>> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<List<global::Zemires.N8n.Api.DataTables.Item.Columns.Columns>> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            var collectionResult = await RequestAdapter.SendCollectionAsync<global::Zemires.N8n.Api.Models.DataTableColumn>(requestInfo, global::Zemires.N8n.Api.Models.DataTableColumn.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            var collectionResult = await RequestAdapter.SendCollectionAsync<global::Zemires.N8n.Api.DataTables.Item.Columns.Columns>(requestInfo, global::Zemires.N8n.Api.DataTables.Item.Columns.Columns.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
             return collectionResult?.AsList();
         }
         /// <summary>
         /// Add a new column to an existing data table.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTableColumn"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated"/></returns>
         /// <param name="body">The request body</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.DataTableColumn?> PostAsync(global::Zemires.N8n.Api.Models.CreateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated?> PostAsync(global::Zemires.N8n.Api.DataTables.Item.Columns.ColumnsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.DataTableColumn> PostAsync(global::Zemires.N8n.Api.Models.CreateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated> PostAsync(global::Zemires.N8n.Api.DataTables.Item.Columns.ColumnsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTableColumn>(requestInfo, global::Zemires.N8n.Api.Models.DataTableColumn.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated>(requestInfo, global::Zemires.N8n.Api.Models.DataTableColumnPublicDto.Generated.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve all columns for a specific data table.
@@ -112,11 +112,11 @@ namespace Zemires.N8n.Api.DataTables.Item.Columns
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.CreateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Columns.ColumnsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.Models.CreateColumnRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::Zemires.N8n.Api.DataTables.Item.Columns.ColumnsPostRequestBody body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             if(ReferenceEquals(body, null)) throw new ArgumentNullException(nameof(body));

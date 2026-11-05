@@ -33,7 +33,7 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Clear
         {
         }
         /// <summary>
-        /// Permanently deletes all rows from a data table. The table structure will be retained. This action cannot be undone.
+        /// Permanently delete all rows from a data table. The table structure is retained. This action cannot be undone.
         /// </summary>
         /// <returns>A <see cref="global::Zemires.N8n.Api.DataTables.Item.Rows.Clear.ClearDeleteResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
@@ -51,7 +51,7 @@ namespace Zemires.N8n.Api.DataTables.Item.Rows.Clear
             return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.DataTables.Item.Rows.Clear.ClearDeleteResponse>(requestInfo, global::Zemires.N8n.Api.DataTables.Item.Rows.Clear.ClearDeleteResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
-        /// Permanently deletes all rows from a data table. The table structure will be retained. This action cannot be undone.
+        /// Permanently delete all rows from a data table. The table structure is retained. This action cannot be undone.
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>

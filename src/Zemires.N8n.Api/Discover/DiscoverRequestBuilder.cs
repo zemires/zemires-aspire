@@ -84,28 +84,35 @@ namespace Zemires.N8n.Api.Discover
         [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
         public partial class DiscoverRequestBuilderGetQueryParameters 
         {
-            /// <summary>Include additional data. Use &quot;schemas&quot; to inline request body schemas per endpoint, eliminating the need to fetch the full OpenAPI spec.</summary>
+            #pragma warning disable CS1591
             [QueryParameter("include")]
             public global::Zemires.N8n.Api.Discover.GetIncludeQueryParameterType? Include { get; set; }
-            /// <summary>Filter to endpoints with a specific operation (e.g. &quot;read&quot;, &quot;create&quot;, &quot;list&quot;).</summary>
+            #pragma warning restore CS1591
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("operation")]
             public string? Operation { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("operation")]
             public string Operation { get; set; }
+            #pragma warning restore CS1591
 #endif
-            /// <summary>Filter to a specific resource (e.g. &quot;workflow&quot;, &quot;tags&quot;, &quot;credential&quot;).</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
+            #pragma warning disable CS1591
             [QueryParameter("resource")]
             public string? Resource { get; set; }
+            #pragma warning restore CS1591
 #nullable restore
 #else
+            #pragma warning disable CS1591
             [QueryParameter("resource")]
             public string Resource { get; set; }
+            #pragma warning restore CS1591
 #endif
         }
     }

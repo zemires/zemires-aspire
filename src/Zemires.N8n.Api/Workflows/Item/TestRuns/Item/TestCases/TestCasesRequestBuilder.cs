@@ -8,11 +8,10 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Zemires.N8n.Api.Models;
 namespace Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases
 {
     /// <summary>
-    /// Builds and executes requests for operations under \workflows\{-id}\test-runs\{runId}\test-cases
+    /// Builds and executes requests for operations under \workflows\{workflowId}\test-runs\{runId}\test-cases
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class TestCasesRequestBuilder : BaseRequestBuilder
@@ -22,7 +21,7 @@ namespace Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public TestCasesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/test-runs/{runId}/test-cases{?cursor*,limit*}", pathParameters)
+        public TestCasesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/test-runs/{runId}/test-cases{?cursor*,limit*}", pathParameters)
         {
         }
         /// <summary>
@@ -30,26 +29,26 @@ namespace Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public TestCasesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{%2Did}/test-runs/{runId}/test-cases{?cursor*,limit*}", rawUrl)
+        public TestCasesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/workflows/{workflowId}/test-runs/{runId}/test-cases{?cursor*,limit*}", rawUrl)
         {
         }
         /// <summary>
         /// Retrieve the per-case results of an evaluation test run.
         /// </summary>
-        /// <returns>A <see cref="global::Zemires.N8n.Api.Models.TestCaseExecutionList"/></returns>
+        /// <returns>A <see cref="global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesGetResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::Zemires.N8n.Api.Models.TestCaseExecutionList?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesRequestBuilder.TestCasesRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesGetResponse?> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesRequestBuilder.TestCasesRequestBuilderGetQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::Zemires.N8n.Api.Models.TestCaseExecutionList> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesRequestBuilder.TestCasesRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesGetResponse> GetAsync(Action<RequestConfiguration<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesRequestBuilder.TestCasesRequestBuilderGetQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Models.TestCaseExecutionList>(requestInfo, global::Zemires.N8n.Api.Models.TestCaseExecutionList.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesGetResponse>(requestInfo, global::Zemires.N8n.Api.Workflows.Item.TestRuns.Item.TestCases.TestCasesGetResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Retrieve the per-case results of an evaluation test run.
