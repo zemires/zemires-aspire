@@ -19,6 +19,46 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
     // n8n binds the session cookie to the browser-id header sent at login; later calls must send the same value.
     private const string BrowserId = "zemires-aspire-hosting-n8n";
 
+    /// <summary>Gets or sets the delay between checks of <see cref="WaitUntilReadyAsync"/>.</summary>
+    public TimeSpan RetryDelay { get; init; } = TimeSpan.FromSeconds(1);
+
+    /// <summary>Gets or sets how long <see cref="WaitUntilReadyAsync"/> waits for the REST API.</summary>
+    public TimeSpan ReadyTimeout { get; init; } = TimeSpan.FromMinutes(2);
+
+    /// <summary>
+    /// Waits until n8n serves its REST API. n8n answers <c>/healthz</c> before it registers the REST routes, which
+    /// return 404 until then; <c>GET /rest/login</c> returns 401 without a session once they are registered.
+    /// </summary>
+    public async Task WaitUntilReadyAsync(CancellationToken cancellationToken)
+    {
+        var deadline = DateTime.UtcNow + ReadyTimeout;
+        while (true)
+        {
+            HttpStatusCode? status = null;
+            try
+            {
+                using var response = await httpClient.GetAsync("/rest/login", cancellationToken).ConfigureAwait(false);
+                status = response.StatusCode;
+                if (status is not (HttpStatusCode.NotFound or HttpStatusCode.ServiceUnavailable))
+                {
+                    return;
+                }
+            }
+            catch (HttpRequestException) when (DateTime.UtcNow < deadline)
+            {
+                // n8n is restarting its server, retry
+            }
+
+            if (DateTime.UtcNow >= deadline)
+            {
+                throw new TimeoutException($"The n8n REST API was not available within {ReadyTimeout} (last status {status}).");
+            }
+
+            logger.LogDebug("Waiting for the n8n REST API (status {Status}).", status);
+            await Task.Delay(RetryDelay, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
     /// <summary>Checks whether n8n accepts <paramref name="apiKey"/> for its public API.</summary>
     public async Task<bool> IsValidAsync(string apiKey, CancellationToken cancellationToken)
     {

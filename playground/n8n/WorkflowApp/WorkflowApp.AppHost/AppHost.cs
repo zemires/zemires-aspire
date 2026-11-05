@@ -2,7 +2,6 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var ownerPassword = builder.AddParameter("owner-password", true);
 var licenseKey = builder.AddParameter("license-key", true);
-var adminApiKey = builder.AddParameter("admin-api-key", true); // value needs to be created manually in n8n
 
 var postgres = builder.AddPostgres("postgres")
     .WithDataVolume();
@@ -37,6 +36,7 @@ var n8n = builder.AddN8n("n8n", port: 5678)
     .WithInstanceOwner("admin@dev.local", "Admin", "Local", ownerPassword)
     .WithLicenseKey(licenseKey)
     .WithOtlpExporter()
+    .WithApiKey()
     .WithEnvironment("N8N_LOG_LEVEL", "debug").WithEnvironment("N8N_LOG_OUTPUT", "console,file")
     .WithEnvironment("CREDENTIALS_OVERWRITE_DATA", credentials);
 
@@ -51,8 +51,7 @@ worker.AddTaskRunner("runner");
 
 var api = builder.AddProject<Projects.WorkflowApp_ApiService>("apiservice")
     .WithReference(n8n)
-    .WaitFor(n8n)
-    .WithEnvironment("Aspire__n8n__Client__ApiKey", adminApiKey);
+    .WaitFor(n8n);
 
 worker.WithReference(api);
 
