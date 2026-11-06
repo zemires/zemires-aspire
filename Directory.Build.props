@@ -41,7 +41,7 @@
   <!-- Versioning -->
   <PropertyGroup>
     <ToolkitMinorVersion>6</ToolkitMinorVersion>
-    <ToolkitPatchVersion>0</ToolkitPatchVersion>
+    <ToolkitPatchVersion>4</ToolkitPatchVersion>
     <!-- Prerelease label of IsPreview packages in a stable release; bump it when 13.x.y-preview.N was already published. -->
     <ToolkitPreviewVersion>preview.3</ToolkitPreviewVersion>
 
