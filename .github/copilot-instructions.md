@@ -16,7 +16,7 @@ Shared guidance for AI coding agents (GitHub Copilot, Claude Code via `CLAUDE.md
 
 The repository was created by importing and merging several previously separate projects (some originally targeting the CommunityToolkit.Aspire repo). If you find leftovers from that origin (CommunityToolkit names, namespaces or links), align them with the conventions below.
 
-`src` packages target `net8.0`, `net9.0` and `net10.0` (`AllTargetFrameworks`; `Zemires.Aspire.Directus` is `net10.0` only because `Qute.Directus` is); examples, playground and tests target `net10.0`. Aspire `13.6.4` (`AspireVersion` in `Directory.Build.props`, AppHost SDK in `global.json`).
+`src` packages target `net8.0`, `net9.0` and `net10.0` (`AllTargetFrameworks`; `Zemires.Aspire.Directus` is `net10.0` only because `Qute.Directus` is); examples, playground and tests target `net10.0`. Aspire: `src` packages reference the lowest supported Aspire `13.6.0` (`AspireMinimumVersion`) so consumers can use any Aspire `13.6.x`; playground, examples and tests use the latest `13.6.4` (`AspireVersion`, both in `Directory.Build.props`; AppHost SDK in `global.json`). `Directory.Packages.props` picks the version via `AspirePackageVersion` based on `IsPackable` — bump `AspireVersion` for new Aspire patches, and `AspireMinimumVersion` only when `src` needs a newer Aspire API.
 
 ## Repository layout (core principles)
 
@@ -61,7 +61,7 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o . -
 ## Build & versioning
 
 - Package versions are centrally managed in `Directory.Packages.props` — never put `Version=` on a `PackageReference`.
-- Shared properties (`DefaultTargetFramework`, `AspireVersion`, `AspireMajorVersion`, `ToolkitMinorVersion`, `ToolkitPatchVersion`) live in the root `Directory.Build.props`. Package version = `$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)`; local builds get a `-dev.<timestamp>` suffix, release builds are validated in `Directory.Build.targets`.
+- Shared properties (`DefaultTargetFramework`, `AspireVersion`, `AspireMinimumVersion`, `AspireMajorVersion`, `ToolkitMinorVersion`, `ToolkitPatchVersion`) live in the root `Directory.Build.props`. Package version = `$(AspireMajorVersion).$(ToolkitMinorVersion).$(ToolkitPatchVersion)`; local builds get a `-dev.<timestamp>` suffix, release builds are validated in `Directory.Build.targets`.
 - `src/Directory.Build.props` / `.targets` add packaging metadata, SourceLink, XML docs (CS1591 etc. as errors), the package icon and pack each project's `README.md` as the NuGet readme — **every `src` project needs a `README.md`**.
 - Every `src` project sets a `Description` and `AdditionalPackageTags` (appended to the common `aspire integration zemires` tags): the target system (e.g. `n8n`, `zitadel`, `terraform`) plus `hosting` for `Zemires.Aspire.Hosting.*` packages or `client` for client packages. The `ValidatePackageTags` target in `src/Directory.Build.targets` fails `dotnet pack` otherwise.
 - `src` projects build with `TreatWarningsAsErrors` and run `Aspire.Hosting.Integration.Analyzers`: public hosting extension methods need `[AspireExport]` or `[AspireExportIgnore]`. Playground, examples and tests keep warnings as warnings.
