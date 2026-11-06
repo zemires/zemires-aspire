@@ -151,6 +151,19 @@ public class N8nApiKeyTests
     }
 
     [Fact]
+    public async Task Provisioner_WaitUntilReady_RetriesWhileStartingUp()
+    {
+        var handler = new FakeN8nHandler { RestNotFoundCount = 1, StartingUpCount = 2 };
+        using var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://n8n.test") };
+        var provisioner = new N8nApiKeyProvisioner(httpClient, NullLogger.Instance) { RetryDelay = TimeSpan.FromMilliseconds(1) };
+
+        await provisioner.WaitUntilReadyAsync(TestContext.Current.CancellationToken);
+
+        // 2 startup pages, 1 not found, then 401 from the registered route
+        Assert.Equal(4, handler.Requests.Count);
+    }
+
+    [Fact]
     public async Task Provisioner_WaitUntilReady_TimesOut()
     {
         var handler = new FakeN8nHandler { RestNotFoundCount = int.MaxValue };
@@ -190,12 +203,21 @@ public class N8nApiKeyTests
 
         public int RestNotFoundCount { get; set; }
 
+        /// <summary>Number of requests answered with n8n's startup page (200, no JSON), as during database migrations.</summary>
+        public int StartingUpCount { get; set; }
+
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var path = request.RequestUri!.AbsolutePath;
             Requests.Add(new RecordedRequest(request.Method, path,
                 Header(request, "Cookie"), Header(request, "browser-id"), Header(request, "X-N8N-API-KEY"),
                 request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken)));
+
+            if (StartingUpCount > 0)
+            {
+                StartingUpCount--;
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("n8n is starting up. Please wait") };
+            }
 
             switch (request.Method.Method, path)
             {

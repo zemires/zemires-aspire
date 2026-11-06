@@ -28,6 +28,7 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
     /// <summary>
     /// Waits until n8n serves its REST API. n8n answers <c>/healthz</c> before it registers the REST routes, which
     /// return 404 until then; <c>GET /rest/login</c> returns 401 without a session once they are registered.
+    /// While the database is migrated, n8n answers every route with <c>200 n8n is starting up. Please wait</c> (no JSON).
     /// </summary>
     public async Task WaitUntilReadyAsync(CancellationToken cancellationToken)
     {
@@ -39,7 +40,7 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
             {
                 using var response = await httpClient.GetAsync("/rest/login", cancellationToken).ConfigureAwait(false);
                 status = response.StatusCode;
-                if (status is not (HttpStatusCode.NotFound or HttpStatusCode.ServiceUnavailable))
+                if (status is not (HttpStatusCode.NotFound or HttpStatusCode.ServiceUnavailable) && !IsStartingUp(response))
                 {
                     return;
                 }
@@ -152,6 +153,10 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
         var body = await response.Content.ReadFromJsonAsync<JsonObject>(cancellationToken).ConfigureAwait(false);
         return body?["data"]?.AsArray().Select(scope => scope!.GetValue<string>()).ToArray() ?? [];
     }
+
+    // the startup page of n8n is a 2xx response without JSON
+    private static bool IsStartingUp(HttpResponseMessage response) =>
+        response.IsSuccessStatusCode && response.Content.Headers.ContentType?.MediaType != "application/json";
 
     private static HttpRequestMessage CreateSessionRequest(HttpMethod method, string path, string sessionCookie)
     {
