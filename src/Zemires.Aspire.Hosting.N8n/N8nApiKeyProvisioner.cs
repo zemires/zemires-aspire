@@ -19,35 +19,44 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
     // n8n binds the session cookie to the browser-id header sent at login; later calls must send the same value.
     private const string BrowserId = "zemires-aspire-hosting-n8n";
 
-    /// <summary>Gets or sets the delay between checks of <see cref="WaitUntilStartedAsync"/>.</summary>
-    internal TimeSpan StartupPollDelay { get; init; } = TimeSpan.FromSeconds(1);
+    /// <summary>Gets or sets the delay between checks of <see cref="WaitUntilReadyAsync"/>.</summary>
+    public TimeSpan RetryDelay { get; init; } = TimeSpan.FromSeconds(1);
+
+    /// <summary>Gets or sets how long <see cref="WaitUntilReadyAsync"/> waits for the REST API.</summary>
+    public TimeSpan ReadyTimeout { get; init; } = TimeSpan.FromMinutes(2);
 
     /// <summary>
-    /// Waits until n8n serves its REST API. n8n reports healthy (<c>/healthz</c>) before that and answers every route
-    /// with <c>200 n8n is starting up. Please wait</c> (no JSON) meanwhile.
+    /// Waits until n8n serves its REST API. n8n answers <c>/healthz</c> before it registers the REST routes, which
+    /// return 404 until then; <c>GET /rest/login</c> returns 401 without a session once they are registered.
+    /// While the database is migrated, n8n answers every route with <c>200 n8n is starting up. Please wait</c> (no JSON).
     /// </summary>
-    public async Task WaitUntilStartedAsync(TimeSpan timeout, CancellationToken cancellationToken)
+    public async Task WaitUntilReadyAsync(CancellationToken cancellationToken)
     {
-        using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutSource.CancelAfter(timeout);
-        try
+        var deadline = DateTime.UtcNow + ReadyTimeout;
+        while (true)
         {
-            while (true)
+            HttpStatusCode? status = null;
+            try
             {
-                using (var response = await httpClient.GetAsync("/rest/settings", timeoutSource.Token).ConfigureAwait(false))
+                using var response = await httpClient.GetAsync("/rest/login", cancellationToken).ConfigureAwait(false);
+                status = response.StatusCode;
+                if (status is not (HttpStatusCode.NotFound or HttpStatusCode.ServiceUnavailable) && !IsStartingUp(response))
                 {
-                    if (response.IsSuccessStatusCode && IsJson(response))
-                    {
-                        return;
-                    }
+                    return;
                 }
-
-                await Task.Delay(StartupPollDelay, timeoutSource.Token).ConfigureAwait(false);
             }
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            throw new TimeoutException($"n8n did not serve its REST API within {timeout}.");
+            catch (HttpRequestException) when (DateTime.UtcNow < deadline)
+            {
+                // n8n is restarting its server, retry
+            }
+
+            if (DateTime.UtcNow >= deadline)
+            {
+                throw new TimeoutException($"The n8n REST API was not available within {ReadyTimeout} (last status {status}).");
+            }
+
+            logger.LogDebug("Waiting for the n8n REST API (status {Status}).", status);
+            await Task.Delay(RetryDelay, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -145,8 +154,9 @@ internal sealed class N8nApiKeyProvisioner(HttpClient httpClient, ILogger logger
         return body?["data"]?.AsArray().Select(scope => scope!.GetValue<string>()).ToArray() ?? [];
     }
 
-    private static bool IsJson(HttpResponseMessage response) =>
-        response.Content.Headers.ContentType?.MediaType == "application/json";
+    // the startup page of n8n is a 2xx response without JSON
+    private static bool IsStartingUp(HttpResponseMessage response) =>
+        response.IsSuccessStatusCode && response.Content.Headers.ContentType?.MediaType != "application/json";
 
     private static HttpRequestMessage CreateSessionRequest(HttpMethod method, string path, string sessionCookie)
     {

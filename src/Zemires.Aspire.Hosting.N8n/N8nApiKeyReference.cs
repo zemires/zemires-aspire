@@ -84,29 +84,37 @@ public sealed class N8nApiKeyReference : IValueProvider, IManifestExpressionProv
     }
 
     /// <summary>
-    /// Gets the key for <see cref="ValueProviderContext.Caller"/>. Without caller, or for the n8n resource itself, a generated
-    /// key that does not exist yet is returned as <see langword="null"/> instead of waiting: Aspire resolves the connection
-    /// string of n8n (for the dashboard) before it creates the container, so waiting there would never end.
+    /// Gets the key for a resource. Waits until a generated key is created, except without a requesting resource
+    /// (<see cref="ValueProviderContext.Caller"/>): returns <see langword="null"/> while the key is not created yet.
     /// </summary>
-    /// <param name="context">The context of the resolution.</param>
+    /// <param name="context">The context of the requesting resource.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The API key.</returns>
-    public ValueTask<string?> GetValueAsync(ValueProviderContext context, CancellationToken cancellationToken = default)
+    /// <remarks>
+    /// Aspire resolves the connection string of n8n without a caller before it creates the container (to show it in
+    /// the dashboard); waiting there for the key, which is created once n8n is ready, would block n8n from starting.
+    /// </remarks>
+    public async ValueTask<string?> GetValueAsync(ValueProviderContext context, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (Parameter is null && (context.Caller is null || context.Caller == Resource))
+        if (Parameter is not null)
+        {
+            return await Parameter.GetValueAsync(context, cancellationToken).ConfigureAwait(false);
+        }
+
+        if (context.Caller is null)
         {
             lock (_lock)
             {
                 if (!_value.Task.IsCompletedSuccessfully)
                 {
-                    return ValueTask.FromResult<string?>(null);
+                    return null;
                 }
             }
         }
 
-        return GetValueAsync(cancellationToken);
+        return await GetValueAsync(cancellationToken).ConfigureAwait(false);
     }
 
     internal void Set(string value)

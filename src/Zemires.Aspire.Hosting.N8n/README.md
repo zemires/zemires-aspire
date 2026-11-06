@@ -62,7 +62,7 @@ builder.AddProject<Projects.ApiService>("api")
     .WaitFor(n8n);
 ```
 
-With an API key the connection string is `Endpoint={url};ApiKey={key}` (connection properties `Uri` and `ApiKey`), read by `AddN8nClient` of `Zemires.Aspire.N8n`. `n8n.Resource.ApiKey` is the key as value (e.g. for `WithEnvironment`), resolved lazily once it exists: consumers wait for it, while the connection string shown in the dashboard has an empty `ApiKey` until then.
+With an API key the connection string is `Endpoint={url};ApiKey={key}` (connection properties `Uri` and `ApiKey`), read by `AddN8nClient` of `Zemires.Aspire.N8n`. `n8n.Resource.ApiKey` is the key as value (e.g. for `WithEnvironment`), resolved lazily once it exists.
 
 `WithApiKey()` works in run mode only and does nothing in publish mode. It uses n8n's internal REST API (`/rest/login`, `/rest/api-keys`), which is undocumented and may change between n8n versions. To use an existing key instead, pass a parameter: `WithApiKey(builder.AddParameter("n8n-api-key", secret: true))`.
 
