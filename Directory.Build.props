@@ -13,10 +13,10 @@
 
     <AspireMajorVersion>13</AspireMajorVersion>
     <!-- Latest Aspire, used by playground, examples and tests (keep in sync with Aspire.AppHost.Sdk in global.json). -->
-    <AspireVersion>$(AspireMajorVersion).6.4</AspireVersion>
-    <!-- Lowest Aspire the released src packages reference, so they work with any Aspire $(AspireMajorVersion).6.x. -->
-    <AspireMinimumVersion>$(AspireMajorVersion).6.0</AspireMinimumVersion>
-    <AspirePreviewSuffix>-preview.1.26523.11</AspirePreviewSuffix> <!-- Used for Aspire packages that still only ship as prerelease packages on nuget.org. -->
+    <AspireVersion>$(AspireMajorVersion).6.5</AspireVersion>
+    <!-- Lowest Aspire the released src packages reference, so they work with any Aspire $(AspireMajorVersion).6.x from 13.6.5 (earlier versions are affected by GHSA-f7vh-h5g3-7jrh). -->
+    <AspireMinimumVersion>$(AspireMajorVersion).6.5</AspireMinimumVersion>
+    <AspirePreviewSuffix>-preview.1.26559.7</AspirePreviewSuffix> <!-- Used for Aspire packages that still only ship as prerelease packages on nuget.org. -->
     <AspNetCoreVersion>10.0.14</AspNetCoreVersion>
     <DotNetExtensionsVersion>10.0.14</DotNetExtensionsVersion>
     <ServiceDiscoveryVersion>10.11.0</ServiceDiscoveryVersion>
