@@ -1,4 +1,5 @@
 using Aspire.Hosting.Azure;
+using Aspire.Hosting.Foundry;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -18,8 +19,8 @@ var postgres = builder.AddPostgres("postgres")
         app.Template.Scale.MaxReplicas = 1;
     });
 
-var foundry = builder.AddAzureAIFoundry("foundry");
-var chat = foundry.AddDeployment("chat", AIFoundryModel.OpenAI.Gpt5Mini);
+var foundry = builder.AddFoundry("foundry");
+var chat = foundry.AddDeployment("chat", FoundryModel.OpenAI.Gpt5Mini);
 
 var n8n = builder.AddN8n("n8n", port: 55678)
     .WithDataVolume()

@@ -29,7 +29,8 @@
 
 ## Prerequisites
 
-- .NET SDK 10 (packages target `net8.0`, `net9.0` and `net10.0`, Aspire 13)
+- .NET SDK 10 (packages target `net10.0`, Aspire 17)
+- Aspire CLI 17 (https://get.aspire.dev) — Aspire 17 AppHosts need its bundle to build and run
 - Docker or Podman for running AppHosts and integration tests
 - OpenTofu CLI (`tofu`, default) or Terraform CLI, plus Azure CLI for Azure targets, for Terraform deployment
 - Kiota — only to regenerate the n8n API client

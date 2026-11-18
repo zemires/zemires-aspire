@@ -1,11 +1,14 @@
-<!-- The AppHost SDK supplies the DCP metadata DistributedApplicationTestingBuilder.Create(args) needs without an AppHost project. -->
-<Project Sdk="Aspire.AppHost.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <IsTestProject>true</IsTestProject>
+    <!-- Aspire.Hosting.AppHost marks this as an AppHost (DCP metadata for DistributedApplicationTestingBuilder.Create());
+         keep dotnet test running the test executable directly instead of redirecting it to 'aspire run'. -->
+    <ASPIRE_SUPPRESS_CLI_RUN_HOOK>true</ASPIRE_SUPPRESS_CLI_RUN_HOOK>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
     <PackageReference Include="Aspire.Hosting.Testing" />
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>
@@ -24,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="Aspire.Hosting" />
     <Using Include="Xunit" />
   </ItemGroup>
 

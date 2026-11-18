@@ -1,4 +1,5 @@
 using Aspire.Hosting.Azure;
+using Aspire.Hosting.Foundry;
 using Aspire.Hosting.Pipelines;
 using Azure.Provisioning;
 using Azure.Provisioning.AppContainers;
@@ -25,8 +26,8 @@ var postgres = builder.AddAzurePostgresFlexibleServer("postgres")
     .WithPasswordAuthentication();
 var db = postgres.AddDatabase("n8n-db", "n8n");
 
-var foundry = builder.AddAzureAIFoundry("foundry");
-var chat = foundry.AddDeployment("chat", AIFoundryModel.OpenAI.Gpt5Mini);
+var foundry = builder.AddFoundry("foundry");
+var chat = foundry.AddDeployment("chat", FoundryModel.OpenAI.Gpt5Mini);
 chat.Resource.SkuCapacity = 1000;
 
 var redis = builder.AddAzureManagedRedis("redis")

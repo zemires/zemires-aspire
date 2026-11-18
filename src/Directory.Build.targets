@@ -21,8 +21,8 @@
   </PropertyGroup>
 
   <!--
-    Preview projects (IsPreview=true) stay prerelease in a stable release: tag v13.6.0 packs them as
-    13.6.0-$(ToolkitPreviewVersion). Set as a property (not in a target) so that project references
+    Preview projects (IsPreview=true) stay prerelease in a stable release: tag v17.0.0 packs them as
+    17.0.0-$(ToolkitPreviewVersion). Set as a property (not in a target) so that project references
     resolve the same dependency version.
   -->
   <PropertyGroup Condition=" '$(ReleaseBuild)' == 'true' AND '$(IsPreview)' == 'true' ">
