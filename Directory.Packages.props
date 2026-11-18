@@ -30,7 +30,7 @@
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspirePackageVersion)" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspirePackageVersion)" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="$(AspirePackageVersion)" />
-    <PackageVersion Include="Aspire.Microsoft.Azure.StackExchangeRedis" Version="13.6.4" />
+    <PackageVersion Include="Aspire.Microsoft.Azure.StackExchangeRedis" Version="13.6.5" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspirePackageVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="$(AspirePackageVersion)" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.JavaScript.Extensions" Version="13.6.1" />
