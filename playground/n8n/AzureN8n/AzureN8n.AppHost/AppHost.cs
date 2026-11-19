@@ -1,10 +1,10 @@
 using Aspire.Hosting.Azure;
+using Aspire.Hosting.Foundry;
 using Aspire.Hosting.Pipelines;
 using Azure.Provisioning;
 using Azure.Provisioning.AppContainers;
 using Azure.Provisioning.RedisEnterprise;
 using Microsoft.Extensions.Logging;
-using Projects;
 #pragma warning disable ASPIREPIPELINES001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -25,8 +25,8 @@ var postgres = builder.AddAzurePostgresFlexibleServer("postgres")
     .WithPasswordAuthentication();
 var db = postgres.AddDatabase("n8n-db", "n8n");
 
-var foundry = builder.AddAzureAIFoundry("foundry");
-var chat = foundry.AddDeployment("chat", AIFoundryModel.OpenAI.Gpt5Mini);
+var foundry = builder.AddFoundry("foundry");
+var chat = foundry.AddDeployment("chat", FoundryModel.OpenAI.Gpt5Mini);
 chat.Resource.SkuCapacity = 1000;
 
 var redis = builder.AddAzureManagedRedis("redis")
@@ -98,7 +98,7 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
 output clientAppId string = clientApp.appId
 ");
 
-var api = builder.AddProject<AzureN8n_ApiService>("api")
+var api = builder.AddDotnetProject("api", "../AzureN8n.ApiService/AzureN8n.ApiService.csproj")
     .WithReference(appi);
 
 //var credentialsOverwrite = ReferenceExpression.Create($"{{\"azureOpenAiApi\": {{\"endpoint\":\"https://{foundry.Resource.NameOutputReference}.openai.azure.com\", \"apiKey\":\"{apiKey}\", \"resourceName\":\"{foundry.Resource.NameOutputReference}\", \"apiVersion\":\"2025-03-01-preview\" }}, \"azureEntraCognitiveServicesOAuth2Api\": {{ \"endpoint\":\"{foundry.Resource.Endpoint}\", \"clientId\":\"{appReg.GetOutput("clientAppId")}\", \"clientSecret\":\"{clientSecret}\", \"resourceName\":\"{foundry.Resource.NameOutputReference}\", \"tenantId\":\"{tenantId}\", \"apiVersion\":\"2025-03-01-preview\" }} }}");

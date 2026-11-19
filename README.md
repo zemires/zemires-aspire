@@ -29,7 +29,8 @@
 
 ## Prerequisites
 
-- .NET SDK 10 (packages target `net8.0`, `net9.0` and `net10.0`, Aspire 13)
+- .NET SDK 10 (packages target `net10.0`, Aspire 17)
+- Aspire CLI 17 (https://get.aspire.dev) — Aspire 17 AppHosts need its bundle to build and run
 - Docker or Podman for running AppHosts and integration tests
 - OpenTofu CLI (`tofu`, default) or Terraform CLI, plus Azure CLI for Azure targets, for Terraform deployment
 - Kiota — only to regenerate the n8n API client
@@ -90,7 +91,7 @@ var queue = storage.AddQueue("queue1", "myqueue");
 var tf = builder.AddTerraformTemplate("tf-template", "my-template.tf.hbs")
     .WithParameter("tfp1", "Hello");
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(queue)
     .WithEnvironment("OUTPUT_TF", tf.GetOutput("output1"));
 
@@ -148,7 +149,7 @@ In a consuming service: `builder.AddDirectusClient("directus");`
 var roach = builder.AddCockroachDB("roach").WithDataVolume();
 var db = roach.AddDatabase("mydb");
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(db)
     .WaitFor(db);
 ```

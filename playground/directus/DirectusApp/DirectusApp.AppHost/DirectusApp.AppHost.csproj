@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Directus\Zemires.Aspire.Hosting.Directus.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\DirectusApp.ApiService\DirectusApp.ApiService.csproj" />
-    <ProjectReference Include="..\DirectusApp.Web\DirectusApp.Web.csproj" />
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Directus\Zemires.Aspire.Hosting.Directus.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

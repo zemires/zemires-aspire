@@ -1,5 +1,4 @@
 using ZitadelApp.AppHost;
-using Projects;
 
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
@@ -30,7 +29,7 @@ var project = zitadel.AddProject("zitadel-project", "Aspire")
 var clientId = project.GetOutput(CustomZitadelInitialization.ClientIdOutput);
 var clientSecret = project.GetSecretOutput(CustomZitadelInitialization.ClientSecretOutput);
 
-builder.AddProject<ZitadelApp_Web>("webfrontend")
+builder.AddDotnetProject("webfrontend", "../ZitadelApp.Web/ZitadelApp.Web.csproj")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(zitadel)
@@ -41,7 +40,7 @@ builder.AddProject<ZitadelApp_Web>("webfrontend")
 
 var zitadelApi = zitadel.AddApiConnectionString();
 
-builder.AddProject<ZitadelApp_AdminConsoleApp>("admin-console")
+builder.AddDotnetProject("admin-console", "../ZitadelApp.AdminConsoleApp/ZitadelApp.AdminConsoleApp.csproj")
     .WithReference(zitadelApi)
     .WaitFor(zitadel); // the machine user key file is written on the first start of zitadel
 

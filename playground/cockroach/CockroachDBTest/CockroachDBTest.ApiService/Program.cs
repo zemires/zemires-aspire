@@ -1,6 +1,8 @@
 using CockroachDBTest.ApiService.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,16 +18,24 @@ builder.AddNpgsqlDbContext<BloggingContext>("mydb", configureDbContextOptions: o
     {
         ngpsqlOptions.SetPostgresVersion(13, 0);
     });
-    options.UseCockroach();
 });
 
 var app = builder.Build();
 
-// damn, cochroach does not support EFCore.
-using var scope = app.Services.CreateScope();
-using var dbContext = scope.ServiceProvider.GetRequiredService<BloggingContext>();
-dbContext.Database.EnsureCreated();
-dbContext.Database.Migrate();
+// EF Core migrations fail on CockroachDB (the history table lock is not supported), and EnsureCreated()
+// skips the schema because CockroachDB's internal tables look like existing tables. Create the tables directly.
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<BloggingContext>();
+    try
+    {
+        dbContext.GetService<IRelationalDatabaseCreator>().CreateTables();
+    }
+    catch (PostgresException e) when (e.SqlState == PostgresErrorCodes.DuplicateTable)
+    {
+        // Schema already created on a previous start.
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

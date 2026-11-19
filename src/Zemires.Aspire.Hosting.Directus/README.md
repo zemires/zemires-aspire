@@ -22,7 +22,7 @@ var directus = builder.AddDirectus("directus", port: 8055)
     .WithPostgresDatabase(db)
     .WithDataBindMount("./.data");
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(directus)
     .WaitFor(directus);
 

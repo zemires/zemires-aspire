@@ -31,17 +31,14 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
-      # The package version comes from the tag (v13.6.0 -> 13.6.0, v13.6.0-preview.1 -> 13.6.0-preview.1).
+      # The package version comes from the tag (v17.0.0 -> 17.0.0, v17.0.0-preview.1 -> 17.0.0-preview.1).
       # Stable versions must match AspireMajorVersion.ToolkitMinorVersion.ToolkitPatchVersion from
       # Directory.Build.props (enforced by ReleaseBuild=true in Directory.Build.targets); prerelease
       # versions must at least share that VersionPrefix.
       # Projects with IsPreview=true (Directus, CockroachDB) stay prerelease in a stable release and are
-      # packed as <VersionPrefix>-<ToolkitPreviewVersion> (e.g. 13.6.0-preview.3), see src/Directory.Build.targets.
+      # packed as <VersionPrefix>-<ToolkitPreviewVersion> (e.g. 17.0.0-preview.1), see src/Directory.Build.targets.
       - name: Determine version
         id: version
         run: |
@@ -53,12 +50,19 @@ jobs:
           fi
           if [[ "$version" == *-* ]]; then release_build=false; else release_build=true; fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "msbuild-args=-p:Version=$version -p:ReleaseBuild=$release_build -p:AspireUseCliBundle=false" >> "$GITHUB_OUTPUT"
+          echo "msbuild-args=-p:Version=$version -p:ReleaseBuild=$release_build" >> "$GITHUB_OUTPUT"
           echo "Releasing version $version"
 
-      # AspireUseCliBundle=false: see ci.yml (ASPIRE009 on CI runners).
+      # See ci.yml: Aspire 17 AppHosts require the Aspire CLI bundle (DCP + dashboard) at build time (ASPIRE013).
+      # Install the CLI matching AspireVersion from Directory.Build.props; the build extracts its bundle ('aspire setup').
+      - name: Install Aspire CLI
+        run: |
+          version=$(dotnet msbuild src/Zemires.Aspire.Hosting.N8n/Zemires.Aspire.Hosting.N8n.csproj -getProperty:AspireVersion)
+          dotnet tool install --global Aspire.Cli --version "$version"
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
       - name: Restore
-        run: dotnet restore Zemires.Aspire.slnx -p:AspireUseCliBundle=false
+        run: dotnet restore Zemires.Aspire.slnx
 
       - name: Build
         run: dotnet build Zemires.Aspire.slnx --configuration Release --no-restore ${{ steps.version.outputs.msbuild-args }}

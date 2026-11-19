@@ -9,7 +9,7 @@ namespace Aspire.Hosting.ApplicationModel;
 public class CockroachDBResource(string name, ParameterResource? userName, ParameterResource password) : ContainerResource(name), IResourceWithConnectionString
 {
     internal const string PrimaryEndpointName = "tcp";
-    internal const string ConsoleEndpointName = "http";
+    internal const string ConsoleEndpointName = "https";
     private const string DefaultUserName = "cockroach";
 
     private readonly Dictionary<string, string> _databases = new(StringComparer.OrdinalIgnoreCase);
@@ -22,7 +22,7 @@ public class CockroachDBResource(string name, ParameterResource? userName, Param
     public EndpointReference PrimaryEndpoint => _primaryEndpoint ??= new(this, PrimaryEndpointName);
 
     /// <summary>
-    /// Gets the DB console (HTTP) endpoint.
+    /// Gets the DB console (HTTPS) endpoint.
     /// </summary>
     public EndpointReference ConsoleEndpoint => _consoleEndpoint ??= new(this, ConsoleEndpointName);
 

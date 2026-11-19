@@ -30,19 +30,21 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
-      # AppHosts default to AspireUseCliBundle=true, whose automatic bundle setup fails on CI
-      # runners with Aspire 13.6.x (ASPIRE009). Use the DCP/dashboard NuGet packages instead;
-      # the property must also be set on restore so those RID-specific packages are restored.
+      # Aspire 17 AppHosts require the Aspire CLI bundle (DCP + dashboard) at build time (ASPIRE013).
+      # Install the CLI matching AspireVersion from Directory.Build.props; the build extracts its bundle ('aspire setup').
+      - name: Install Aspire CLI
+        run: |
+          version=$(dotnet msbuild src/Zemires.Aspire.Hosting.N8n/Zemires.Aspire.Hosting.N8n.csproj -getProperty:AspireVersion)
+          dotnet tool install --global Aspire.Cli --version "$version"
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
       - name: Restore
-        run: dotnet restore Zemires.Aspire.slnx -p:AspireUseCliBundle=false
+        run: dotnet restore Zemires.Aspire.slnx
 
       - name: Build
-        run: dotnet build Zemires.Aspire.slnx --configuration Release --no-restore -p:AspireUseCliBundle=false
+        run: dotnet build Zemires.Aspire.slnx --configuration Release --no-restore
 
       # Integration tests ([Trait("Category", "Integration")]) start containers via
       # DistributedApplicationTestingBuilder and need Docker; they are excluded here.

@@ -1,18 +1,22 @@
-<Project Sdk="Aspire.AppHost.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<UserSecretsId>96127873-9c85-4627-903f-3984e2ee2630</UserSecretsId>
 	</PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" />
+  </ItemGroup>
+
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.N8n\Zemires.Aspire.Hosting.N8n.csproj" IsAspireProjectResource="false" />
-		<ProjectReference Include="..\AzureN8n.ApiService\AzureN8n.ApiService.csproj" />
+		<ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.N8n\Zemires.Aspire.Hosting.N8n.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Aspire.Hosting.Azure" />
-		<PackageReference Include="Aspire.Hosting.Azure.AIFoundry" />
+		<PackageReference Include="Aspire.Hosting.Foundry" />
 		<PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
 		<PackageReference Include="Aspire.Hosting.Azure.ApplicationInsights" />
 		<PackageReference Include="Aspire.Hosting.Azure.KeyVault" />

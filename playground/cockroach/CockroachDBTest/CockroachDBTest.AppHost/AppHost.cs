@@ -1,4 +1,3 @@
-using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -7,7 +6,7 @@ var roach = builder.AddCockroachDB("roach")
 
 var db = roach.AddDatabase("mydb");
 
-var api = builder.AddProject<CockroachDBTest_ApiService>("api")
+var api = builder.AddDotnetProject("api", "../CockroachDBTest.ApiService/CockroachDBTest.ApiService.csproj")
     .WithReference(db)
     .WaitFor(db);
 

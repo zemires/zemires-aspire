@@ -49,13 +49,13 @@ var worker = n8n.AddWorker("worker", port: 5679)
 
 worker.AddTaskRunner("runner");
 
-var api = builder.AddProject<Projects.WorkflowApp_ApiService>("apiservice")
+var api = builder.AddDotnetProject("apiservice", "../WorkflowApp.ApiService/WorkflowApp.ApiService.csproj")
     .WithReference(n8n)
     .WaitFor(n8n);
 
 worker.WithReference(api);
 
-var mcp = builder.AddProject<Projects.WorkflowApp_McpService>("mcpservice");
+var mcp = builder.AddDotnetProject("mcpservice", "../WorkflowApp.McpService/WorkflowApp.McpService.csproj");
 n8n.WithReference(mcp);
 worker.WithReference(mcp);
 

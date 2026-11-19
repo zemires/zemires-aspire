@@ -47,7 +47,7 @@ var project = zitadel.AddProject("zitadel-project", "Aspire")
         context.SetOutput("client-secret", app.ClientSecret);
     });
 
-builder.AddProject<Projects.WebApp>("webapp")
+builder.AddDotnetProject("webapp", "../WebApp/WebApp.csproj")
     .WithEnvironment("Oidc__Authority", zitadel.Resource.PrimaryEndpoint)
     .WithEnvironment("Oidc__ClientId", project.GetOutput("client-id"))
     .WithEnvironment("Oidc__ClientSecret", project.GetSecretOutput("client-secret"))
