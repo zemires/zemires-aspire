@@ -63,7 +63,6 @@
   </ItemGroup>
   <ItemGroup Label="Integration Packages">
     <PackageVersion Include="BCrypt.Net-Next" Version="4.2.1" />
-    <PackageVersion Include="CockroachDB.EFCore.Provider" Version="0.1.0" />
     <PackageVersion Include="Handlebars.Net" Version="2.4.3" />
     <PackageVersion Include="Handlebars.Net.Extension.Json" Version="1.0.0" />
     <PackageVersion Include="Handlebars.Net.Helpers" Version="2.5.5" />

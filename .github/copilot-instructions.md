@@ -95,7 +95,7 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o . -
 - **`Zemires.Aspire.Directus`** — client integration `AddDirectusClient()` (based on `Qute.Directus`) with `DirectusHealthCheck`.
 
 ### CockroachDB
-- **`Zemires.Aspire.Hosting.CockroachDB`** — `AddCockroachDB()` (container `cockroachdb/cockroach`), `AddDatabase()` returning `CockroachDBDatabaseResource` (with `WithCreationScript`), `WithUserName`, `WithPassword`, `WithHostPort`, data volume / bind mount. Health check via `AspNetCore.HealthChecks.NpgSql` (Postgres wire protocol). EF Core usage is shown in `playground/cockroach` with `CockroachDB.EFCore.Provider`.
+- **`Zemires.Aspire.Hosting.CockroachDB`** — `AddCockroachDB()` (container `cockroachdb/cockroach`), `AddDatabase()` returning `CockroachDBDatabaseResource` (with `WithCreationScript`), `WithUserName`, `WithPassword`, `WithHostPort`, data volume / bind mount. Runs in secure mode (`start-single-node --certs-dir=/cockroach/cockroach-data/certs`: password auth needs it, certificates live in the data folder so they survive restarts; DB console on `https`). Health check via `AspNetCore.HealthChecks.NpgSql` (Postgres wire protocol, TLS). EF Core usage (plain Npgsql provider, tables via `CreateTables()` since migrations and `EnsureCreated` don't work on CockroachDB) is shown in `playground/cockroach`.
 
 ### Tests
 - xUnit v3 (`xunit.v3`) with explicit `<Using>` elements and `IsTestProject` metadata.
@@ -103,7 +103,7 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o . -
 - n8n integration tests use `DistributedApplicationTestingBuilder.CreateAsync<Projects.Zemires_Aspire_Hosting_N8n_AppHost>()` to boot the example AppHost, then `app.CreateHttpClient(resourceName)` and wait for `KnownResourceStates.Running` via `ResourceNotificationService`.
 - Terraform tests verify the rendered templates of the publisher (`TerraformTemplatePublisherTests`).
 - `Zemires.Aspire.Hosting.N8n.Tests` covers the n8n model (API key, custom nodes) and the API key provisioner with a fake handler; its integration tests boot the example AppHost. `Zemires.Aspire.N8n.Tests` covers the client registration and the webhook client. Test projects that call `DistributedApplicationTestingBuilder.Create()` use `Microsoft.NET.Sdk` with a `PackageReference` to `Aspire.Hosting.AppHost` and `<ASPIRE_SUPPRESS_CLI_RUN_HOOK>true</ASPIRE_SUPPRESS_CLI_RUN_HOOK>` (otherwise `dotnet test` is redirected to `aspire run`).
-- `Zemires.Aspire.Zitadel.Tests` covers the Zitadel client registration, `Zemires.Aspire.Hosting.Zitadel.Tests` the initialization outputs. Directus and CockroachDB have no test projects yet — add `tests/<SrcProject>.Tests` when changing them.
+- `Zemires.Aspire.Zitadel.Tests` covers the Zitadel client registration, `Zemires.Aspire.Hosting.Zitadel.Tests` the initialization outputs. `Zemires.Aspire.Hosting.CockroachDB.Tests` covers the container setup (secure mode, environment, endpoints) plus an integration test. Directus has no test project yet — add `tests/<SrcProject>.Tests` when changing them.
 
 ## Key conventions
 

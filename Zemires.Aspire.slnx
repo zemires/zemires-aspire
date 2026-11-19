@@ -62,6 +62,7 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Zemires.Aspire.Hosting.CockroachDB.Tests/Zemires.Aspire.Hosting.CockroachDB.Tests.csproj" />
     <Project Path="tests/Zemires.Aspire.Hosting.N8n.Tests/Zemires.Aspire.Hosting.N8n.Tests.csproj" Id="8b300e87-83a6-4a1c-99fe-7df19076c9c1" />
     <Project Path="tests/Zemires.Aspire.Hosting.Terraform.Azure.Tests/Zemires.Aspire.Hosting.Terraform.Azure.Tests.csproj" />
     <Project Path="tests/Zemires.Aspire.Hosting.Terraform.Tests/Zemires.Aspire.Hosting.Terraform.Tests.csproj" />
