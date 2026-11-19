@@ -1,4 +1,3 @@
-using Projects;
 using System.Xml.Linq;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -23,11 +22,11 @@ var directus = builder.AddDirectus("directus", port: 8055)
     .WithDataBindMount("./.data");
     //.WithDataVolume();
 
-var api = builder.AddProject<DirectusApp_ApiService>("api")
+var api = builder.AddDotnetProject("api", "../DirectusApp.ApiService/DirectusApp.ApiService.csproj")
     .WithReference(directus)
     .WaitFor(directus);
 
-//var web = builder.AddProject<DirectusApp_Web>("web")
+//var web = builder.AddDotnetProject("web", "../DirectusApp.Web/DirectusApp.Web.csproj")
 //    .WithReference(directus)
 //    .WaitFor(directus);
 

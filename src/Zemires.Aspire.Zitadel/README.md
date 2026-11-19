@@ -17,7 +17,7 @@ var zitadel = builder.AddZitadel("zitadel").WithMachineUser();
 
 var zitadelApi = zitadel.AddApiConnectionString(); // resource "zitadel-api"
 
-builder.AddProject<Projects.AdminApp>("admin")
+builder.AddDotnetProject("admin", "../AdminApp/AdminApp.csproj")
     .WithReference(zitadelApi)
     .WaitFor(zitadel); // the machine user key is written on the first start of Zitadel
 ```

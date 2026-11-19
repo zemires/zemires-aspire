@@ -13,7 +13,7 @@ dotnet add package Zemires.Aspire.N8n
 In the AppHost, reference the n8n resource (see `Zemires.Aspire.Hosting.N8n`):
 
 ```csharp
-builder.AddProject<Projects.ApiService>("api").WithReference(n8n);
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj").WithReference(n8n);
 ```
 
 In the consuming service:

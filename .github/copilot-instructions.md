@@ -16,7 +16,7 @@ Shared guidance for AI coding agents (GitHub Copilot, Claude Code via `CLAUDE.md
 
 The repository was created by importing and merging several previously separate projects (some originally targeting the CommunityToolkit.Aspire repo). If you find leftovers from that origin (CommunityToolkit names, namespaces or links), align them with the conventions below.
 
-All projects target `net10.0` (`DefaultTargetFramework`; `AllTargetFrameworks` for `src` — Aspire 17 itself only ships for `net10.0`). Aspire: `src` packages reference the lowest supported Aspire `17.0.0` (`AspireMinimumVersion`) so consumers can use any Aspire `17.x`; playground, examples and tests use the latest `17.0.0` (`AspireVersion`, both in `Directory.Build.props`; AppHost SDK in `global.json`). `Directory.Packages.props` picks the version via `AspirePackageVersion` based on `IsPackable` — bump `AspireVersion` for new Aspire patches, and `AspireMinimumVersion` only when `src` needs a newer Aspire API. Aspire packages that only ship as prerelease (`Aspire.Hosting.Integration.Analyzers`, `Aspire.Hosting.Foundry`, `Aspire.Npgsql.EntityFrameworkCore.PostgreSQL`) use `$(AspireVersion)$(AspirePreviewSuffix)`.
+All projects target `net10.0` (`DefaultTargetFramework`; `AllTargetFrameworks` for `src` — Aspire 17 itself only ships for `net10.0`). Aspire: `src` packages reference the lowest supported Aspire `17.0.0` (`AspireMinimumVersion`) so consumers can use any Aspire `17.x`; playground, examples and tests use the latest `17.0.0` (`AspireVersion`, both in `Directory.Build.props`). `Directory.Packages.props` picks the version via `AspirePackageVersion` based on `IsPackable` — bump `AspireVersion` for new Aspire patches, and `AspireMinimumVersion` only when `src` needs a newer Aspire API. Aspire packages that only ship as prerelease (`Aspire.Hosting.Integration.Analyzers`, `Aspire.Hosting.Foundry`, `Aspire.Npgsql.EntityFrameworkCore.PostgreSQL`) use `$(AspireVersion)$(AspirePreviewSuffix)`.
 
 ## Repository layout (core principles)
 
@@ -27,7 +27,7 @@ All projects target `net10.0` (`DefaultTargetFramework`; `AllTargetFrameworks` f
 - **`tests/`** — xUnit v3 test projects, named `<SrcProject>.Tests`.
 - **`docs/`** — shared documentation assets (e.g. `docs/images/nuget.png`, the package icon).
 
-New projects must be added to `Zemires.Aspire.slnx` in the matching solution folder. Project references are relative; playground/example AppHosts reference `src` projects with `IsAspireProjectResource="false"`.
+New projects must be added to `Zemires.Aspire.slnx` in the matching solution folder. Project references are relative; playground/example AppHosts reference `src` projects with a plain `ProjectReference` and add .NET service projects with `AddDotnetProject(name, "../Service/Service.csproj")` (path relative to the AppHost directory; no `ProjectReference`, no `Projects.*` types).
 
 ## Workflow
 
@@ -50,7 +50,7 @@ dotnet run --project examples\Zemires.Aspire.Hosting.N8n.AppHost\Zemires.Aspire.
 dotnet pack src\<Project>\<Project>.csproj   # output goes to ./nuget
 ```
 
-`global.json` opts into the Microsoft.Testing.Platform `dotnet test` mode (required by xunit.v3 4.x), so pass projects with `--project` / `--solution`. Aspire 17 AppHosts need the Aspire CLI bundle (DCP + dashboard) to build and run: install the CLI matching `global.json` (https://get.aspire.dev or `dotnet tool install -g Aspire.Cli`); `AspireUseCliBundle=false` is no longer supported (ASPIRE013). Integration tests and most playground AppHosts need a running container runtime (Docker or `podman machine start`). Terraform deployment needs the OpenTofu CLI `tofu` by default (`TerraformExecutor`; override with `Terraform:Executor:ExecutablePath`, e.g. `terraform`) and `az` for Azure targets.
+`global.json` opts into the Microsoft.Testing.Platform `dotnet test` mode (required by xunit.v3 4.x), so pass projects with `--project` / `--solution`. Aspire 17 AppHosts need the Aspire CLI bundle (DCP + dashboard) to build and run: install the CLI matching `AspireVersion` (https://get.aspire.dev or `dotnet tool install -g Aspire.Cli`); `AspireUseCliBundle=false` is no longer supported (ASPIRE013). Integration tests and most playground AppHosts need a running container runtime (Docker or `podman machine start`). Terraform deployment needs the OpenTofu CLI `tofu` by default (`TerraformExecutor`; override with `Terraform:Executor:ExecutablePath`, e.g. `terraform`) and `az` for Azure targets.
 
 To regenerate the n8n API client (from `src\Zemires.N8n.Api`, spec file `openapi.yml`, see `kiota-lock.json`):
 
@@ -65,7 +65,7 @@ kiota generate -d .\openapi.yml -l csharp -n Zemires.N8n.Api -c N8nClient -o . -
 - `src/Directory.Build.props` / `.targets` add packaging metadata, SourceLink, XML docs (CS1591 etc. as errors), the package icon and pack each project's `README.md` as the NuGet readme — **every `src` project needs a `README.md`**.
 - Every `src` project sets a `Description` and `AdditionalPackageTags` (appended to the common `aspire integration zemires` tags): the target system (e.g. `n8n`, `zitadel`, `terraform`) plus `hosting` for `Zemires.Aspire.Hosting.*` packages or `client` for client packages. The `ValidatePackageTags` target in `src/Directory.Build.targets` fails `dotnet pack` otherwise.
 - `src` projects build with `TreatWarningsAsErrors` and run `Aspire.Hosting.Integration.Analyzers`: public hosting extension methods need `[AspireExport]` or `[AspireExportIgnore]`. Playground, examples and tests keep warnings as warnings.
-- AppHost projects use `Sdk="Aspire.AppHost.Sdk"` (versionless; pinned in `global.json`). Aspire 17 marks it obsolete (ASPIRE012, warning only) in favour of `Microsoft.NET.Sdk` + `Aspire.Hosting.AppHost` / `Aspire.Hosting.Dotnet` with `AddDotnetProject`; keep it until the AppHosts are migrated together.
+- AppHost projects use `Sdk="Microsoft.NET.Sdk"` with `OutputType` `Exe` and `PackageReference`s to `Aspire.Hosting.AppHost` (plus `Aspire.Hosting.Dotnet` when they call `AddDotnetProject`). `Aspire.AppHost.Sdk` and `AddProject<TProject>` are obsolete since Aspire 17 (ASPIRE012 / CS0618) — do not reintroduce them.
 
 ## Architecture
 

@@ -1,12 +1,16 @@
-<Project Sdk="Aspire.AppHost.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<UserSecretsId>2ec259d3-451b-404d-b04f-431437ca0aca</UserSecretsId>
 	</PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+  </ItemGroup>
+
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Zemires.Aspire.Hosting.N8n\Zemires.Aspire.Hosting.N8n.csproj" IsAspireProjectResource="false" />
+		<ProjectReference Include="..\..\src\Zemires.Aspire.Hosting.N8n\Zemires.Aspire.Hosting.N8n.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

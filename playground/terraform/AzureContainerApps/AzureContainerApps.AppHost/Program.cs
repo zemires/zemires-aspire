@@ -37,7 +37,7 @@ kv.AddSecret("kvsecret3", ReferenceExpression.Create($"{tfTemplate.GetSecretOutp
 //var sqladmin = builder.AddAzureUserAssignedIdentity("sqladmin");
 //sql.WithAnnotation(new AppIdentityAnnotation(sqladmin.Resource));
 
-var apiService = builder.AddProject<Projects.AzureContainerApps_ApiService>("apiservice")
+var apiService = builder.AddDotnetProject("apiservice", "../AzureContainerApps.ApiService/AzureContainerApps.ApiService.csproj")
     .WaitFor(db)
     .WithReference(db)
     .WithEnvironment("P1", param1)
@@ -51,7 +51,7 @@ var apiService = builder.AddProject<Projects.AzureContainerApps_ApiService>("api
     //.WithAzureUserAssignedIdentity(sqladmin)
     .WithEnvironment("GROUP_ID", "${azuread_group.ra_app_contributor.object_id}");
 
-var web = builder.AddProject<Projects.AzureContainerApps_Web>("webfrontend")
+var web = builder.AddDotnetProject("webfrontend", "../AzureContainerApps.Web/AzureContainerApps.Web.csproj")
     .WithExternalHttpEndpoints()
     .WithReference(cache)
     .WaitFor(cache)

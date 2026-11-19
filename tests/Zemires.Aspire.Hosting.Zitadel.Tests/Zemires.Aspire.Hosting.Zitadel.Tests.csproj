@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Aspire.Hosting" />
     <Using Include="Xunit" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,8 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.CockroachDB\Zemires.Aspire.Hosting.CockroachDB.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\CockroachDBTest.ApiService\CockroachDBTest.ApiService.csproj" />
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.CockroachDB\Zemires.Aspire.Hosting.CockroachDB.csproj" />
   </ItemGroup>
 
 </Project>

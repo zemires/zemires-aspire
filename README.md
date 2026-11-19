@@ -91,7 +91,7 @@ var queue = storage.AddQueue("queue1", "myqueue");
 var tf = builder.AddTerraformTemplate("tf-template", "my-template.tf.hbs")
     .WithParameter("tfp1", "Hello");
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(queue)
     .WithEnvironment("OUTPUT_TF", tf.GetOutput("output1"));
 
@@ -149,7 +149,7 @@ In a consuming service: `builder.AddDirectusClient("directus");`
 var roach = builder.AddCockroachDB("roach").WithDataVolume();
 var db = roach.AddDatabase("mydb");
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(db)
     .WaitFor(db);
 ```

@@ -10,9 +10,9 @@
   </PropertyGroup>
   <ItemGroup Label="Aspire Packages">
     <PackageVersion Include="Aspire.Hosting" Version="$(AspirePackageVersion)" />
-    <!-- Aspire.AppHost.Sdk projects get Aspire.Hosting.AppHost implicitly (NU1009 otherwise); Microsoft.NET.Sdk projects reference it explicitly. -->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspirePackageVersion)" Condition="'$(_UsingAspireAppHostSdk)' != 'true'" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspirePackageVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure" Version="$(AspirePackageVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Dotnet" Version="$(AspirePackageVersion)" />
     <PackageVersion Include="Aspire.Hosting.Foundry" Version="$(AspireVersion)$(AspirePreviewSuffix)" />
     <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="$(AspirePackageVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.ApplicationInsights" Version="$(AspirePackageVersion)" />

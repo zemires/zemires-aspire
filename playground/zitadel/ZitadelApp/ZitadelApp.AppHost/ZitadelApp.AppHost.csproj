@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Zitadel\Zemires.Aspire.Hosting.Zitadel.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\ZitadelApp.AdminConsoleApp\ZitadelApp.AdminConsoleApp.csproj" />
-    <ProjectReference Include="..\ZitadelApp.Web\ZitadelApp.Web.csproj" />
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Zemires.Aspire.Hosting.Zitadel\Zemires.Aspire.Hosting.Zitadel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

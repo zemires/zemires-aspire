@@ -23,7 +23,7 @@ var storage = builder.AddAzureStorage("storage");
 var queue = storage.AddQueue("queue1", "myqueue");
 var db = builder.AddAzureSqlServer("sql").AddDatabase("db");
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(queue)
     .WithReference(db);
 

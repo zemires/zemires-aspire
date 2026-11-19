@@ -57,7 +57,7 @@ var n8n = builder.AddN8n("n8n")
     .WithInstanceOwner("admin@dev.local", "Admin", "Local")
     .WithApiKey(); // label "Aspire AppHost", or WithApiKey("my-label")
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(n8n) // ConnectionStrings__n8n = Endpoint=http://...;ApiKey=...
     .WaitFor(n8n);
 ```

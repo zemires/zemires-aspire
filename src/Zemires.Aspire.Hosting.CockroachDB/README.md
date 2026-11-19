@@ -20,7 +20,7 @@ var roach = builder.AddCockroachDB("roach")
 
 var db = roach.AddDatabase("mydb");
 
-builder.AddProject<Projects.ApiService>("api")
+builder.AddDotnetProject("api", "../ApiService/ApiService.csproj")
     .WithReference(db)
     .WaitFor(db);
 
