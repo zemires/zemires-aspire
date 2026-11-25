@@ -61,6 +61,8 @@ builder.AddDotnetProject("webapp", "../WebApp/WebApp.csproj")
 
 `WithMachineUser()` and `WithLoginClientKey()` write the machine user key and login client PAT to `.zitadel/{name}-keys` in the AppHost directory; add `.zitadel/` to `.gitignore`.
 
+The login v2 UI signs its session cookies with `ZITADEL_SESSION_COOKIE_SECRET`. `AddZitadelLoginClient` generates one (parameter `{name}-session-cookie-secret`, persisted in the AppHost user secrets); use `WithSessionCookieSecret(parameter)` to provide your own (at least 32 characters, comma-separated values to rotate it). Changing the secret signs all users out of the login UI.
+
 To call the Zitadel API from a service with the machine user, use `zitadel.AddApiConnectionString()` (connection string resource `zitadel-api` holding `Endpoint=...;ServiceAccountKey=<base64 key>`) and `AddZitadelApi("zitadel-api")` from `Zemires.Aspire.Zitadel`.
 
 Further options: `WithExternalDomain`, `WithCertificate`, `WithHostPort`, `WithOtlpExporter`, `WithInitialization`. Initialization callbacks receive ready-to-use Zitadel API client options (authenticated as the machine user).
