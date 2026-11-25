@@ -12,7 +12,7 @@ var redis = builder.AddRedis("redis")
     .WithDataVolume();
 
 //var ollama = builder.AddOllama("ollama"):
-var ollama = builder.AddOllamaLocal("ollama");
+var ollama = builder.AddOllamaLocal("ollama", targetPort: 11439);
 //var model_gemma = ollama.AddModel("gemma3");
 var model_gwen = ollama.AddModel("qwen3.5:0.8b"); // small
 //var model_gwenembed = ollama.AddModel("qwen3-embedding:0.6b");
