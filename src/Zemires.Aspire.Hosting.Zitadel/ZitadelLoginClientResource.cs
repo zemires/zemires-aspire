@@ -42,4 +42,9 @@ public class ZitadelLoginClientResource(string name, ParameterResource? accessTo
     /// Gets the service user token used to call the Zitadel API.
     /// </summary>
     public ParameterResource? ServiceAccessToken { get; } = accessToken;
+
+    /// <summary>
+    /// Gets the secret that signs the login session cookies (<c>ZITADEL_SESSION_COOKIE_SECRET</c>).
+    /// </summary>
+    public ParameterResource? SessionCookieSecret { get; internal set; }
 }

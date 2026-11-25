@@ -19,6 +19,7 @@ public static class ZitadelBuilderExtensions
     private const int DefaultContainerPortLoginClient = 3000;
     private const string KeysPath = "/keys";
     private const string LoginClientPatExpirationDate = "2099-12-31T00:00:00Z";
+    private const int MinSessionCookieSecretLength = 32;
 
     /// <summary>
     /// Adds a Zitadel container resource (<c>start-from-init</c>). Login v2 is disabled unless <see cref="AddZitadelLoginClient"/> is used.
@@ -320,7 +321,12 @@ public static class ZitadelBuilderExtensions
         ParameterResource serviceAccessTokenParameter = serviceAccessToken?.Resource
             ?? new ParameterResource($"{name}-service-user-token", _ => File.ReadAllText(patFile), secret: true);
 
-        ZitadelLoginClientResource loginClient = new(name, serviceAccessTokenParameter);
+        ZitadelLoginClientResource loginClient = new(name, serviceAccessTokenParameter)
+        {
+            // no special characters: the login splits ZITADEL_SESSION_COOKIE_SECRET on commas
+            SessionCookieSecret = ParameterResourceBuilderExtensions.CreateGeneratedParameter(builder.ApplicationBuilder, $"{name}-session-cookie-secret",
+                secret: true, new GenerateParameterDefault { MinLength = MinSessionCookieSecretLength, Special = false })
+        };
         bool isRunMode = builder.ApplicationBuilder.ExecutionContext.IsRunMode;
 
         IResourceBuilder<ZitadelLoginClientResource> loginBuilder = builder.ApplicationBuilder.AddResource(loginClient)
@@ -332,6 +338,13 @@ public static class ZitadelBuilderExtensions
             .WithEnvironment("ZITADEL_API_URL", builder.Resource.PrimaryEndpoint)
             .WithEnvironment("NEXT_PUBLIC_BASE_PATH", ZitadelLoginClientResource.BasePath)
             .WithEnvironment("ZITADEL_SERVICE_USER_TOKEN", serviceAccessTokenParameter)
+            .WithEnvironment(context =>
+            {
+                if (loginClient.SessionCookieSecret is { } secret)
+                {
+                    context.EnvironmentVariables["ZITADEL_SESSION_COOKIE_SECRET"] = secret;
+                }
+            })
             .WaitFor(builder);
 
         if (isRunMode)
@@ -376,6 +389,24 @@ public static class ZitadelBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
         return builder.WithEndpoint(ZitadelResource.PrimaryEndpointName, endpoint => endpoint.Port = port);
+    }
+
+    /// <summary>
+    /// Sets the secret that signs the login session cookies (<c>ZITADEL_SESSION_COOKIE_SECRET</c>), replacing the generated one.
+    /// Changing it signs all users out of the login UI.
+    /// </summary>
+    /// <param name="builder">The resource builder.</param>
+    /// <param name="secret">The secret, at least 32 characters. Comma-separated values rotate it: the first signs, all verify.</param>
+    /// <returns>The resource builder.</returns>
+    [AspireExport]
+    public static IResourceBuilder<ZitadelLoginClientResource> WithSessionCookieSecret(this IResourceBuilder<ZitadelLoginClientResource> builder,
+        IResourceBuilder<ParameterResource> secret)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(secret);
+
+        builder.Resource.SessionCookieSecret = secret.Resource;
+        return builder;
     }
 
     /// <summary>

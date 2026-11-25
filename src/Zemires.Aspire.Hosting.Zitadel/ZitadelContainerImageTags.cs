@@ -8,12 +8,12 @@ internal static class ZitadelContainerImageTags
     /// <summary>zitadel/zitadel</summary>
     public const string Image = "zitadel/zitadel";
 
-    /// <summary>v4.19.0</summary>
-    public const string Tag = "v4.19.0";
+    /// <summary>v4.20.5</summary>
+    public const string Tag = "v4.20.5";
 
     /// <summary>zitadel/zitadel-login</summary>
     public const string LoginImage = "zitadel/zitadel-login";
 
-    /// <summary>v4.19.0</summary>
-    public const string LoginTag = "v4.19.0";
+    /// <summary>v4.20.5</summary>
+    public const string LoginTag = "v4.20.5";
 }
